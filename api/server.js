@@ -22,7 +22,17 @@ const port = process.env.PORT;
 const COOKIE = process.env.PROJECT_DOMAIN;
 
 // add cors for cross origin linking 
-app.options('*', cors())
+app.use('*', function(req, res, next) {
+  //replace localhost:8080 to the ip address:port of your server
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header('Access-Control-Allow-Credentials', true);
+  next();
+});
+
+//enable pre-flight
+app.options('*', cors());
 
 // Create a cookie which will hold the saved authenticated user
 app.use(cookieParser());
@@ -44,6 +54,7 @@ let scopes = ["notifications", "user:email", "read:org", "repo"];
 // Passport is authentication middleware for any Nodejs server application
 // Here, we are using passport to define our authentication strategy with the github account
 // i.e. defining how we are going to authenticate with github
+
 passport.use(
   new GithubStrategy(
     {

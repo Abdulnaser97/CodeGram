@@ -1,7 +1,8 @@
 import './App.css';
 import {
   Button,
-  Box 
+  Box, 
+  Typography
 } from '@mui/material';
 import apiClient from './api/apiClient';
 
@@ -41,9 +42,15 @@ function App() {
 
   return (
     <div className="App">
+
+
+
       <Box 
         padding = {10}
       >
+      <Typography variant="h3">
+        End point testers!
+      </Typography>
         <Button 
           variant="outlined"
           onClick={() => login()}>       
@@ -68,9 +75,19 @@ function App() {
           variant="outlined"
           onClick={() => helloWorld()}>       
           Hello 
-        </Button>   
+        </Button>  
+
+        </Box>
+
+      <Box>
+      <Typography variant="h3">
+        React-flow Test 
+      </Typography> 
+
+      
 
       </Box>
+     
     </div>
   );
 }
