@@ -1,0 +1,55 @@
+<html>
+
+  <head>
+    <title>CodeGram Git Data</title>
+    <meta name="description" content="Github API app with Nodejs Server." />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      pre { overflow-x: auto; word-wrap: break-word; font-size: 15px; }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Github API Data</h1>
+    </header>
+
+    <main>
+
+      <p>
+        <a href="/logoff">Sign out</a>
+      </p>
+
+      <a class="container" href="/auth/github">Log-in with GitHub</a>
+
+      <h1>{{username}}</h1>
+
+      <h2 style="color: red;">{{error}}</h2>
+
+      <p>Your access token: {{token}}</p>
+
+      <a class="container" href="/pr">Get PRs</a>
+      <br />
+      <a class="container" href="/getcontent"> Get Repo Content</a>
+
+      <div style="position: relative; width: 800px;">
+        <pre>
+
+          {{pr}}
+          {{content}}
+
+        </pre>
+
+      </div>
+
+      <ul class="collapsible">
+
+      </ul>
+
+    </main>
+
+  </body>
+
+</html>

@@ -1,0 +1,37 @@
+version: '3.7'
+services:
+   client:
+      build:
+         context: ./client
+         dockerfile: Dockerfile
+      tty: true
+      ports:
+         - "3000:3000"
+      volumes:
+         - ./client:/app
+         - /app/node_modules
+   
+   api:
+        build: 
+            context: ./api
+            dockerfile: Dockerfile
+        ports:
+            - "8080:8080"
+        environment:
+            GITHUB_CLIENT_ID: "882414159e94387ed4ae"
+            GITHUB_CLIENT_SECRET: "928968f2209bad19e5908370f6c21e8e9698820f"
+            PORT: 8080
+        volumes:
+            - appdata:/var/www/
+        networks:
+            - client
+            - api
+
+networks:
+    client:
+      driver: bridge
+    api:
+      driver: bridge
+volumes:
+   appdata:
+      driver: local
