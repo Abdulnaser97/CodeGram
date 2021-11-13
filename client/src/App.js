@@ -15,9 +15,6 @@ import ReactFlow,
   addEdge,
 }from "react-flow-renderer";
 
-
-
-
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -70,23 +67,38 @@ export default function App() {
   const onElementsRemove = (elementsToRemove) =>
     setElements((els) => removeElements(elementsToRemove, els));
   const onConnect = (params) => setElements((els) => addEdge(params, els));
+  const onElementClick = (event, element) => {
+    console.log('click', element)
+    setSelectedEL(element);
+  }
+
   // state for search 
   const [search, setSearch] = useState('search'); 
   const [nodeName, setNodeName] = useState('nodeName'); 
+  const [selectedEL, setSelectedEL] = useState(0);
 
 
-
+  // add node function 
   const addNode = useCallback(() => {
 
     var label = nodeName; 
-    console.log(label)
-    String(label)
     const newNode = {
       id: getNodeId(),
-      data: { label: label},
+      // this data will get filled with the array of JSON objects that will come 
+      // from Github 
+      data: { 
+        label: label,
+        name: label,
+        linkedFiles: ['aa.py', 'gg.py', 'kookoo.py'],
+        childNodes: ['da', 'de', 'do'],
+        siblingNodes: ['ta', 'te', 'to'],
+        parentNodes: ['pa', 'pe'],
+        documentation: ['url1', 'url2'],
+        description: '',
+      },
       position: {
-        x: Math.random() * window.innerWidth - 100,
-        y: Math.random() * window.innerHeight,
+        x: 100,
+        y: yPos.current,
       },
     };
     setElements((els) => els.concat(newNode));
@@ -121,30 +133,27 @@ export default function App() {
   }
 
 
-
   // for tabs in the side menu 
   const [value, setValue] = React.useState(0);
 
+
+  // handlers for state 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   const handleSearch = (event, newValue) => {
-    console.log('changing search')
-    console.log(event.target.value)
     setSearch(event.target.value);
-    console.log(search)
   };
 
   const handleName = (event, newValue) => {
     setNodeName(event.target.value);
   };
 
-  
-
+ 
   return (
     <div className="App">
-      <Box padding={10}>
+      <Box>
         <Typography variant="h3" m={2}>
           End point testers!
         </Typography>
@@ -172,10 +181,13 @@ export default function App() {
       <Box sx={{ display: 'flex', flexDirection: 'row'}}>
         <Container>
         <div className="canvas">
-          <ReactFlow        elements={elements}
-        onElementsRemove={onElementsRemove}
-        onConnect={onConnect}
-        onLoad={setRfInstance}/>
+          <ReactFlow        
+            elements={elements}
+            onElementsRemove={onElementsRemove}
+            onConnect={onConnect}
+            onLoad={setRfInstance}
+            onElementClick={onElementClick}
+          />
       </div>
 
         </Container>
@@ -200,7 +212,7 @@ export default function App() {
                 Search to link a file!
               </Typography>
             <TextField
-            margin="dense" 
+              margin="dense" 
               placeholder="Search.."
               inputProps={{ 'aria-label': 'search' }}
               onKeyPress={searchCodeBase}
@@ -236,10 +248,10 @@ export default function App() {
 
           </TabPanel>
           <TabPanel value={value} index={1}>
-            Item Two
+            Let's connect to github first! 
           </TabPanel>
           <TabPanel value={value} index={2}>
-            Item Three
+            {JSON.stringify(selectedEL)}
           </TabPanel>
         </Container>
       </Box>
