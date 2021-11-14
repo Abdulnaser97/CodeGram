@@ -36,3 +36,20 @@
     transform: rotate(360deg);
   }
 }
+
+.loginButton {
+  width: 230px;
+  padding: 16px 16px;
+  border-radius: 5px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-weight: bold;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.github {
+  background-color: black;
+}
