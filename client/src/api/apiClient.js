@@ -1,53 +1,67 @@
-import axios from "axios";
+export async function perform(method, resource, data) {
+  const BASE_URI = process.env.REACT_APP_BACKEND_URL;
+  const accessToken = sessionStorage.getItem("access_token");
+  try {
+    let reqParams;
+    if (method === "post") {
+      reqParams = {
+        method: method,
+        credentials: "include",
+        mode: "cors",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Credentials": true,
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(data),
+      };
+    } else {
+      reqParams = {
+        method: method,
+        credentials: "include",
+        mode: "cors",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Credentials": true,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+    }
 
-const BASE_URI = "http://localhost:8080";
+    let res = await fetch(`${BASE_URI}${resource}`, reqParams);
 
-const client = axios.create({
-  baseURL: BASE_URI,
-  json: true,
-});
-
-class apiClient {
-  constructor(accessToken) {
-    this.accessToken = accessToken;
-  }
-
-  getHello() {
-    return this.perform("get", `/hello`);
-  }
-
-  logoff() {
-    return this.perform("get", `/logoff`);
-  }
-
-  githubAuth() {
-    console.log("github Auth");
-    return this.perform(
-      "get",
-      `https://github.com/login/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Flogin%2Fgithub%2Freturn&scope=notifications%20user%3Aemail%20read%3Aorg%20repo&client_id=882414159e94387ed4ae`
-    );
-  }
-
-  getRepo() {
-    return this.perform("get", `/getcontent`);
-  }
-
-  getPR() {
-    return this.perform("get", `/getcontent`);
-  }
-
-  async perform(method, resource, data) {
-    return client({
-      method,
-      url: resource,
-      data,
-      headers: {
-        Authorization: `Bearer ${this.accessToken}`,
-      },
-    }).then((resp) => {
-      return resp.data ? resp.data : [];
-    });
+    if (res.status !== 200) {
+      throw new Error("authentication has been failed!");
+    }
+    res = await res.json();
+    return res;
+  } catch (e) {
+    console.log(e);
   }
 }
 
-export default apiClient;
+export async function invalidateToken() {
+  const result = await perform("get", `/auth/logout`);
+  return result.success;
+}
+
+export async function getRepo(repo) {
+  const data = {
+    repo: repo,
+  };
+  return await perform("post", `/getcontent`, data);
+}
+
+export async function getPR(repo, prNum) {
+  const data = {
+    repo: repo,
+    prNum: prNum,
+  };
+  return await perform("post", `/pr`, data);
+}
+
+export async function getUser() {
+  return await perform("get", `/auth/login/success`);
+}

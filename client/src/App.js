@@ -1,57 +1,46 @@
 import "./App.css";
 import { Button, Box } from "@mui/material";
-import apiClient from "./api/apiClient";
 import Github from "./img/github.png";
 import { useEffect, useState } from "react";
+import { invalidateToken, getRepo, getPR, getUser } from "./api/apiClient";
 
 function App() {
-  const ac = new apiClient("none");
   const [user, setUser] = useState([]);
+  const [content, setContent] = useState([]);
 
   function login() {
     window.open("http://localhost:8080/auth/github", "_self");
   }
 
-  function getPR() {
-    ac.getPR().then((data) => console.log(data));
-  }
+  const getRepoContent = async () => {
+    const repoContent = await getRepo("AutoBook");
+    setContent(repoContent);
+  };
 
-  function getRepo() {
-    ac.getRepo().then((data) => console.log(data));
-  }
+  const getPRContent = async () => {
+    const PRContent = await getPR("hello-world", 1942);
+    setContent(PRContent);
+  };
 
-  function logoff() {
-    ac.logoff().then((data) => console.log(data));
-  }
-  function helloWorld() {
-    ac.getHello().then((data) => console.log(data));
-  }
+  const logout = async () => {
+    await invalidateToken();
+    sessionStorage.clear();
+    window.location.assign("/");
+  };
 
+  // Retrieves user details once authenticated
   useEffect(() => {
-    const getUser = () => {
-      fetch("http://localhost:8080/auth/login/success", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Credentials": true,
-        },
-      })
-        .then((response) => {
-          if (response.status === 200) return response.json();
-          throw new Error("authentication has been failed!");
-        })
-        .then((resObject) => {
-          setUser(resObject.user);
-          console.log(user);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-    getUser();
+    getUser().then((userDetails) => {
+      setUser(userDetails.user);
+    });
   }, []);
+
+  // Stores Access token in session storage, Not very secure, but good for now
+  useEffect(() => {
+    if (user.length !== 0) {
+      sessionStorage.setItem("access_token", user.access_token);
+    }
+  }, [user]);
 
   return (
     <div className="App">
@@ -60,20 +49,21 @@ function App() {
           <img src={Github} alt="" className="icon" />
           Login with Github
         </div>
-        <Button variant="outlined" onClick={() => logoff()}>
+        <Button variant="outlined" onClick={() => logout()}>
           Logoff!
         </Button>
-        <Button variant="outlined" onClick={() => getPR()}>
+        <Button variant="outlined" onClick={() => getPRContent()}>
           Get PR!
         </Button>
-        <Button variant="outlined" onClick={() => getRepo()}>
+        <Button variant="outlined" onClick={() => getRepoContent()}>
           Get Repo!
-        </Button>
-        <Button variant="outlined" onClick={() => helloWorld()}>
-          Hello
         </Button>
         <code>
           <pre>{JSON.stringify(user, null, 2)}</pre>
+        </code>
+
+        <code>
+          <pre>{JSON.stringify(content, null, 2)}</pre>
         </code>
       </Box>
     </div>

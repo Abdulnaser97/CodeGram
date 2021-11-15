@@ -23,7 +23,10 @@ router.get("/login/failed", (req, res) => {
 
 router.get("/logout", (req, res) => {
   req.logout();
-  res.redirect(CLIENT_URL);
+  res.status(200).json({
+    success: true,
+    message: "successfully logged out",
+  });
 });
 
 router.get("/github", passport.authenticate("github", { scope: ["profile"] }));

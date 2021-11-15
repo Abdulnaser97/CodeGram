@@ -1,6 +1,7 @@
 const cookieSession = require("cookie-session");
 const express = require("express");
 const cors = require("cors");
+var bodyParser = require("body-parser");
 
 // import env variables
 require("dotenv").config();
@@ -13,6 +14,9 @@ const authRoute = require("./routes/auth");
 const { repoContentController, pullRequestController } = require("./Endpoints");
 
 const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 const port = process.env.PORT;
 
 app.use(
@@ -33,14 +37,9 @@ app.use(
 /******************************************** Endpoints ******************************************/
 /*************************************************************************************************/
 
-// test function
-app.get("/hello", function (req, res) {
-  res.send("Hello World!");
-});
+app.post("/pr", pullRequestController());
 
-app.get("/pr", pullRequestController());
-
-app.get("/getcontent", repoContentController());
+app.post("/getcontent", repoContentController());
 
 // /auth/github to authenticate the user using passport strategy
 app.use("/auth", authRoute);

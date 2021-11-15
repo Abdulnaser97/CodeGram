@@ -13,8 +13,9 @@ passport.use(
     },
     function (accessToken, refreshToken, profile, done) {
       console.log(`Your access token is: ${accessToken}`);
-      console.log(`Your refresh token is: ${refreshToken}`);
+      profile["access_token"] = accessToken;
       done(null, profile);
+      return accessToken;
     }
   )
 );
