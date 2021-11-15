@@ -1,1 +1,3 @@
 export const COUNTER_CHANGE = "COUNTER_CHANGE";
+export const ADD_NODE_TO_ARRAY = "ADD_NODE_TO_ARRAY";
+export const SAVE_NODES_TO_FILE = "SAVE_NODES_TO_FILE";

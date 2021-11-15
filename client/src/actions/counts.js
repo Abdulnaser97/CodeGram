@@ -1,4 +1,4 @@
-import { COUNTER_CHANGE  } from "../constants";
+import { COUNTER_CHANGE } from '../constants';
 
 export function changeCount(count) {
     return {

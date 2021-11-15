@@ -16,7 +16,8 @@ import ReactFlow,
 }from "react-flow-renderer";
 
 import { connect } from "react-redux";
-import { changeCount} from "./actions/counts";
+import { changeCount } from "./actions/counts";
+import { addNodeToArray } from "./actions/nodes";
 import { bindActionCreators } from "redux";
 import { COUNTER_CHANGE } from "./constants/index"; 
 import { useDispatch } from "react-redux";
@@ -84,6 +85,9 @@ function App(props) {
   const [selectedEL, setSelectedEL] = useState(0);
 
   const count = props.count.count;
+  const nodesArr = props.nodes.nodesArr;
+  // const count = props.count;
+  // const count = props.countReducer.count;
 
   const dispatch = useDispatch();
   // add node function 
@@ -109,6 +113,7 @@ function App(props) {
         y: yPos.current,
       },
     };
+    dispatch(addNodeToArray(newNode));
     setElements((els) => els.concat(newNode));
   }, [setElements, nodeName]);
 
@@ -160,7 +165,26 @@ function App(props) {
 
   const incrementCount = () => {
     console.log(`count: ${count}`);
-    dispatch({type: COUNTER_CHANGE, payload: count+2});
+    dispatch(changeCount(count + 4));
+    // dispatch({type: COUNTER_CHANGE, payload: count+2});
+
+  };
+
+  const decrementCount = () => {
+    console.log(`count: ${count}`);
+    dispatch(changeCount(count - 4));
+    // dispatch({type: COUNTER_CHANGE, payload: count+2});
+
+  };
+
+  const printNodesArr = () => {
+    console.log(`nodesArr:`);
+    console.log(nodesArr);
+    const jsonNodes = JSON.stringify(nodesArr);
+    console.log("JSON String:");
+    console.log(jsonNodes);
+    // dispatch({type: COUNTER_CHANGE, payload: count+2});
+
   };
 
  
@@ -185,8 +209,14 @@ function App(props) {
         <Button variant="outlined" onClick={() => helloWorld()}>
           Hello
         </Button>
+        <Button variant="outlined" onClick={() => decrementCount()}>
+          -
+        </Button>
         <Button variant="outlined" onClick={() => incrementCount()}>
           +
+        </Button>
+        <Button variant="outlined" onClick={() => printNodesArr()}>
+          Save
         </Button>
       </Box>
       <Typography variant="h3" m={2}>
@@ -279,10 +309,12 @@ function App(props) {
 
 const mapStateToProps = state => ({
   count: state.count,
+  nodes: state.nodes
 });
 const ActionCreators = Object.assign(
   {},
   changeCount,
+  addNodeToArray
 );
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators(ActionCreators, dispatch),

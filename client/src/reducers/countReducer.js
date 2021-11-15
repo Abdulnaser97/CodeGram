@@ -1,7 +1,7 @@
 import { COUNTER_CHANGE } from '../constants';
 
 const initialState = {
-    count: 0
+    count: 0,
 };
 
 const countReducer = (state = initialState, action) => {
