@@ -15,6 +15,12 @@ import ReactFlow,
   addEdge,
 }from "react-flow-renderer";
 
+import { connect } from "react-redux";
+import { changeCount} from "./actions/counts";
+import { bindActionCreators } from "redux";
+import { COUNTER_CHANGE } from "./constants/index"; 
+import { useDispatch } from "react-redux";
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -59,7 +65,7 @@ const initialElements = [
   },
 ];
 
-export default function App() {
+function App(props) {
   // react flow
   const yPos = useRef(0);
   const [rfInstance, setRfInstance] = useState(null);
@@ -77,7 +83,9 @@ export default function App() {
   const [nodeName, setNodeName] = useState('nodeName'); 
   const [selectedEL, setSelectedEL] = useState(0);
 
+  const count = props.count.count;
 
+  const dispatch = useDispatch();
   // add node function 
   const addNode = useCallback(() => {
 
@@ -150,6 +158,11 @@ export default function App() {
     setNodeName(event.target.value);
   };
 
+  const incrementCount = () => {
+    console.log(`count: ${count}`);
+    dispatch({type: COUNTER_CHANGE, payload: count+2});
+  };
+
  
   return (
     <div className="App">
@@ -171,6 +184,9 @@ export default function App() {
         </Button>
         <Button variant="outlined" onClick={() => helloWorld()}>
           Hello
+        </Button>
+        <Button variant="outlined" onClick={() => incrementCount()}>
+          +
         </Button>
       </Box>
       <Typography variant="h3" m={2}>
@@ -260,3 +276,17 @@ export default function App() {
   );
 }
 
+
+const mapStateToProps = state => ({
+  count: state.count,
+});
+const ActionCreators = Object.assign(
+  {},
+  changeCount,
+);
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators(ActionCreators, dispatch),
+});
+
+const connectedApp = connect(mapStateToProps, mapDispatchToProps)(App);
+export {connectedApp as App};
