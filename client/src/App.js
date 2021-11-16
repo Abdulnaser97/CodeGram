@@ -17,9 +17,8 @@ import ReactFlow,
 
 import { connect } from "react-redux";
 import { changeCount } from "./actions/counts";
-import { addNodeToArray } from "./actions/nodes";
-import { bindActionCreators } from "redux";
-import { COUNTER_CHANGE } from "./constants/index"; 
+import { addNodeToArray, deleteNodeFromArray } from "./actions/nodes";
+import { bindActionCreators } from "redux"; 
 import { useDispatch } from "react-redux";
 
 function TabPanel(props) {
@@ -71,7 +70,7 @@ function App(props) {
   const yPos = useRef(0);
   const [rfInstance, setRfInstance] = useState(null);
   const [elements, setElements] = useState(initialElements);
-  const onElementsRemove = (elementsToRemove) =>
+  const onElementsRemove = (elementsToRemove) => 
     setElements((els) => removeElements(elementsToRemove, els));
   const onConnect = (params) => setElements((els) => addEdge(params, els));
   const onElementClick = (event, element) => {
@@ -86,8 +85,6 @@ function App(props) {
 
   const count = props.count.count;
   const nodesArr = props.nodes.nodesArr;
-  // const count = props.count;
-  // const count = props.countReducer.count;
 
   const dispatch = useDispatch();
   // add node function 
@@ -183,7 +180,15 @@ function App(props) {
     const jsonNodes = JSON.stringify(nodesArr);
     console.log("JSON String:");
     console.log(jsonNodes);
-    // dispatch({type: COUNTER_CHANGE, payload: count+2});
+
+    const fs = require('browserify-fs');
+    fs.writeFile('newNodes.txt', jsonNodes, { flag: 'w+' }, err => {
+      if (err) {
+        console.log('Error writing file', err);
+      } else {
+        console.log('Successfully wrote file');
+      }
+    });
 
   };
 
@@ -287,7 +292,7 @@ function App(props) {
               Create Node
             </Button>
 
-            <Button variant="outlined" >
+            <Button variant="outlined">
               Delete Node
             </Button>
             </Container>
@@ -314,7 +319,8 @@ const mapStateToProps = state => ({
 const ActionCreators = Object.assign(
   {},
   changeCount,
-  addNodeToArray
+  addNodeToArray,
+  deleteNodeFromArray
 );
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators(ActionCreators, dispatch),
