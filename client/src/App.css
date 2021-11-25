@@ -1,11 +1,48 @@
-.App{
+.App {
   text-align: center;
-  padding:5vh;
+  padding:0;
+  margin:0;
+  background-color: rgb(250, 250, 250);
+  min-height: 100vh;
 }
-.canvas{
+.canvas {
   height: 60vh;
-  width:60vw; 
+  width: 60vw;
   background-color: rgb(247, 247, 247);
-  border: 1px darkgrey solid; 
+  border: 1px darkgrey solid;
   margin: auto 0;
+}
+
+.loginButton {
+  padding: 8px 8px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-weight: bold;
+  cursor: pointer;
+  min-height: 4vh;
+  min-width: 4vh;
+}
+
+
+.github {
+  
+}
+.github:hover{
+  background-color: rgb(32, 32, 32);
+}
+
+.landingLogin{
+  color:black;
+}
+.landingLogin:hover{
+  color:#FF8B8B;
+  cursor: pointer;
+  font-weight:bold; 
+}
+
+html, body {
+  padding:0;
+  margin:0;
 }
