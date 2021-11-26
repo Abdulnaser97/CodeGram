@@ -1,0 +1,9 @@
+// Nodes
+export const ADD_NODE_TO_ARRAY = "ADD_NODE_TO_ARRAY";
+export const SAVE_NODES_TO_FILE = "SAVE_NODES_TO_FILE";
+export const DELETE_NODES_FROM_ARRAY = "DELETE_NODES_FROM_ARRAY";
+
+// Repo files
+
+export const FETCH_REPO_FILES = "FETCH_REPO_FILES";
+export const STORE_REPO_FILES = "STORE_REPO_FILES";

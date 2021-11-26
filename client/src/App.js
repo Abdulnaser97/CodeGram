@@ -8,70 +8,25 @@ import {
   getUser,
   getRepos,
 } from "./api/apiClient";
-import PropTypes from "prop-types";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import {
-  Button,
   Box,
   Typography,
   Container,
-  TextField,
   AppBar,
   Toolbar,
   MenuItem,
   FormControl,
-  InputLabel,
   Select,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
-import ReactFlow, {
-  removeElements,
-  isEdge,
-  getConnectedEdges,
-  addEdge,
-} from "react-flow-renderer";
+import ReactFlow, { removeElements, addEdge } from "react-flow-renderer";
 
 import { connect } from "react-redux";
-import { changeCount } from "./actions/counts";
-import { addNodeToArray, deleteNodeFromArray } from "./actions/nodes";
-import { bindActionCreators } from "redux";
+import { addNodeToArray } from "./Redux/actions/nodes";
 import { useDispatch } from "react-redux";
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
+import { SourceDoc } from "./SourceDoc/SourceDoc";
+import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
+import { getRepoFiles } from "./Redux/actions/repoFiles";
 
 const getNodeId = () => `randomnode_${+new Date()}`;
 
@@ -91,15 +46,10 @@ function App(props) {
   const [repo, setRepo] = useState("");
   const [repoData, setRepoData] = useState(0);
   const [loggedIn, setLoggedIn] = useState(false);
-  var repoChoiceList = [];
-  // state for search
-  const [search, setSearch] = useState("search");
-  const [nodeName, setNodeName] = useState("nodeName");
-  const [selectedEL, setSelectedEL] = useState(0);
 
-  // state for flash messages
-  const [setOpenFail, openFail] = useState(false);
-  const [setOpenSucc, openSucc] = useState(false);
+  const [nodeName, setNodeName] = useState("nodeName");
+  // Selected node
+  const [selectedEL, setSelectedEL] = useState(0);
 
   // react flow
   const yPos = useRef(0);
@@ -113,22 +63,7 @@ function App(props) {
     setSelectedEL(element);
   };
 
-  // const handleCloseFail = (event, reason) => {
-  //   if (reason === 'clickaway') {
-  //     return;
-  //   }
-  //   setOpenFail(false);
-  // };
-
-  // const handleCloseSucc = (event, reason) => {
-  //   if (reason === 'clickaway') {
-  //     return;
-  //   }
-  //   setOpenSucc(false);
-  // };
-
   // redux
-  const count = props.count.count;
   const nodesArr = props.nodes.nodesArr;
   const dispatch = useDispatch();
 
@@ -156,29 +91,33 @@ function App(props) {
     };
     dispatch(addNodeToArray(newNode));
     setElements((els) => els.concat(newNode));
-  }, [setElements, nodeName]);
+  }, [setElements, nodeName, dispatch]);
 
   function login() {
     window.open("http://localhost:8080/auth/github", "_self");
   }
-  
-  // get all repos in users account 
+
+  // get all repos in users account
   const getRepoList = async () => {
     const userRepos = await getRepos();
     setRepos(userRepos);
   };
 
-  // set new repo from drop down menu 
+  // set new repo from drop down menu
   const handleRepoChange = (event) => {
     setRepo(event.target.value);
+    dispatch(getRepoFiles(event.target.value));
   };
 
+  const handleName = (event, newValue) => {
+    setNodeName(event.target.value);
+  };
 
   function renderRepos() {
     var repoNames = [];
     var repoChoiceItems = [];
 
-    if (repos.data !== undefined) {
+    if (repos.length !== 0 && repos.data !== undefined) {
       repoChoiceItems.push(<MenuItem value={""}>Repository</MenuItem>);
       for (var i = 0; i < repos.data.length; i++) {
         var name = repos.data[i].name;
@@ -204,11 +143,6 @@ function App(props) {
     setLoggedIn(false);
   };
 
-  // functions needed
-  function searchCodeBase() {
-    return null;
-  }
-
   // Retrieves user details once authenticated
   useEffect(() => {
     getUser().then((userDetails) => {
@@ -224,44 +158,6 @@ function App(props) {
       getRepoList();
     }
   }, [user]);
-
-  //
-  useEffect(async () => {
-    const newRepo = await getRepo(repo);
-    setRepoData(newRepo)
-  }, [repo]);
-
-  // for tabs in the side menu
-  const [value, setValue] = React.useState(0);
-
-  // handlers for state
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  const handleSearch = (event, newValue) => {
-    var searchVal = event.target.value;
-    console.log(repoData)
-    const found = repoData.data.find(file => file.name.startsWith(searchVal));
-    //console.log(found) 
-    setSearch(event.target.value);
-  };
-
-  const handleName = (event, newValue) => {
-    setNodeName(event.target.value);
-  };
-
-  const incrementCount = () => {
-    console.log(`count: ${count}`);
-    dispatch(changeCount(count + 4));
-    // dispatch({type: COUNTER_CHANGE, payload: count+2});
-  };
-
-  const decrementCount = () => {
-    console.log(`count: ${count}`);
-    dispatch(changeCount(count - 4));
-    // dispatch({type: COUNTER_CHANGE, payload: count+2});
-  };
 
   const printNodesArr = () => {
     console.log(`nodesArr:`);
@@ -280,7 +176,6 @@ function App(props) {
     });
   };
 
-
   if (loggedIn) {
     return (
       <div className="App">
@@ -289,13 +184,8 @@ function App(props) {
             <MenuItem sx={{ flexGrow: 3 }}>
               <Typography variant="h5">CodeGram</Typography>
             </MenuItem>
-            <Box sx={{ flexGrow: 1, p: 2, color:'white'}}>
-            
-              <FormControl
-                fullWidth
-                variant="outlined"
-             
-              >
+            <Box sx={{ flexGrow: 1, p: 2, color: "white" }}>
+              <FormControl fullWidth variant="outlined">
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
@@ -341,91 +231,16 @@ function App(props) {
               />
             </div>
           </Container>
-
-          <Container variant="absolute" sx={{ boxShadow: 3, m: 3, p: 3 }}>
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <Tabs
-                value={value}
-                onChange={handleChange}
-                aria-label="basic tabs example"
-                centered
-              >
-                <Tab label="Tools" {...a11yProps(0)} />
-                <Tab label="Code" {...a11yProps(1)} />
-                <Tab label="Documentation" {...a11yProps(2)} />
-              </Tabs>
-            </Box>
-            <TabPanel
-              value={value}
-              index={0}
-              sx={{ display: "flex", flexDirection: "column" }}
-            >
-              <Container>
-                <Typography>Search to link a file!</Typography>
-                <TextField
-                  margin="dense"
-                  placeholder="Search.."
-                  inputProps={{ "aria-label": "search" }}
-                  onKeyPress={searchCodeBase}
-                  onChange={handleSearch}
-                ></TextField>
-              </Container>
-
-              <Container>
-                <Typography>Name node!</Typography>
-                <TextField
-                  margin="dense"
-                  placeholder="Name.."
-                  inputProps={{ "aria-label": "search" }}
-                  onKeyPress={searchCodeBase}
-                  onChange={handleName}
-                ></TextField>
-              </Container>
-
-              <Container
-                sx={{ display: "flex", justifyContent: "space-around", mt: 3 }}
-              >
-                <Button variant="contained" onClick={() => addNode()}>
-                  Create Node
-                </Button>
-
-                <Button variant="outlined">Delete Node</Button>
-                <Button variant="outlined" onClick={() => printNodesArr()}>
-                  Save
-                </Button>
-
-                <Button variant="outlined" onClick={() => getPRContent()}>
-                  Get PR!
-                </Button>
-                <Button variant="outlined" onClick={() => decrementCount()}>
-                  -
-                </Button>
-                <Button variant="outlined" onClick={() => incrementCount()}>
-                  +
-                </Button>
-              </Container>
-            </TabPanel>
-            <TabPanel value={value} index={1}>
-              Let's connect to github first!
-            </TabPanel>
-            <TabPanel value={value} index={2}>
-              {JSON.stringify(selectedEL)}
-            </TabPanel>
-          </Container>
+          <SourceDoc
+            functions={{
+              addNode: addNode,
+              printNodesArr: printNodesArr,
+              getPRContent: getPRContent,
+              handleName: handleName,
+            }}
+            data={{ repoData: repoData, selectedEL: selectedEL }}
+          />
         </Box>
-
-        {/* flash messages */}
-        {/* <Snackbar open={openFail} autoHideDuration={6000} onClose={handleCloseFail}>
-        <Alert onClose={handleCloseFail} severity="error" sx={{ width: '100%' }}>
-          This is an error message!;
-        </Alert>
-      </Snackbar>
-
-      <Snackbar open={openSucc} autoHideDuration={6000} onClose={handleCloseSucc}>
-        <Alert onClose={handleCloseSucc} severity="success" sx={{ width: '100%' }}>
-          This is a success message!
-        </Alert>
-      </Snackbar> */}
       </div>
     );
   } else {
@@ -448,20 +263,6 @@ function App(props) {
     );
   }
 }
-
-const mapStateToProps = (state) => ({
-  count: state.count,
-  nodes: state.nodes,
-});
-const ActionCreators = Object.assign(
-  {},
-  changeCount,
-  addNodeToArray,
-  deleteNodeFromArray
-);
-const mapDispatchToProps = (dispatch) => ({
-  actions: bindActionCreators(ActionCreators, dispatch),
-});
 
 const connectedApp = connect(mapStateToProps, mapDispatchToProps)(App);
 export { connectedApp as App };
