@@ -72,9 +72,30 @@ export function SourceDoc(props) {
   };
 
   return (
-    <Container variant="absolute" sx={{ boxShadow: 3, m: 3, p: 3 }}>
+    <Container
+      calssName="sourceDocContainer"
+      variant="absolute"
+      sx={{ boxShadow: 3, m: 3, p: 3 }}
+      style={{
+        position: "fixed",
+        top: "12vh",
+        right: "1vw",
+        width: "35vw",
+        height: "80vh",
+        "z-index": 0,
+        borderRadius: "2vw 2vw 2vw 2vw",
+        "background-color": "white",
+      }}
+    >
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
+          TabIndicatorProps={{
+            style: {
+              backgroundColor: "#FFAEA6",
+            },
+          }}
+          textColor="primary"
+          indicatorColor="primary"
           value={value}
           onChange={handleChange}
           aria-label="basic tabs example"
@@ -115,16 +136,30 @@ export function SourceDoc(props) {
         <Container
           sx={{ display: "flex", justifyContent: "space-around", mt: 3 }}
         >
-          <Button variant="contained" onClick={props.functions.addNode}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={props.functions.addNode}
+          >
             Create Node
           </Button>
 
-          <Button variant="outlined">Delete Node</Button>
-          <Button variant="outlined" onClick={props.functions.printNodesArr}>
+          <Button variant="outlined" color="primary">
+            Delete Node
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={props.functions.printNodesArr}
+          >
             Save
           </Button>
 
-          <Button variant="outlined" onClick={props.functions.getPRContent}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={props.functions.getPRContent}
+          >
             Get PR
           </Button>
         </Container>

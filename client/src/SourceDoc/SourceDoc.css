@@ -1,0 +1,10 @@
+.sourceDocContainer {
+  position: absolute;
+  top: 30vw;
+  right: 10vw;
+  height: 60vh;
+  width: 35vw;
+  background-color: rgb(247, 247, 247);
+  border: 1px darkgrey solid;
+  margin: auto 0;
+}

@@ -1,5 +1,11 @@
 import "./App.css";
-import Github from "./img/github.png";
+import styled from "styled-components";
+import Github2 from "./img/github.png";
+import GitHub from "./Landing/GitHub";
+import Background from "./Landing/Background";
+import Logo from "./Landing/Logo";
+import Logo3 from "./img/Logo3.svg";
+
 import React, { useCallback, useState, useRef, useEffect } from "react";
 import {
   invalidateToken,
@@ -27,6 +33,8 @@ import { useDispatch } from "react-redux";
 import { SourceDoc } from "./SourceDoc/SourceDoc";
 import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
 import { getRepoFiles } from "./Redux/actions/repoFiles";
+import { ThemeProvider } from "@material-ui/core";
+import { theme } from "./AppUtils";
 
 const getNodeId = () => `randomnode_${+new Date()}`;
 
@@ -36,8 +44,26 @@ const initialElements = [
     type: "input", // input node
     data: { label: "Input Node" },
     position: { x: 100, y: 0 },
+    animated: true,
+    style: {
+      borderColor: "#FFAEA6",
+      color: "#6E6E6E",
+      width: "4vw",
+      height: "1vw",
+    },
   },
 ];
+
+const LogoTopNav = styled.div`
+  position: relative;
+  left: 0;
+  padding-right: 1.25vw;
+  height: 3vw;
+  width: 3vw;
+  background-image: url(${Logo3});
+  background-size: contain;
+  background-repeat: no-repeat;
+`;
 
 function App(props) {
   const [user, setUser] = useState([]);
@@ -71,6 +97,7 @@ function App(props) {
   const addNode = useCallback(() => {
     var label = nodeName;
     const newNode = {
+      ...initialElements[0],
       id: getNodeId(),
       // this data will get filled with the array of JSON objects that will come
       // from Github
@@ -87,6 +114,10 @@ function App(props) {
       position: {
         x: 100,
         y: yPos.current,
+      },
+      animated: true,
+      style: {
+        ...initialElements[0].style,
       },
     };
     dispatch(addNodeToArray(newNode));
@@ -178,49 +209,83 @@ function App(props) {
 
   if (loggedIn) {
     return (
-      <div className="App">
-        <AppBar position="sticky" style={{ background: "black" }}>
-          <Toolbar>
-            <MenuItem sx={{ flexGrow: 3 }}>
-              <Typography variant="h5">CodeGram</Typography>
-            </MenuItem>
-            <Box sx={{ flexGrow: 1, p: 2, color: "white" }}>
-              <FormControl fullWidth variant="outlined">
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={repo}
-                  label="Repository"
-                  onChange={handleRepoChange}
-                  sx={{ backgroundColor: "#E4E6EB" }}
-                  displayEmpty
+      <ThemeProvider theme={theme}>
+        <div className="App">
+          <AppBar
+            elevation={0}
+            position="sticky"
+            style={{ "background-color": "#f7f7f7" }}
+          >
+            <Toolbar>
+              <MenuItem
+                sx={{ flexGrow: 3 }}
+                style={{ backgroundColor: "transparent" }}
+              >
+                <div
+                  style={{
+                    position: "relative",
+                    height: "80%",
+                    left: "0",
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  {renderRepos()}
-                </Select>
-              </FormControl>
-            </Box>
+                  <LogoTopNav className="LogoTopNav" />
+                  <h2
+                    style={{
+                      "font-family": "Poppins-Thin",
+                      color: "#FFAEA6",
+                    }}
+                  >
+                    CodeGram
+                  </h2>
+                </div>
+              </MenuItem>
+              <Box sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}>
+                <FormControl fullWidth variant="outlined">
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={repo}
+                    label="Repository"
+                    onChange={handleRepoChange}
+                    sx={{ backgroundColor: "white" }}
+                    displayEmpty
+                  >
+                    {renderRepos()}
+                  </Select>
+                </FormControl>
+              </Box>
 
-            <Box mx={1}>
-              <div className="loginButton github">
-                <Typography> Push </Typography>
-                <img src={Github} alt="" className="icon" />
-              </div>
-            </Box>
+              <Box mx={1} sx={{ "box-shadow": 0 }}>
+                <div className="loginButton github">
+                  <Typography color="primary"> Push </Typography>
+                  <img src={Github2} alt="" className="icon" />
+                </div>
+              </Box>
 
-            <Box mx={1}>
-              <div className="loginButton github" onClick={() => logout()}>
-                <LogoutIcon> </LogoutIcon>
-              </div>
-            </Box>
-          </Toolbar>
-        </AppBar>
+              <Box mx={1} sx={{ "box-shadow": 0 }}>
+                <div className="loginButton github" onClick={() => logout()}>
+                  <LogoutIcon> </LogoutIcon>
+                </div>
+              </Box>
+            </Toolbar>
+          </AppBar>
 
-        <Typography variant="h3" m={8}>
-          Welcome to CodeGram demo {user.username}!
-        </Typography>
+          <h1
+            class="welcomeMessage"
+            style={{
+              "font-family": "Poppins-Thin",
+              "text-align": "left",
+              "padding-left": "5vw",
+            }}
+          >
+            Welcome to CodeGram demo {user.username}!
+          </h1>
 
-        <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <Container>
+          <Container className="canvasContainer">
             <div className="canvas">
               <ReactFlow
                 elements={elements}
@@ -240,26 +305,25 @@ function App(props) {
             }}
             data={{ repoData: repoData, selectedEL: selectedEL }}
           />
-        </Box>
-      </div>
+        </div>
+      </ThemeProvider>
     );
   } else {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          height: "100vh",
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "column",
-        }}
-      >
-        <Typography variant="h1"> CodeGram</Typography>
-        <div className="landingLogin" onClick={login}>
-          <Typography variant="h4"> Login w/ GitHub</Typography>
-          <img src={Github} alt="" className="icon" />
+      <ThemeProvider theme={theme}>
+        <div className="LandingPage">
+          <div className="LogoDiv background">
+            <Background className="Background" />
+          </div>
+          <div className="LogoDiv">
+            <Logo className="Logo" />
+          </div>
+          <h1 className="CodeGram"> CodeGram</h1>
+          <div className="GitHubButtonWrapper" onClick={login}>
+            <GitHub className="GitHub" />
+          </div>
         </div>
-      </Box>
+      </ThemeProvider>
     );
   }
 }
