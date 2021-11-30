@@ -76,7 +76,12 @@ function SourceDoc(props) {
       var repoList = [];
       const files = repoData.repoFiles[0];
       for (var i = 0; i < files.length; i++) {
-        repoList.push(<SourceDocFile addNode={props.functions.addNode} setSelectedFile={props.functions.setSelectedFile}file={files[i]} />);
+        repoList.push(<SourceDocFile 
+          addNode={props.functions.addNode} 
+          setSelectedFile={props.functions.setSelectedFile}
+          file={files[i]}
+          selectedFile={props.data.selectedFile}
+           />);
       }
       return repoList;
     }

@@ -62,7 +62,6 @@ function App(props) {
   const [repo, setRepo] = useState("");
   const [repoData, setRepoData] = useState(0);
   const [loggedIn, setLoggedIn] = useState(false);
-
   const [nodeName, setNodeName] = useState("nodeName");
   // Selected node
   const [selectedEL, setSelectedEL] = useState(0);
@@ -189,10 +188,12 @@ function App(props) {
       }
     });
   };
-  console.log(selectedFile)
   if (loggedIn) {
     return (
       <div className="App">
+
+        {/* navbar component written but has weird bug  */}
+
         {/* <MyNavigationBar
           functions={{
             handleRepoChange: handleRepoChange,
@@ -202,6 +203,7 @@ function App(props) {
           }}
           data={{ repo: repo }}
        />  */}
+        
         <AppBar position="sticky" style={{ background: "black" }}>
           <Toolbar>
             <MenuItem sx={{ flexGrow: 3 }}>
@@ -239,7 +241,9 @@ function App(props) {
 
           </Toolbar>
         </AppBar>
+        
         {/* dashboard should be in its own file at some point  */}
+        
         <div className='dashboard'>
             <div className="canvas">
               <ReactFlow
