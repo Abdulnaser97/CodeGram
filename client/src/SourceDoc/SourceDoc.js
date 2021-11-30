@@ -1,3 +1,4 @@
+// mui components
 import {
   Box,
   Typography,
@@ -7,9 +8,20 @@ import {
   TextField,
   Button,
 } from "@mui/material";
+
+// third party dependecnies
 import PropTypes from "prop-types";
+
+// react
 import { useState } from "react";
+
+// redux
 import { useSelector } from "react-redux";
+import { mapDispatchToProps, mapStateToProps } from "../Redux/configureStore";
+import { connect } from "react-redux";
+
+// components
+import SourceDocFile from "./SourceDocFile";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -49,13 +61,28 @@ function searchCodeBase() {
   return null;
 }
 
-export function SourceDoc(props) {
+
+function SourceDoc(props) {
   const state = useSelector((state) => state);
-  console.log(state);
+  //console.log(state);
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
   // state for search
   const [search, setSearch] = useState("search");
+
+
+  function renderRepoContent(repoData) {
+    if (repoData.repoFiles[0] !== undefined) {
+      var repoList = [];
+      const files = repoData.repoFiles[0];
+      for (var i = 0; i < files.length; i++) {
+        repoList.push(<SourceDocFile addNode={props.functions.addNode} setSelectedFile={props.functions.setSelectedFile}file={files[i]} />);
+      }
+      return repoList;
+    }
+  
+    return null;
+  }
 
   // Tabs: handlers for state of tabs
   const handleChange = (event, newValue) => {
@@ -71,8 +98,10 @@ export function SourceDoc(props) {
     setSearch(event.target.value);
   };
 
+  var repoContent = renderRepoContent(state.repoFiles);
   return (
-    <Container variant="absolute" sx={{ boxShadow: 3, m: 3, p: 3 }}>
+    <div className ='toolbar'> 
+    <Container sx={{ boxShadow: 3,p: 3, minHeight:0.5}}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
           value={value}
@@ -90,30 +119,41 @@ export function SourceDoc(props) {
         index={0}
         sx={{ display: "flex", flexDirection: "column" }}
       >
-        <Container>
-          <Typography>Search to link a file</Typography>
-          <TextField
-            margin="dense"
-            placeholder="Search.."
-            inputProps={{ "aria-label": "search" }}
-            onKeyPress={searchCodeBase}
-            onChange={props.handleSearch}
-          ></TextField>
+        <Container m={3} sx={{ display: "flex", flexDirection: "row" }}>
+ 
+          <Container>
+            <Typography>Search to link a file</Typography>
+            <TextField
+              margin="dense"
+              placeholder="Search.."
+              inputProps={{ "aria-label": "search" }}
+              onKeyPress={searchCodeBase}
+              onChange={props.handleSearch}
+            ></TextField>
+          </Container>
+
+          <Container>
+            <Typography>Name node</Typography>
+            <TextField
+              margin="dense"
+              placeholder="Name.."
+              inputProps={{ "aria-label": "search" }}
+              onKeyPress={searchCodeBase}
+              onChange={props.functions.handleName}
+            ></TextField>
+          </Container>
         </Container>
 
-        <Container>
-          <Typography>Name node</Typography>
-          <TextField
-            margin="dense"
-            placeholder="Name.."
-            inputProps={{ "aria-label": "search" }}
-            onKeyPress={searchCodeBase}
-            onChange={props.functions.handleName}
-          ></TextField>
-        </Container>
+        <Box my={3}>
+          <Typography variant="h5" textAlign="left">
+            Repository Content
+          </Typography>
+          {repoContent}
+        </Box>
 
         <Container
-          sx={{ display: "flex", justifyContent: "space-around", mt: 3 }}
+          m={5}
+          sx={{ display: "flex", justifyContent: "space-around"}}
         >
           <Button variant="contained" onClick={props.functions.addNode}>
             Create Node
@@ -136,5 +176,9 @@ export function SourceDoc(props) {
         {JSON.stringify(props.data.selectedEL)}
       </TabPanel>
     </Container>
+    </div>
   );
+
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(SourceDoc);

@@ -1,6 +1,13 @@
+// styling 
 import "./App.css";
+
+// assets 
 import Github from "./img/github.png";
+
+// react 
 import React, { useCallback, useState, useRef, useEffect } from "react";
+
+// api calls 
 import {
   invalidateToken,
   getRepo,
@@ -8,6 +15,8 @@ import {
   getUser,
   getRepos,
 } from "./api/apiClient";
+
+// material ui components 
 import {
   Box,
   Typography,
@@ -19,14 +28,21 @@ import {
   Select,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
-import ReactFlow, { removeElements, addEdge } from "react-flow-renderer";
 
+// redux 
+import ReactFlow, { removeElements, addEdge } from "react-flow-renderer";
 import { connect } from "react-redux";
 import { addNodeToArray } from "./Redux/actions/nodes";
 import { useDispatch } from "react-redux";
-import { SourceDoc } from "./SourceDoc/SourceDoc";
 import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
 import { getRepoFiles } from "./Redux/actions/repoFiles";
+
+// custom components 
+import SourceDoc from "./SourceDoc/SourceDoc";
+import MyNavigationBar from "./components/MyNavigationBar";
+
+// pages 
+import { Landing }  from "./pages/Landing";
 
 const getNodeId = () => `randomnode_${+new Date()}`;
 
@@ -34,7 +50,7 @@ const initialElements = [
   {
     id: "1",
     type: "input", // input node
-    data: { label: "Input Node" },
+    data: { label: "Project Root" },
     position: { x: 100, y: 0 },
   },
 ];
@@ -50,7 +66,8 @@ function App(props) {
   const [nodeName, setNodeName] = useState("nodeName");
   // Selected node
   const [selectedEL, setSelectedEL] = useState(0);
-
+  // state for selected file 
+  const [selectedFile, setSelectedFile] = useState(''); 
   // react flow
   const yPos = useRef(0);
   const [rfInstance, setRfInstance] = useState(null);
@@ -66,17 +83,17 @@ function App(props) {
   // redux
   const nodesArr = props.nodes.nodesArr;
   const dispatch = useDispatch();
-
+  
   // add node function
-  const addNode = useCallback(() => {
+  const addNode = useCallback((file) => {
     var label = nodeName;
     const newNode = {
       id: getNodeId(),
       // this data will get filled with the array of JSON objects that will come
       // from Github
       data: {
-        label: label,
-        name: label,
+        label: file.fileName !== undefined ? file.fileName : label,
+        name: file.fileName !== undefined ? file.fileName : label,
         linkedFiles: ["aa.py", "gg.py", "kookoo.py"],
         childNodes: ["da", "de", "do"],
         siblingNodes: ["ta", "te", "to"],
@@ -91,11 +108,8 @@ function App(props) {
     };
     dispatch(addNodeToArray(newNode));
     setElements((els) => els.concat(newNode));
-  }, [setElements, nodeName, dispatch]);
+  }, [setElements, nodeName, dispatch, selectedFile]);
 
-  function login() {
-    window.open("http://localhost:8080/auth/github", "_self");
-  }
 
   // get all repos in users account
   const getRepoList = async () => {
@@ -113,7 +127,7 @@ function App(props) {
     setNodeName(event.target.value);
   };
 
-  function renderRepos() {
+  const renderRepos = () => {
     var repoNames = [];
     var repoChoiceItems = [];
 
@@ -175,15 +189,25 @@ function App(props) {
       }
     });
   };
-
+  console.log(selectedFile)
   if (loggedIn) {
     return (
       <div className="App">
+        {/* <MyNavigationBar
+          functions={{
+            handleRepoChange: handleRepoChange,
+            renderRepos: renderRepos,
+            logout: logout
+
+          }}
+          data={{ repo: repo }}
+       />  */}
         <AppBar position="sticky" style={{ background: "black" }}>
           <Toolbar>
             <MenuItem sx={{ flexGrow: 3 }}>
-              <Typography variant="h5">CodeGram</Typography>
+              <Typography variant="h3">CodeGram</Typography>
             </MenuItem>
+            <Box> <Typography> user: {user.username}</Typography></Box>
             <Box sx={{ flexGrow: 1, p: 2, color: "white" }}>
               <FormControl fullWidth variant="outlined">
                 <Select
@@ -212,15 +236,11 @@ function App(props) {
                 <LogoutIcon> </LogoutIcon>
               </div>
             </Box>
+
           </Toolbar>
         </AppBar>
-
-        <Typography variant="h3" m={8}>
-          Welcome to CodeGram demo {user.username}!
-        </Typography>
-
-        <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <Container>
+        {/* dashboard should be in its own file at some point  */}
+        <div className='dashboard'>
             <div className="canvas">
               <ReactFlow
                 elements={elements}
@@ -228,38 +248,25 @@ function App(props) {
                 onConnect={onConnect}
                 onLoad={setRfInstance}
                 onElementClick={onElementClick}
-              />
+                />
             </div>
-          </Container>
+     
           <SourceDoc
             functions={{
               addNode: addNode,
               printNodesArr: printNodesArr,
               getPRContent: getPRContent,
               handleName: handleName,
+              setSelectedFile:setSelectedFile
             }}
-            data={{ repoData: repoData, selectedEL: selectedEL }}
+            data={{ repo: repo, repoData: repoData, selectedEL: selectedEL, selectedFile:selectedFile}}
           />
-        </Box>
+        </div>
       </div>
     );
   } else {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          height: "100vh",
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "column",
-        }}
-      >
-        <Typography variant="h1"> CodeGram</Typography>
-        <div className="landingLogin" onClick={login}>
-          <Typography variant="h4"> Login w/ GitHub</Typography>
-          <img src={Github} alt="" className="icon" />
-        </div>
-      </Box>
+      <Landing/> 
     );
   }
 }
