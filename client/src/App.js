@@ -28,7 +28,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import ReactFlow, { removeElements, addEdge } from "react-flow-renderer";
 
 import { connect } from "react-redux";
-import { addNodeToArray } from "./Redux/actions/nodes";
+import { addNodeToArray, deleteNodeFromArray } from "./Redux/actions/nodes";
 import { useDispatch } from "react-redux";
 import { SourceDoc } from "./SourceDoc/SourceDoc";
 import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
@@ -81,8 +81,6 @@ function App(props) {
   const yPos = useRef(0);
   const [rfInstance, setRfInstance] = useState(null);
   const [elements, setElements] = useState(initialElements);
-  const onElementsRemove = (elementsToRemove) =>
-    setElements((els) => removeElements(elementsToRemove, els));
   const onConnect = (params) => setElements((els) => addEdge(params, els));
   const onElementClick = (event, element) => {
     console.log("click", element);
@@ -123,6 +121,14 @@ function App(props) {
     dispatch(addNodeToArray(newNode));
     setElements((els) => els.concat(newNode));
   }, [setElements, nodeName, dispatch]);
+    
+  const onElementsRemove = (elementsToRemove) => {
+    if (elementsToRemove.length == 0) {
+      console.log("nothing selected");
+      return;
+    }
+    dispatch(deleteNodeFromArray(elementsToRemove[0]));
+  };
 
   function login() {
     window.open("http://localhost:8080/auth/github", "_self");
@@ -288,7 +294,7 @@ function App(props) {
           <Container className="canvasContainer">
             <div className="canvas">
               <ReactFlow
-                elements={elements}
+                elements={nodesArr}
                 onElementsRemove={onElementsRemove}
                 onConnect={onConnect}
                 onLoad={setRfInstance}
@@ -299,6 +305,7 @@ function App(props) {
           <SourceDoc
             functions={{
               addNode: addNode,
+              deleteNode: onElementsRemove,   //TODO: Add deleteNode function to DELETE NODE button(?)
               printNodesArr: printNodesArr,
               getPRContent: getPRContent,
               handleName: handleName,
