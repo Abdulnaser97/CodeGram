@@ -18,7 +18,7 @@ const nodesReducer = (state = initialState, action) => {
     case DELETE_NODES_FROM_ARRAY:
       return {
         ...state,
-        nodesArr: state.nodesArr.filter((node) => action.payload !== node.id),
+        nodesArr: state.nodesArr.filter((node) => action.nodeId !== node.id),
       };
     default:
       return state;
