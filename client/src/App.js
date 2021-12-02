@@ -132,6 +132,16 @@ function App(props) {
           description: "",
           url: file.url !== undefined ? file.url : "",
         },
+        style: {
+          backgroundColor: "#FFAEA6",
+          color: "white",
+          fontWeight: "bold",
+          height: "2vw",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          border:'none'
+        },
         position: { x: 500, y: 400 },
         animated: true,
       };

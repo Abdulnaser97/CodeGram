@@ -124,7 +124,7 @@ function SourceDoc(props) {
     <Container
       className="sourceDocContainer"
       variant="absolute"
-      sx={{ boxShadow: 3, m: 3, p: 3 }}
+      sx={{ boxShadow: 10, m: 3, p: 3 }}
       style={{
         position: "fixed",
         top: "12vh",
@@ -132,7 +132,7 @@ function SourceDoc(props) {
         width: "35vw",
         height: "80vh",
         "z-index": 0,
-        borderRadius: "1vw 1vw 1vw 1vw",
+        borderRadius: "10px",
         "background-color": "white",
       }}
     >
@@ -160,30 +160,29 @@ function SourceDoc(props) {
         index={0}
         sx={{ display: "flex", flexDirection: "column" }}
       >
-        <Container m={3} sx={{ display: "flex", flexDirection: "row" }}>
- 
-          <Container>
-            <Typography>Search to link a file</Typography>
-            <TextField
-              margin="dense"
-              placeholder="Search.."
-              inputProps={{ "aria-label": "search" }}
-              onKeyPress={searchCodeBase}
-              onChange={props.handleSearch}
-            ></TextField>
-          </Container>
 
-          <Container>
-            <Typography>Name node</Typography>
+ 
+
+        <Typography variant="h5" textAlign="left">
+            Create Node
+          </Typography>
             <TextField
               margin="dense"
               placeholder="Name.."
               inputProps={{ "aria-label": "search" }}
               onKeyPress={searchCodeBase}
               onChange={props.functions.handleName}
+              fullWidth
             ></TextField>
-          </Container>
-        </Container>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={props.functions.addNode}
+              fullWidth
+            >
+              Create Node
+            </Button>
+
 
         <Box my={3}>
           <Typography variant="h5" textAlign="left">
@@ -192,37 +191,19 @@ function SourceDoc(props) {
           {repoContent}
         </Box>
 
-        <Container
-          m={5}
-          sx={{ display: "flex", justifyContent: "space-around"}}
-        >
+   
+
+
           <Button
             variant="contained"
             color="primary"
-            onClick={props.functions.addNode}
-          >
-            Create Node
-          </Button>
-
-          <Button variant="outlined" color="primary">
-            Delete Node
-          </Button>
-          <Button
-            variant="outlined"
-            color="primary"
             onClick={props.functions.printNodesArr}
+            fullWidth
           >
-            Save
+            Save Diagram
           </Button>
 
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={props.functions.getPRContent}
-          >
-            Get PR
-          </Button>
-        </Container>
+
       </TabPanel>
       <TabPanel value={value} index={1}>
 

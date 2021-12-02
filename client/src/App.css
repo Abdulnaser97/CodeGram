@@ -99,7 +99,7 @@ body {
 
 .SourceDocFile{ 
   border-radius: 10px;
-  margin:1em; 
+  margin:1em 0; 
   padding:2% 5%;
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
   display: flex;

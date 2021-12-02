@@ -24,7 +24,7 @@ export function LandingPage(){
       <div className="LogoDiv">
         <Logo className="Logo" />
       </div>
-      <h1 className="CodeGram"> CodeGram</h1>
+      <Typography variant='h1' className='CodeGram'> CodeGram</Typography>
       <div className="GitHubButtonWrapper" onClick={login}>
         <GitHub className="GitHub" />
       </div>
