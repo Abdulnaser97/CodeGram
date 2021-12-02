@@ -32,6 +32,11 @@
   cursor: pointer;
   min-height: 4vh;
   min-width: 4vh;
+  transition: ease-in 0.1s;
+}
+
+.loginButton:hover {
+  box-shadow: rgba(0, 0, 0, 0.301) 0px 3px 7px;
 }
 
 .LandingPage {
@@ -192,5 +197,9 @@ a{
 }
 
 a:hover{
-  text-decoration: underlinef;
+  text-decoration: underline;
+}
+
+pre{
+  font-size: 10px;
 }

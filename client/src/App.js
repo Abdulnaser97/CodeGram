@@ -31,7 +31,7 @@ import {
   Select,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
-
+import GitHubIcon from '@mui/icons-material/GitHub';
 // redux
 import ReactFlow, { removeElements, addEdge } from "react-flow-renderer";
 import { connect } from "react-redux";
@@ -310,14 +310,14 @@ function App(props) {
 
               <Box mx={1} sx={{ "box-shadow": 0 }}>
                 <div className="loginButton github">
-                  <Typography color="primary"> Push </Typography>
-                  <img src={Github2} alt="" className="icon" />
+                  <Typography mx={2} fontWeight='bold' color="primary"> Push </Typography>
+                  <GitHubIcon color="primary"> </GitHubIcon>
                 </div>
               </Box>
 
-              <Box mx={1} sx={{ "box-shadow": 0 }}>
+              <Box sx={{ "box-shadow": 0 }}>
                 <div className="loginButton github" onClick={() => logout()}>
-                  <LogoutIcon> </LogoutIcon>
+                  <LogoutIcon color="primary"> </LogoutIcon>
                 </div>
               </Box>
             </Toolbar>
