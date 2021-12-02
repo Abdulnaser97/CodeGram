@@ -1,14 +1,16 @@
-// styling 
+// styling
 import "./App.css";
-import axios from 'axios';
+import axios from "axios";
 
-// assets 
-import Github from "./img/github.png";
+// react
+import styled from "styled-components";
+import Github2 from "./img/github.png";
 
-// react 
+import Logo3 from "./img/Logo3.svg";
+
 import React, { useCallback, useState, useRef, useEffect } from "react";
 
-// api calls 
+// api calls
 import {
   invalidateToken,
   getRepo,
@@ -17,7 +19,7 @@ import {
   getRepos,
 } from "./api/apiClient";
 
-// material ui components 
+// material ui components
 import {
   Box,
   Typography,
@@ -30,29 +32,56 @@ import {
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 
-// redux 
+// redux
 import ReactFlow, { removeElements, addEdge } from "react-flow-renderer";
 import { connect } from "react-redux";
-import { addNodeToArray } from "./Redux/actions/nodes";
+import { addNodeToArray, deleteNodeFromArray } from "./Redux/actions/nodes";
 import { useDispatch } from "react-redux";
 import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
 import { getRepoFiles } from "./Redux/actions/repoFiles";
+import { ThemeProvider } from "@material-ui/core";
+import { theme } from "./AppUtils";
 
-// custom components 
+// custom components
 import SourceDoc from "./SourceDoc/SourceDoc";
 import MyNavigationBar from "./components/MyNavigationBar";
 
-// pages 
-import { Landing }  from "./pages/Landing";
+// pages
+import { LandingPage } from "./Landing/LandingPage";
 
 const getNodeId = () => `randomnode_${+new Date()}`;
 
-const initialElements = [
+// api call import
+function login() {
+  window.open("http://localhost:8080/auth/github", "_self");
+}
+
+const LogoTopNav = styled.div`
+  position: relative;
+  left: 0;
+  padding-right: 1.25vw;
+  height: 3vw;
+  width: 3vw;
+  background-image: url(${Logo3});
+  background-size: contain;
+  background-repeat: no-repeat;
+`;
+
+var initialElements = [
   {
     id: "1",
     type: "input", // input node
-    data: { label: "Project Root", url:""},
-    position: { x: 100, y: 0 },
+    data: { label: "Project Root", url: "" },
+    position: { x: 500, y: 300 },
+    animated: true,
+    style: {
+      borderColor: "#FFAEA6",
+      color: "#6E6E6E",
+      height: "2vw",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
   },
 ];
 
@@ -64,17 +93,16 @@ function App(props) {
   const [repoData, setRepoData] = useState(0);
   const [loggedIn, setLoggedIn] = useState(false);
   const [nodeName, setNodeName] = useState("nodeName");
-  const [curCode, setCurCode]  = useState('Select a nnode to view file')
+  const [curCode, setCurCode] = useState("Select a nnode to view file");
+
   // Selected node
   const [selectedEL, setSelectedEL] = useState(initialElements[0]);
-  // state for selected file 
-  const [selectedFile, setSelectedFile] = useState(''); 
+  // state for selected file
+  const [selectedFile, setSelectedFile] = useState("");
   // react flow
   const yPos = useRef(0);
   const [rfInstance, setRfInstance] = useState(null);
   const [elements, setElements] = useState(initialElements);
-  const onElementsRemove = (elementsToRemove) =>
-    setElements((els) => removeElements(elementsToRemove, els));
   const onConnect = (params) => setElements((els) => addEdge(params, els));
   const onElementClick = (event, element) => {
     console.log("click", element);
@@ -84,34 +112,42 @@ function App(props) {
   // redux
   const nodesArr = props.nodes.nodesArr;
   const dispatch = useDispatch();
-  
-  // add node function
-  const addNode = useCallback((file) => {
-    var label = nodeName;
-    const newNode = {
-      id: getNodeId(),
-      // this data will get filled with the array of JSON objects that will come
-      // from Github
-      data: {
-        label: file.fileName !== undefined ? file.fileName : label,
-        name: file.fileName !== undefined ? file.fileName : label,
-        linkedFiles: ["aa.py", "gg.py", "kookoo.py"],
-        childNodes: ["da", "de", "do"],
-        siblingNodes: ["ta", "te", "to"],
-        parentNodes: ["pa", "pe"],
-        documentation: ["url1", "url2"],
-        description: "",
-        url: file.url !== undefined ? file.url : ""
-      },
-      position: {
-        x: 100,
-        y: yPos.current,
-      },
-    };
-    dispatch(addNodeToArray(newNode));
-    setElements((els) => els.concat(newNode));
-  }, [setElements, nodeName, dispatch, selectedFile]);
 
+  // add node function
+  const addNode = useCallback(
+    (file) => {
+      var label = nodeName;
+      const newNode = {
+        id: getNodeId(),
+        // this data will get filled with the array of JSON objects that will come
+        // from Github
+        data: {
+          label: file.fileName !== undefined ? file.fileName : label,
+          name: file.fileName !== undefined ? file.fileName : label,
+          linkedFiles: ["aa.py", "gg.py", "kookoo.py"],
+          childNodes: ["da", "de", "do"],
+          siblingNodes: ["ta", "te", "to"],
+          parentNodes: ["pa", "pe"],
+          documentation: ["url1", "url2"],
+          description: "",
+          url: file.url !== undefined ? file.url : "",
+        },
+        position: { x: 500, y: 400 },
+        animated: true,
+      };
+      dispatch(addNodeToArray(newNode));
+      setElements((els) => els.concat(newNode));
+    },
+    [setElements, nodeName, dispatch, selectedFile]
+  );
+
+  const onElementsRemove = (elementsToRemove) => {
+    if (elementsToRemove.length == 0) {
+      console.log("nothing selected");
+      return;
+    }
+    dispatch(deleteNodeFromArray(elementsToRemove[0]));
+  };
 
   // get all repos in users account
   const getRepoList = async () => {
@@ -122,6 +158,7 @@ function App(props) {
   // set new repo from drop down menu
   const handleRepoChange = (event) => {
     setRepo(event.target.value);
+    setElements(initialElements);
     dispatch(getRepoFiles(event.target.value));
   };
 
@@ -145,7 +182,7 @@ function App(props) {
     }
 
     return repoChoiceItems;
-  }
+  };
 
   const getPRContent = async () => {
     const PRContent = await getPR("hello-world", 1942);
@@ -176,20 +213,21 @@ function App(props) {
   }, [user]);
 
   useEffect(() => {
-    if (selectedEL.data.url!==undefined){
-      // calls node url to get file content 
-      axios.get(selectedEL.data.url)
-      .then(function (response) {
-        // handle success
-        console.log(response);
-        setCurCode(response.data);
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      })
+    if (selectedEL.data.url !== undefined) {
+      // calls node url to get file content
+      axios
+        .get(selectedEL.data.url)
+        .then(function (response) {
+          // handle success
+          console.log(response);
+          setCurCode(response.data);
+        })
+        .catch(function (error) {
+          // handle error
+          console.log(error);
+        });
     }
-  }, [selectedEL]); 
+  }, [selectedEL]);
 
   const printNodesArr = () => {
     console.log(`nodesArr:`);
@@ -209,61 +247,84 @@ function App(props) {
   };
   if (loggedIn) {
     return (
-      <div className="App">
-
-        {/* navbar component written but has weird bug  */}
-
-        {/* <MyNavigationBar
-          functions={{
-            handleRepoChange: handleRepoChange,
-            renderRepos: renderRepos,
-            logout: logout
-
-          }}
-          data={{ repo: repo }}
-       />  */}
-        
-        <AppBar position="sticky" style={{ background: "black" }}>
-          <Toolbar>
-            <MenuItem sx={{ flexGrow: 3 }}>
-              <Typography variant="h3">CodeGram</Typography>
-            </MenuItem>
-            <Box> <Typography> user: {user.username}</Typography></Box>
-            <Box sx={{ flexGrow: 1, p: 2, color: "white" }}>
-              <FormControl fullWidth variant="outlined">
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={repo}
-                  label="Repository"
-                  onChange={handleRepoChange}
-                  sx={{ backgroundColor: "#E4E6EB" }}
-                  displayEmpty
+      <ThemeProvider theme={theme}>
+        <div className="App">
+          {/* move app bar to its own navigation component  */}
+          <AppBar
+            elevation={0}
+            position="sticky"
+            style={{ "background-color": "#f7f7f7" }}
+          >
+            <Toolbar>
+              <MenuItem
+                sx={{ flexGrow: 3 }}
+                style={{ backgroundColor: "transparent" }}
+              >
+                <div
+                  style={{
+                    position: "relative",
+                    height: "80%",
+                    left: "0",
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  {renderRepos()}
-                </Select>
-              </FormControl>
-            </Box>
+                  <LogoTopNav className="LogoTopNav" />
+                  <h2
+                    style={{
+                      "font-family": "Poppins-Thin",
+                      color: "#FFAEA6",
+                    }}
+                  >
+                    CodeGram
+                  </h2>
+                </div>
+              </MenuItem>
+              <Box sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}>
+                <FormControl fullWidth variant="outlined">
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={repo}
+                    label="Repository"
+                    onChange={handleRepoChange}
+                    sx={{ backgroundColor: "white" }}
+                    displayEmpty
+                  >
+                    {renderRepos()}
+                  </Select>
+                </FormControl>
+              </Box>
 
-            <Box mx={1}>
-              <div className="loginButton github">
-                <Typography> Push </Typography>
-                <img src={Github} alt="" className="icon" />
-              </div>
-            </Box>
+              <Box mx={1} sx={{ "box-shadow": 0 }}>
+                <div className="loginButton github">
+                  <Typography color="primary"> Push </Typography>
+                  <img src={Github2} alt="" className="icon" />
+                </div>
+              </Box>
 
-            <Box mx={1}>
-              <div className="loginButton github" onClick={() => logout()}>
-                <LogoutIcon> </LogoutIcon>
-              </div>
-            </Box>
+              <Box mx={1} sx={{ "box-shadow": 0 }}>
+                <div className="loginButton github" onClick={() => logout()}>
+                  <LogoutIcon> </LogoutIcon>
+                </div>
+              </Box>
+            </Toolbar>
+          </AppBar>
+          {/* everything from here down can be in a cashboard component */}
+          <h1
+            class="welcomeMessage"
+            style={{
+              "font-family": "Poppins-Thin",
+              "text-align": "left",
+              "padding-left": "5vw",
+            }}
+          >
+            Welcome to CodeGram demo {user.username}!
+          </h1>
 
-          </Toolbar>
-        </AppBar>
-        
-        {/* dashboard should be in its own file at some point  */}
-        
-        <div className='dashboard'>
+          <Container className="canvasContainer">
             <div className="canvas">
               <ReactFlow
                 elements={elements}
@@ -271,26 +332,31 @@ function App(props) {
                 onConnect={onConnect}
                 onLoad={setRfInstance}
                 onElementClick={onElementClick}
-                />
+              />
             </div>
-     
+          </Container>
           <SourceDoc
             functions={{
               addNode: addNode,
+              deleteNode: onElementsRemove, //TODO: Add deleteNode function to DELETE NODE button(?)
               printNodesArr: printNodesArr,
               getPRContent: getPRContent,
               handleName: handleName,
-              setSelectedFile:setSelectedFile
+              setSelectedFile: setSelectedFile,
             }}
-            data={{ repo: repo, repoData: repoData, selectedEL: selectedEL, selectedFile:selectedFile, curCode:curCode}}
+            data={{
+              repo: repo,
+              repoData: repoData,
+              selectedEL: selectedEL,
+              selectedFile: selectedFile,
+              curCode: curCode,
+            }}
           />
         </div>
-      </div>
+      </ThemeProvider>
     );
   } else {
-    return (
-      <Landing/> 
-    );
+    return <LandingPage />;
   }
 }
 

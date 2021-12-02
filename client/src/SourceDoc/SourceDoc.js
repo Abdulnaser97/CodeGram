@@ -1,3 +1,5 @@
+import "../App.css";
+
 // mui components
 import {
   Box,
@@ -89,6 +91,20 @@ function SourceDoc(props) {
     return null;
   }
 
+  function renderFiles(){
+   
+    var files = []
+    if (props.data.selectedEL.data.parentNodes){
+    const f = props.data.selectedEL.data.parentNodes.map((pNode) => {
+      <li className="SourceDocFile foldertype">
+        hello
+      </li> 
+    }); 
+  }
+    console.log(files)
+    return files
+  }
+
   // Tabs: handlers for state of tabs
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -105,10 +121,30 @@ function SourceDoc(props) {
 
   var repoContent = renderRepoContent(state.repoFiles);
   return (
-    <div className ='toolbar'> 
-    <Container sx={{ boxShadow: 3,p: 3, minHeight:0.5}}>
+    <Container
+      className="sourceDocContainer"
+      variant="absolute"
+      sx={{ boxShadow: 3, m: 3, p: 3 }}
+      style={{
+        position: "fixed",
+        top: "12vh",
+        right: "1vw",
+        width: "35vw",
+        height: "80vh",
+        "z-index": 0,
+        borderRadius: "1vw 1vw 1vw 1vw",
+        "background-color": "white",
+      }}
+    >
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
+          TabIndicatorProps={{
+            style: {
+              backgroundColor: "#FFAEA6",
+            },
+          }}
+          textColor="primary"
+          indicatorColor="primary"
           value={value}
           onChange={handleChange}
           aria-label="basic tabs example"
@@ -160,30 +196,66 @@ function SourceDoc(props) {
           m={5}
           sx={{ display: "flex", justifyContent: "space-around"}}
         >
-          <Button variant="contained" onClick={props.functions.addNode}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={props.functions.addNode}
+          >
             Create Node
           </Button>
 
-          <Button variant="outlined">Delete Node</Button>
-          <Button variant="outlined" onClick={props.functions.printNodesArr}>
+          <Button variant="outlined" color="primary">
+            Delete Node
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={props.functions.printNodesArr}
+          >
             Save
           </Button>
 
-          <Button variant="outlined" onClick={props.functions.getPRContent}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={props.functions.getPRContent}
+          >
             Get PR
           </Button>
         </Container>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <Box textAlign='left'>
-        {props.data.curCode} 
-        </Box>
+
+          <pre> {`${props.data.curCode}`} </pre>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        {JSON.stringify(props.data.selectedEL)}
+        <Box sx={{disaply:'flex', flexDirection:'column'}}>
+        <Typography variant='h4' fontWeight='bold'> 
+          {props.data.selectedEL.data.label}
+        </Typography>
+        <Typography variant='h5' > 
+          <a href={props.data.selectedEL.data.url}> source code link </a>
+        </Typography>
+        <Typography variant='h5' mt={2}> 
+          Parent Nodes <br/>
+          <Typography> {props.data.selectedEL.data.parentNodes} </Typography>
+        </Typography>
+        <Typography variant='h5' mt={2}> 
+          Child Nodes <br/>
+          <Typography> {props.data.selectedEL.data.childNodes} </Typography>
+        </Typography>
+        <Typography variant='h5' mt={2}> 
+          Configuration Files <br/>
+          <Typography> {props.data.selectedEL.data.parentNodes} </Typography>
+        </Typography>
+        <Typography variant='h5' mt={2}> 
+          Reference Docs <br/>
+          {renderFiles()}
+          <Typography>  {props.data.selectedEL.data.documentation}</Typography> 
+        </Typography>
+        </Box>
       </TabPanel>
     </Container>
-    </div>
   );
 
 }
