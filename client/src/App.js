@@ -1,5 +1,6 @@
 // styling 
 import "./App.css";
+import axios from 'axios';
 
 // assets 
 import Github from "./img/github.png";
@@ -50,7 +51,7 @@ const initialElements = [
   {
     id: "1",
     type: "input", // input node
-    data: { label: "Project Root" },
+    data: { label: "Project Root", url:""},
     position: { x: 100, y: 0 },
   },
 ];
@@ -63,8 +64,9 @@ function App(props) {
   const [repoData, setRepoData] = useState(0);
   const [loggedIn, setLoggedIn] = useState(false);
   const [nodeName, setNodeName] = useState("nodeName");
+  const [curCode, setCurCode]  = useState('Select a nnode to view file')
   // Selected node
-  const [selectedEL, setSelectedEL] = useState(0);
+  const [selectedEL, setSelectedEL] = useState(initialElements[0]);
   // state for selected file 
   const [selectedFile, setSelectedFile] = useState(''); 
   // react flow
@@ -99,6 +101,7 @@ function App(props) {
         parentNodes: ["pa", "pe"],
         documentation: ["url1", "url2"],
         description: "",
+        url: file.url !== undefined ? file.url : ""
       },
       position: {
         x: 100,
@@ -171,6 +174,22 @@ function App(props) {
       getRepoList();
     }
   }, [user]);
+
+  useEffect(() => {
+    if (selectedEL.data.url!==undefined){
+      // calls node url to get file content 
+      axios.get(selectedEL.data.url)
+      .then(function (response) {
+        // handle success
+        console.log(response);
+        setCurCode(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+    }
+  }, [selectedEL]); 
 
   const printNodesArr = () => {
     console.log(`nodesArr:`);
@@ -263,7 +282,7 @@ function App(props) {
               handleName: handleName,
               setSelectedFile:setSelectedFile
             }}
-            data={{ repo: repo, repoData: repoData, selectedEL: selectedEL, selectedFile:selectedFile}}
+            data={{ repo: repo, repoData: repoData, selectedEL: selectedEL, selectedFile:selectedFile, curCode:curCode}}
           />
         </div>
       </div>

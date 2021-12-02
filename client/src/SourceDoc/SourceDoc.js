@@ -175,7 +175,9 @@ function SourceDoc(props) {
         </Container>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Let's connect to github first!
+        <Box textAlign='left'>
+        {props.data.curCode} 
+        </Box>
       </TabPanel>
       <TabPanel value={value} index={2}>
         {JSON.stringify(props.data.selectedEL)}
