@@ -153,7 +153,6 @@ function SourceDoc(props) {
         </Tabs>
       </Box>
       <TabPanel
-        style={{ overflow: "scroll" }}
         value={value}
         index={0}
         sx={{ display: "flex", flexDirection: "column" }}
@@ -183,7 +182,11 @@ function SourceDoc(props) {
             Repository Content
           </Typography>
           <div
-            style={{ position: "relative", height: "35vh", overflow: "scroll" }}
+            style={{
+              position: "relative",
+              height: "35vh",
+              "overflow-y": "scroll",
+            }}
           >
             {repoContent}
           </div>
@@ -198,7 +201,11 @@ function SourceDoc(props) {
           Save Diagram
         </Button>
       </TabPanel>
-      <TabPanel value={value} index={1} style={{ overflow: "scroll" }}>
+      <TabPanel
+        value={value}
+        index={1}
+        style={{ height: "90%", overflow: "scroll" }}
+      >
         <pre> {`${props.data.curCode}`} </pre>
       </TabPanel>
       <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
