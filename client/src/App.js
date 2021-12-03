@@ -1,12 +1,16 @@
+// styling
 import "./App.css";
+import axios from "axios";
+
+// react
 import styled from "styled-components";
 import Github2 from "./img/github.png";
-import GitHub from "./Landing/GitHub";
-import Background from "./Landing/Background";
-import Logo from "./Landing/Logo";
+
 import Logo3 from "./img/Logo3.svg";
 
 import React, { useCallback, useState, useRef, useEffect } from "react";
+
+// api calls
 import {
   invalidateToken,
   getRepo,
@@ -14,6 +18,8 @@ import {
   getUser,
   getRepos,
 } from "./api/apiClient";
+
+// material ui components
 import {
   Box,
   Typography,
@@ -25,34 +31,30 @@ import {
   Select,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
+import GitHubIcon from '@mui/icons-material/GitHub';
+// redux
 import ReactFlow, { removeElements, addEdge } from "react-flow-renderer";
-
 import { connect } from "react-redux";
 import { addNodeToArray, deleteNodeFromArray } from "./Redux/actions/nodes";
 import { useDispatch } from "react-redux";
-import { SourceDoc } from "./SourceDoc/SourceDoc";
 import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
 import { getRepoFiles } from "./Redux/actions/repoFiles";
 import { ThemeProvider } from "@material-ui/core";
 import { theme } from "./AppUtils";
 
+// custom components
+import SourceDoc from "./SourceDoc/SourceDoc";
+import MyNavigationBar from "./components/MyNavigationBar";
+
+// pages
+import { LandingPage } from "./Landing/LandingPage";
+
 const getNodeId = () => `randomnode_${+new Date()}`;
 
-const initialElements = [
-  {
-    id: "1",
-    type: "input", // input node
-    data: { label: "Input Node" },
-    position: { x: 100, y: 0 },
-    animated: true,
-    style: {
-      borderColor: "#FFAEA6",
-      color: "#6E6E6E",
-      width: "4vw",
-      height: "1vw",
-    },
-  },
-];
+// api call import
+function login() {
+  window.open("http://localhost:8080/auth/github", "_self");
+}
 
 const LogoTopNav = styled.div`
   position: relative;
@@ -65,6 +67,24 @@ const LogoTopNav = styled.div`
   background-repeat: no-repeat;
 `;
 
+var initialElements = [
+  {
+    id: "1",
+    type: "input", // input node
+    data: { label: "Project Root", url: "" },
+    position: { x: 500, y: 300 },
+    animated: true,
+    style: {
+      borderColor: "#FFAEA6",
+      color: "#6E6E6E",
+      height: "2vw",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+  },
+];
+
 function App(props) {
   const [user, setUser] = useState([]);
   const [content, setContent] = useState([]);
@@ -72,11 +92,13 @@ function App(props) {
   const [repo, setRepo] = useState("");
   const [repoData, setRepoData] = useState(0);
   const [loggedIn, setLoggedIn] = useState(false);
-
   const [nodeName, setNodeName] = useState("nodeName");
-  // Selected node
-  const [selectedEL, setSelectedEL] = useState(0);
+  const [curCode, setCurCode] = useState("Select a nnode to view file");
 
+  // Selected node
+  const [selectedEL, setSelectedEL] = useState(initialElements[0]);
+  // state for selected file
+  const [selectedFile, setSelectedFile] = useState("");
   // react flow
   const yPos = useRef(0);
   const [rfInstance, setRfInstance] = useState(null);
@@ -92,36 +114,43 @@ function App(props) {
   const dispatch = useDispatch();
 
   // add node function
-  const addNode = useCallback(() => {
-    var label = nodeName;
-    const newNode = {
-      ...initialElements[0],
-      id: getNodeId(),
-      // this data will get filled with the array of JSON objects that will come
-      // from Github
-      data: {
-        label: label,
-        name: label,
-        linkedFiles: ["aa.py", "gg.py", "kookoo.py"],
-        childNodes: ["da", "de", "do"],
-        siblingNodes: ["ta", "te", "to"],
-        parentNodes: ["pa", "pe"],
-        documentation: ["url1", "url2"],
-        description: "",
-      },
-      position: {
-        x: 100,
-        y: yPos.current,
-      },
-      animated: true,
-      style: {
-        ...initialElements[0].style,
-      },
-    };
-    dispatch(addNodeToArray(newNode));
-    setElements((els) => els.concat(newNode));
-  }, [setElements, nodeName, dispatch]);
-    
+  const addNode = useCallback(
+    (file) => {
+      var label = nodeName;
+      const newNode = {
+        id: getNodeId(),
+        // this data will get filled with the array of JSON objects that will come
+        // from Github
+        data: {
+          label: file.fileName !== undefined ? file.fileName : label,
+          name: file.fileName !== undefined ? file.fileName : label,
+          linkedFiles: ["aa.py", "gg.py", "kookoo.py"],
+          childNodes: ["da", "de", "do"],
+          siblingNodes: ["ta", "te", "to"],
+          parentNodes: ["pa", "pe"],
+          documentation: ["url1", "url2"],
+          description: "",
+          url: file.url !== undefined ? file.url : "",
+        },
+        style: {
+          backgroundColor: "#FFAEA6",
+          color: "white",
+          fontWeight: "bold",
+          height: "2vw",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          border:'none'
+        },
+        position: { x: 500, y: 400 },
+        animated: true,
+      };
+      dispatch(addNodeToArray(newNode));
+      setElements((els) => els.concat(newNode));
+    },
+    [setElements, nodeName, dispatch, selectedFile]
+  );
+
   const onElementsRemove = (elementsToRemove) => {
     if (elementsToRemove.length == 0) {
       console.log("nothing selected");
@@ -129,10 +158,6 @@ function App(props) {
     }
     dispatch(deleteNodeFromArray(elementsToRemove[0]));
   };
-
-  function login() {
-    window.open("http://localhost:8080/auth/github", "_self");
-  }
 
   // get all repos in users account
   const getRepoList = async () => {
@@ -143,6 +168,7 @@ function App(props) {
   // set new repo from drop down menu
   const handleRepoChange = (event) => {
     setRepo(event.target.value);
+    setElements(initialElements);
     dispatch(getRepoFiles(event.target.value));
   };
 
@@ -150,7 +176,7 @@ function App(props) {
     setNodeName(event.target.value);
   };
 
-  function renderRepos() {
+  const renderRepos = () => {
     var repoNames = [];
     var repoChoiceItems = [];
 
@@ -166,7 +192,7 @@ function App(props) {
     }
 
     return repoChoiceItems;
-  }
+  };
 
   const getPRContent = async () => {
     const PRContent = await getPR("hello-world", 1942);
@@ -196,6 +222,23 @@ function App(props) {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (selectedEL.data.url !== undefined) {
+      // calls node url to get file content
+      axios
+        .get(selectedEL.data.url)
+        .then(function (response) {
+          // handle success
+          console.log(response);
+          setCurCode(response.data);
+        })
+        .catch(function (error) {
+          // handle error
+          console.log(error);
+        });
+    }
+  }, [selectedEL]);
+
   const printNodesArr = () => {
     console.log(`nodesArr:`);
     console.log(nodesArr);
@@ -212,11 +255,11 @@ function App(props) {
       }
     });
   };
-
   if (loggedIn) {
     return (
       <ThemeProvider theme={theme}>
         <div className="App">
+          {/* move app bar to its own navigation component  */}
           <AppBar
             elevation={0}
             position="sticky"
@@ -267,19 +310,19 @@ function App(props) {
 
               <Box mx={1} sx={{ "box-shadow": 0 }}>
                 <div className="loginButton github">
-                  <Typography color="primary"> Push </Typography>
-                  <img src={Github2} alt="" className="icon" />
+                  <Typography mx={2} fontWeight='bold' color="primary"> Push </Typography>
+                  <GitHubIcon color="primary"> </GitHubIcon>
                 </div>
               </Box>
 
-              <Box mx={1} sx={{ "box-shadow": 0 }}>
+              <Box sx={{ "box-shadow": 0 }}>
                 <div className="loginButton github" onClick={() => logout()}>
-                  <LogoutIcon> </LogoutIcon>
+                  <LogoutIcon color="primary"> </LogoutIcon>
                 </div>
               </Box>
             </Toolbar>
           </AppBar>
-
+          {/* everything from here down can be in a cashboard component */}
           <h1
             class="welcomeMessage"
             style={{
@@ -294,7 +337,7 @@ function App(props) {
           <Container className="canvasContainer">
             <div className="canvas">
               <ReactFlow
-                elements={nodesArr}
+                elements={elements}
                 onElementsRemove={onElementsRemove}
                 onConnect={onConnect}
                 onLoad={setRfInstance}
@@ -305,33 +348,25 @@ function App(props) {
           <SourceDoc
             functions={{
               addNode: addNode,
-              deleteNode: onElementsRemove,   //TODO: Add deleteNode function to DELETE NODE button(?)
+              deleteNode: onElementsRemove, //TODO: Add deleteNode function to DELETE NODE button(?)
               printNodesArr: printNodesArr,
               getPRContent: getPRContent,
               handleName: handleName,
+              setSelectedFile: setSelectedFile,
             }}
-            data={{ repoData: repoData, selectedEL: selectedEL }}
+            data={{
+              repo: repo,
+              repoData: repoData,
+              selectedEL: selectedEL,
+              selectedFile: selectedFile,
+              curCode: curCode,
+            }}
           />
         </div>
       </ThemeProvider>
     );
   } else {
-    return (
-      <ThemeProvider theme={theme}>
-        <div className="LandingPage">
-          <div className="LogoDiv background">
-            <Background className="Background" />
-          </div>
-          <div className="LogoDiv">
-            <Logo className="Logo" />
-          </div>
-          <h1 className="CodeGram"> CodeGram</h1>
-          <div className="GitHubButtonWrapper" onClick={login}>
-            <GitHub className="GitHub" />
-          </div>
-        </div>
-      </ThemeProvider>
-    );
+    return <LandingPage />;
   }
 }
 

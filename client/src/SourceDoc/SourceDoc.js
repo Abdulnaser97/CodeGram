@@ -1,3 +1,6 @@
+import "../App.css";
+
+// mui components
 import {
   Box,
   Typography,
@@ -7,9 +10,20 @@ import {
   TextField,
   Button,
 } from "@mui/material";
+
+// third party dependecnies
 import PropTypes from "prop-types";
+
+// react
 import { useState } from "react";
+
+// redux
 import { useSelector } from "react-redux";
+import { mapDispatchToProps, mapStateToProps } from "../Redux/configureStore";
+import { connect } from "react-redux";
+
+// components
+import SourceDocFile from "./SourceDocFile";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -49,13 +63,44 @@ function searchCodeBase() {
   return null;
 }
 
-export function SourceDoc(props) {
+function SourceDoc(props) {
   const state = useSelector((state) => state);
-  console.log(state);
+  //console.log(state);
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
   // state for search
   const [search, setSearch] = useState("search");
+
+  function renderRepoContent(repoData) {
+    if (repoData.repoFiles[0] !== undefined) {
+      var repoList = [];
+      const files = repoData.repoFiles[0];
+      for (var i = 0; i < files.length; i++) {
+        repoList.push(
+          <SourceDocFile
+            addNode={props.functions.addNode}
+            setSelectedFile={props.functions.setSelectedFile}
+            file={files[i]}
+            selectedFile={props.data.selectedFile}
+          />
+        );
+      }
+      return repoList;
+    }
+
+    return null;
+  }
+
+  function renderFiles() {
+    var files = [];
+    if (props.data.selectedEL.data.parentNodes) {
+      const f = props.data.selectedEL.data.parentNodes.map((pNode) => {
+        <li className="SourceDocFile foldertype">hello</li>;
+      });
+    }
+    console.log(files);
+    return files;
+  }
 
   // Tabs: handlers for state of tabs
   const handleChange = (event, newValue) => {
@@ -71,11 +116,12 @@ export function SourceDoc(props) {
     setSearch(event.target.value);
   };
 
+  var repoContent = renderRepoContent(state.repoFiles);
   return (
     <Container
-      calssName="sourceDocContainer"
+      className="sourceDocContainer"
       variant="absolute"
-      sx={{ boxShadow: 3, m: 3, p: 3 }}
+      sx={{ boxShadow: 10, m: 3, p: 3 }}
       style={{
         position: "fixed",
         top: "12vh",
@@ -83,7 +129,7 @@ export function SourceDoc(props) {
         width: "35vw",
         height: "80vh",
         "z-index": 0,
-        borderRadius: "2vw 2vw 2vw 2vw",
+        borderRadius: "10px",
         "background-color": "white",
       }}
     >
@@ -111,65 +157,86 @@ export function SourceDoc(props) {
         index={0}
         sx={{ display: "flex", flexDirection: "column" }}
       >
-        <Container>
-          <Typography>Search to link a file</Typography>
-          <TextField
-            margin="dense"
-            placeholder="Search.."
-            inputProps={{ "aria-label": "search" }}
-            onKeyPress={searchCodeBase}
-            onChange={props.handleSearch}
-          ></TextField>
-        </Container>
-
-        <Container>
-          <Typography>Name node</Typography>
-          <TextField
-            margin="dense"
-            placeholder="Name.."
-            inputProps={{ "aria-label": "search" }}
-            onKeyPress={searchCodeBase}
-            onChange={props.functions.handleName}
-          ></TextField>
-        </Container>
-
-        <Container
-          sx={{ display: "flex", justifyContent: "space-around", mt: 3 }}
+        <Typography variant="h5" textAlign="left">
+          Create Node
+        </Typography>
+        <TextField
+          margin="dense"
+          placeholder="Name.."
+          inputProps={{ "aria-label": "search" }}
+          onKeyPress={searchCodeBase}
+          onChange={props.functions.handleName}
+          fullWidth
+        ></TextField>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={props.functions.addNode}
+          fullWidth
         >
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={props.functions.addNode}
-          >
-            Create Node
-          </Button>
+          Create Node
+        </Button>
 
-          <Button variant="outlined" color="primary">
-            Delete Node
-          </Button>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={props.functions.printNodesArr}
+        <Box my={3}>
+          <Typography variant="h5" textAlign="left">
+            Repository Content
+          </Typography>
+          <div
+            style={{
+              position: "relative",
+              height: "35vh",
+              "overflow-y": "scroll",
+            }}
           >
-            Save
-          </Button>
+            {repoContent}
+          </div>
+        </Box>
 
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={props.functions.getPRContent}
-          >
-            Get PR
-          </Button>
-        </Container>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={props.functions.printNodesArr}
+          fullWidth
+        >
+          Save Diagram
+        </Button>
       </TabPanel>
-      <TabPanel value={value} index={1}>
-        Let's connect to github first!
+      <TabPanel
+        value={value}
+        index={1}
+        style={{ height: "90%", overflow: "scroll" }}
+      >
+        <pre> {`${props.data.curCode}`} </pre>
       </TabPanel>
-      <TabPanel value={value} index={2}>
-        {JSON.stringify(props.data.selectedEL)}
+      <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
+        <Box sx={{ disaply: "flex", flexDirection: "column" }}>
+          <Typography variant="h4" fontWeight="bold">
+            {props.data.selectedEL.data.label}
+          </Typography>
+          <Typography variant="h5">
+            <a href={props.data.selectedEL.data.url}> source code link </a>
+          </Typography>
+          <Typography variant="h5" mt={2}>
+            Parent Nodes <br />
+            <Typography> {props.data.selectedEL.data.parentNodes} </Typography>
+          </Typography>
+          <Typography variant="h5" mt={2}>
+            Child Nodes <br />
+            <Typography> {props.data.selectedEL.data.childNodes} </Typography>
+          </Typography>
+          <Typography variant="h5" mt={2}>
+            Configuration Files <br />
+            <Typography> {props.data.selectedEL.data.parentNodes} </Typography>
+          </Typography>
+          <Typography variant="h5" mt={2}>
+            Reference Docs <br />
+            {renderFiles()}
+            <Typography> {props.data.selectedEL.data.documentation}</Typography>
+          </Typography>
+        </Box>
       </TabPanel>
     </Container>
   );
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(SourceDoc);

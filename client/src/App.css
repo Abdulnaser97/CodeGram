@@ -32,6 +32,11 @@
   cursor: pointer;
   min-height: 4vh;
   min-width: 4vh;
+  transition: ease-in 0.1s;
+}
+
+.loginButton:hover {
+  box-shadow: rgba(0, 0, 0, 0.301) 0px 3px 7px;
 }
 
 .LandingPage {
@@ -83,10 +88,87 @@ body {
 
 .GitHubButtonWrapper:hover .GitButton {
   fill: #ffaea6;
+  cursor: pointer;
 }
 
 .GitHubButtonWrapper:hover .LoginWithGitHub {
   fill: #ffffff;
+  cursor: pointer;
+}
+
+.landingLogin:hover {
+  color: #ff8b8b;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.SourceDocFile {
+  position: relative;
+  height: 5%;
+  width: 85%;
+  border-radius: 1vw;
+  margin: 1vw 0;
+  padding: 2% 5%;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.SourceDocFile:hover {
+  cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.623) 1.95px 1.95px 2.6px;
+}
+
+.selected {
+  box-shadow: rgba(0, 0, 0, 0.603) 0px 3px 8px;
+}
+.selected:hover {
+  box-shadow: rgba(0, 0, 0, 0.603) 0px 3px 8px;
+}
+
+.foldertype {
+  background-color: rgb(226, 226, 226);
+}
+
+.filetype {
+  background-color: rgb(241, 241, 241);
+}
+
+.dashboard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  width: 100vw;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  position: fixed;
+  top: 0;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30vw;
+  z-index: 1;
+}
+
+.iconWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: ease-in 0.1s;
+}
+.iconWrapper:hover {
+  box-shadow: rgba(0, 0, 0, 0.603) 0px 3px 8px;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
 }
 
 .LogoDiv {
@@ -108,4 +190,18 @@ body {
   height: 200vw;
   width: 150vw;
   z-index: 0;
+}
+
+a {
+  text-decoration: none;
+  color: #f58282;
+  font-weight: bold;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+pre {
+  font-size: 10px;
 }
