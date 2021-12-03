@@ -63,7 +63,6 @@ function searchCodeBase() {
   return null;
 }
 
-
 function SourceDoc(props) {
   const state = useSelector((state) => state);
   //console.log(state);
@@ -72,37 +71,35 @@ function SourceDoc(props) {
   // state for search
   const [search, setSearch] = useState("search");
 
-
   function renderRepoContent(repoData) {
     if (repoData.repoFiles[0] !== undefined) {
       var repoList = [];
       const files = repoData.repoFiles[0];
       for (var i = 0; i < files.length; i++) {
-        repoList.push(<SourceDocFile 
-          addNode={props.functions.addNode} 
-          setSelectedFile={props.functions.setSelectedFile}
-          file={files[i]}
-          selectedFile={props.data.selectedFile}
-           />);
+        repoList.push(
+          <SourceDocFile
+            addNode={props.functions.addNode}
+            setSelectedFile={props.functions.setSelectedFile}
+            file={files[i]}
+            selectedFile={props.data.selectedFile}
+          />
+        );
       }
       return repoList;
     }
-  
+
     return null;
   }
 
-  function renderFiles(){
-   
-    var files = []
-    if (props.data.selectedEL.data.parentNodes){
-    const f = props.data.selectedEL.data.parentNodes.map((pNode) => {
-      <li className="SourceDocFile foldertype">
-        hello
-      </li> 
-    }); 
-  }
-    console.log(files)
-    return files
+  function renderFiles() {
+    var files = [];
+    if (props.data.selectedEL.data.parentNodes) {
+      const f = props.data.selectedEL.data.parentNodes.map((pNode) => {
+        <li className="SourceDocFile foldertype">hello</li>;
+      });
+    }
+    console.log(files);
+    return files;
   }
 
   // Tabs: handlers for state of tabs
@@ -156,89 +153,83 @@ function SourceDoc(props) {
         </Tabs>
       </Box>
       <TabPanel
+        style={{ overflow: "scroll" }}
         value={value}
         index={0}
         sx={{ display: "flex", flexDirection: "column" }}
       >
-
- 
-
         <Typography variant="h5" textAlign="left">
-            Create Node
-          </Typography>
-            <TextField
-              margin="dense"
-              placeholder="Name.."
-              inputProps={{ "aria-label": "search" }}
-              onKeyPress={searchCodeBase}
-              onChange={props.functions.handleName}
-              fullWidth
-            ></TextField>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={props.functions.addNode}
-              fullWidth
-            >
-              Create Node
-            </Button>
-
+          Create Node
+        </Typography>
+        <TextField
+          margin="dense"
+          placeholder="Name.."
+          inputProps={{ "aria-label": "search" }}
+          onKeyPress={searchCodeBase}
+          onChange={props.functions.handleName}
+          fullWidth
+        ></TextField>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={props.functions.addNode}
+          fullWidth
+        >
+          Create Node
+        </Button>
 
         <Box my={3}>
           <Typography variant="h5" textAlign="left">
             Repository Content
           </Typography>
-          {repoContent}
+          <div
+            style={{ position: "relative", height: "35vh", overflow: "scroll" }}
+          >
+            {repoContent}
+          </div>
         </Box>
 
-   
-
-
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={props.functions.printNodesArr}
-            fullWidth
-          >
-            Save Diagram
-          </Button>
-
-
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={props.functions.printNodesArr}
+          fullWidth
+        >
+          Save Diagram
+        </Button>
       </TabPanel>
-      <TabPanel value={value} index={1}>
-
-          <pre> {`${props.data.curCode}`} </pre>
+      <TabPanel value={value} index={1} style={{ overflow: "scroll" }}>
+        <pre> {`${props.data.curCode}`} </pre>
       </TabPanel>
-      <TabPanel value={value} index={2}>
-        <Box sx={{disaply:'flex', flexDirection:'column'}}>
-        <Typography variant='h4' fontWeight='bold'> 
-          {props.data.selectedEL.data.label}
-        </Typography>
-        <Typography variant='h5' > 
-          <a href={props.data.selectedEL.data.url}> source code link </a>
-        </Typography>
-        <Typography variant='h5' mt={2}> 
-          Parent Nodes <br/>
-          <Typography> {props.data.selectedEL.data.parentNodes} </Typography>
-        </Typography>
-        <Typography variant='h5' mt={2}> 
-          Child Nodes <br/>
-          <Typography> {props.data.selectedEL.data.childNodes} </Typography>
-        </Typography>
-        <Typography variant='h5' mt={2}> 
-          Configuration Files <br/>
-          <Typography> {props.data.selectedEL.data.parentNodes} </Typography>
-        </Typography>
-        <Typography variant='h5' mt={2}> 
-          Reference Docs <br/>
-          {renderFiles()}
-          <Typography>  {props.data.selectedEL.data.documentation}</Typography> 
-        </Typography>
+      <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
+        <Box sx={{ disaply: "flex", flexDirection: "column" }}>
+          <Typography variant="h4" fontWeight="bold">
+            {props.data.selectedEL.data.label}
+          </Typography>
+          <Typography variant="h5">
+            <a href={props.data.selectedEL.data.url}> source code link </a>
+          </Typography>
+          <Typography variant="h5" mt={2}>
+            Parent Nodes <br />
+            <Typography> {props.data.selectedEL.data.parentNodes} </Typography>
+          </Typography>
+          <Typography variant="h5" mt={2}>
+            Child Nodes <br />
+            <Typography> {props.data.selectedEL.data.childNodes} </Typography>
+          </Typography>
+          <Typography variant="h5" mt={2}>
+            Configuration Files <br />
+            <Typography> {props.data.selectedEL.data.parentNodes} </Typography>
+          </Typography>
+          <Typography variant="h5" mt={2}>
+            Reference Docs <br />
+            {renderFiles()}
+            <Typography> {props.data.selectedEL.data.documentation}</Typography>
+          </Typography>
         </Box>
       </TabPanel>
     </Container>
   );
-
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SourceDoc);
