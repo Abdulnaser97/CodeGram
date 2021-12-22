@@ -1,0 +1,38 @@
+.ToolBarButton:hover .Rect {
+  stroke: #ffaea6;
+}
+
+.ToolBarButton:hover .options {
+  fill: #ffaea6;
+}
+
+.ToolBarButton:hover .Text {
+  fill: #ffaea6;
+}
+
+.ToolBarButton:hover path {
+  fill: #ffaea6;
+}
+
+.PopupButton:hover rect {
+  stroke: #ffaea6;
+}
+
+.PopupButton:hover .CircleShape {
+  stroke: #ffaea6;
+}
+
+.ToolBarButton:hover .DashedShape {
+  stroke: #ffaea6;
+}
+
+.ShapesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 1vw;
+  padding-left: 1vw;
+  padding-right: 1vw;
+  height: 2vw;
+  align-items: center;
+  justify-content: center;
+}

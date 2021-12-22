@@ -29,7 +29,7 @@ export default function SourceDocFile(props) {
       >
         <p
           style={{
-            "font-family": "Poppins-Bold",
+            fontFamily: "Poppins-Bold",
             "font-size": "70%",
             color: "#25252",
           }}
