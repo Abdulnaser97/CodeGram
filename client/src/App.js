@@ -264,7 +264,7 @@ function App(props) {
           <AppBar
             elevation={0}
             position="sticky"
-            style={{ "background-color": "#f7f7f7" }}
+            style={{ backgroundColor: "#f7f7f7" }}
           >
             <Toolbar>
               <MenuItem
@@ -285,7 +285,7 @@ function App(props) {
                   <LogoTopNav className="LogoTopNav" />
                   <h2
                     style={{
-                      "font-family": "Poppins-Thin",
+                      fontFamily: "Poppins-Thin",
                       color: "#FFAEA6",
                     }}
                   >
@@ -328,9 +328,9 @@ function App(props) {
           </AppBar>
           {/* everything from here down can be in a cashboard component */}
           <h1
-            class="welcomeMessage"
+            className="welcomeMessage"
             style={{
-              "font-family": "Poppins-Thin",
+              fontFamily: "Poppins-Thin",
               "text-align": "left",
               "padding-left": "5vw",
             }}

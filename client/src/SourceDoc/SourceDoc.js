@@ -130,7 +130,7 @@ function SourceDoc(props) {
         height: "80vh",
         "z-index": 0,
         borderRadius: "10px",
-        "background-color": "white",
+        backgroundColor: "white",
       }}
     >
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>

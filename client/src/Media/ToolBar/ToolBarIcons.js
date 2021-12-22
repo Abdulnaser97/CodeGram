@@ -18,7 +18,7 @@ export const Cursor = () => {
       >
         <g id="Cursor">
           <path
-            fill-rule="evenodd"
+            fillRule="evenodd"
             clip-rule="evenodd"
             d="M11.1852 6.7701L0.384756 0.0832963L1.41666 12.4241L5.01666 9.3384L7.58512 13.4563L9.12801 12.4241L6.55653 8.31333L11.1852 6.7701Z"
             fill="#353535"
@@ -84,7 +84,7 @@ export const Rectangle = () => {
             height="15"
             rx="2"
             stroke="#353535"
-            stroke-width="2"
+            strokeWidth="2"
           />
         </g>
       </svg>
@@ -111,9 +111,9 @@ export const DashedShape = () => {
             height="15"
             rx="2"
             stroke="#353535"
-            stroke-width="2"
-            stroke-linejoin="round"
-            stroke-dasharray="6 1"
+            strokeWidth="2"
+            strokeLinejoin="round"
+            strokeDasharray="6 1"
           />
         </g>
       </svg>
@@ -138,7 +138,7 @@ export const CircleShape = () => {
             cy="9"
             r="8"
             stroke="#353535"
-            stroke-width="2"
+            strokeWidth="2"
           />
         </g>
       </svg>

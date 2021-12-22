@@ -140,14 +140,15 @@ function ToolBar(props) {
           },
         }}
         MenuListProps={{
-          paddingTop: "2px",
-          paddingBottom: "2px",
+          paddingtop: "2px",
+          paddingbottom: "2px",
         }}
         transitionDuration={{ enter: 100, exit: 120 }}
       >
-        <div className="ShapesGrid">
+        <div className="ShapesGrid" key="ShapesGrid">
           <PopupButton
             className="PopupButton"
+            key="PopupButton1"
             active={selectedShapeName.current === "rect" ? true : false}
             onClick={() => shapeSelect(<Rectangle />, "rect")}
           >
@@ -155,6 +156,7 @@ function ToolBar(props) {
           </PopupButton>
           <PopupButton
             className="PopupButton"
+            key="PopupButton2"
             active={selectedShapeName.current === "DashedShape" ? true : false}
             onClick={() => shapeSelect(<DashedShape />, "DashedShape")}
           >
@@ -162,6 +164,7 @@ function ToolBar(props) {
           </PopupButton>
           <PopupButton
             className="PopupButton"
+            key="PopupButton3"
             active={selectedShapeName.current === "CircleShape" ? true : false}
             onClick={() => shapeSelect(<CircleShape />, "CircleShape")}
           >
