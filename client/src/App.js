@@ -4,9 +4,9 @@ import axios from "axios";
 
 // react
 import styled from "styled-components";
-import Github2 from "./img/github.png";
+import Github2 from "./Media/github.png";
 
-import Logo3 from "./img/Logo3.svg";
+import Logo3 from "./Media/Logo3.svg";
 
 import React, { useCallback, useState, useRef, useEffect } from "react";
 
@@ -31,7 +31,7 @@ import {
   Select,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
-import GitHubIcon from '@mui/icons-material/GitHub';
+import GitHubIcon from "@mui/icons-material/GitHub";
 // redux
 import ReactFlow, { removeElements, addEdge } from "react-flow-renderer";
 import { connect } from "react-redux";
@@ -40,7 +40,7 @@ import { useDispatch } from "react-redux";
 import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
 import { getRepoFiles } from "./Redux/actions/repoFiles";
 import { ThemeProvider } from "@material-ui/core";
-import { theme } from "./AppUtils";
+import { theme } from "./Themes";
 
 // custom components
 import SourceDoc from "./SourceDoc/SourceDoc";
@@ -48,6 +48,7 @@ import MyNavigationBar from "./components/MyNavigationBar";
 
 // pages
 import { LandingPage } from "./Landing/LandingPage";
+import ToolBar from "./components/ToolBar.js";
 
 const getNodeId = () => `randomnode_${+new Date()}`;
 
@@ -140,7 +141,7 @@ function App(props) {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          border:'none'
+          border: "none",
         },
         position: { x: 500, y: 400 },
         animated: true,
@@ -310,7 +311,10 @@ function App(props) {
 
               <Box mx={1} sx={{ "box-shadow": 0 }}>
                 <div className="loginButton github">
-                  <Typography mx={2} fontWeight='bold' color="primary"> Push </Typography>
+                  <Typography mx={2} fontWeight="Medium" color="primary">
+                    {" "}
+                    Push{" "}
+                  </Typography>
                   <GitHubIcon color="primary"> </GitHubIcon>
                 </div>
               </Box>
@@ -333,7 +337,7 @@ function App(props) {
           >
             Welcome to CodeGram demo {user.username}!
           </h1>
-
+          <ToolBar />
           <Container className="canvasContainer">
             <div className="canvas">
               <ReactFlow
