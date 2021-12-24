@@ -1,0 +1,49 @@
+.node-label {
+	margin: 10px;
+}
+
+.square-container {
+	height: 5vw;
+	width: auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border: 1px dashed #FF6666;
+	border-radius: 5px;
+	background-color: none;
+}
+
+.cylinder {
+	position: relative;
+	margin: 0 auto;
+	width: 100px;
+	height: 150px;
+	border-radius: 50px/25px;
+	background-color: rgba(160, 160, 160, 0.5);
+}
+
+.cylinder .node-label {
+	text-align: center;
+}
+
+.cylinder:before {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100px;
+	height: 50px;
+	border-radius: 50px/25px;
+	background-color: rgba(160, 160, 160, 0.2);
+	content: '';
+}
+
+.cylinder:after {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100px;
+	height: 50px;
+	border-radius: 50px/25px;
+	background-color: rgba(160, 160, 160, 0.4);
+	content: '';
+}
