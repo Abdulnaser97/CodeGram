@@ -45,6 +45,7 @@ import { theme } from "./AppUtils";
 // custom components
 import SourceDoc from "./SourceDoc/SourceDoc";
 import MyNavigationBar from "./components/MyNavigationBar";
+import {nodeStyles, CustomNodeComponent, SquareContainerNodeComponent, CylinderNode} from "./canvas/custom_node";
 
 // pages
 import { LandingPage } from "./Landing/LandingPage";
@@ -131,17 +132,9 @@ function App(props) {
           documentation: ["url1", "url2"],
           description: "",
           url: file.url !== undefined ? file.url : "",
+          type: file.nodeType !== undefined ? file.nodeType: "default",
         },
-        style: {
-          backgroundColor: "#FFAEA6",
-          color: "white",
-          fontWeight: "bold",
-          height: "2vw",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          border:'none'
-        },
+        type: file.nodeType !== undefined ? file.nodeType: "default",
         position: { x: 500, y: 400 },
         animated: true,
       };
@@ -337,6 +330,12 @@ function App(props) {
           <Container className="canvasContainer">
             <div className="canvas">
               <ReactFlow
+                nodeTypes={{
+                  default: CustomNodeComponent, 
+                  square: CustomNodeComponent,
+                  squareContainer: SquareContainerNodeComponent,
+                  cylinder: CylinderNode
+                }}   //TODO: Have different node types?
                 elements={elements}
                 onElementsRemove={onElementsRemove}
                 onConnect={onConnect}
