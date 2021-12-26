@@ -1,4 +1,8 @@
-const { getPRFiles, getContent, getRepoNames } = require("./GitEndpoints");
+const { getPRFiles,
+        getContent, 
+        getRepoNames, 
+        getAllContent 
+     } = require("./GitEndpoints");
 
 const repoContentController = () => {
   return async (req, res) => {
@@ -58,9 +62,34 @@ const repoNamesController = () => {
   };
 };
 
+const fullRepoController = () => {
+  return async (req, res) => {
+    try {
+      let { authorization } = req.headers;
+      // Check if access token exists in request
+      if (authorization) {
+        // Call github API here
+        let body = req.body;
+        
+        const resp = await getAllContent( 
+          authorization, 
+          body.repo, 
+          body.path
+        );
+                                    
+        console.log(`fullRepoController: Success`);
+        res.status(200).json(resp);
+      }
+    } catch (error) {
+      console.log(`fullRepoController: Error`);
+      console.log(error);
+    }
+  };
+};
 
 module.exports = {
   repoContentController,
   pullRequestController,
-  repoNamesController
+  repoNamesController, 
+  fullRepoController 
 };

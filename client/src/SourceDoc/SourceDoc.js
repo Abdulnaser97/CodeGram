@@ -98,7 +98,7 @@ function SourceDoc(props) {
         <li className="SourceDocFile foldertype">hello</li>;
       });
     }
-    console.log(files);
+
     return files;
   }
 

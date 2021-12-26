@@ -17,6 +17,7 @@ import {
   getPR,
   getUser,
   getRepos,
+  getAllRepo
 } from "./api/apiClient";
 
 // material ui components

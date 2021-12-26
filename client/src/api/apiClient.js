@@ -54,9 +54,17 @@ export async function getRepo(repo) {
   return await perform("post", `/getcontent`, data);
 }
 
+export async function getAllRepo(repo, path) {
+  const data = {
+    repo: repo,
+    path: path 
+  };
+  return await perform("post", `/getallcontent`, data);
+}
+
 export async function getRepos() {
   const data = {
-  };
+  };  
   return await perform("post", `/getrepos`, data);
 }
 

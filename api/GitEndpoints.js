@@ -58,23 +58,50 @@ async function getRepoNames(token){
     data: { login },
   } = await octokit.rest.users.getAuthenticated();
 
-  const repos = await octokit.request('GET /user/repos')
+  const repos = await octokit.rest.repos.listForUser({
+    username: login
+  });
   return repos
-  // octokit
-  // .paginate(
-  //   "'GET /user/repos'",
-  //   { owner: login},
-  //   (response) => response.data.map((repo) =>repo.name)
-  // )
-  // .then((repoNames) => {
-  //   // issueTitles is now an array with the titles only
-  //   console.log(repoNames)
-  //   return repoNames;
+}
 
-  // });
+async function getAllContent(token, repo, path){
+    // const octokit = new Octokit({ auth: token });
 
+    // const {
+    //   data: { login },
+    // } = await octokit.rest.users.getAuthenticated();
 
+    // const ret = await octokit.rest.repos.getBranch({
+    //   owner:login,
+    //   repo:repo,
+    //   branch:'master', //TODO: user will have to set or find default 
+    // });
+    
+    // let sha = ret['data']['commit']['sha'] 
+
+    // const repos = await octokit.rest.git.getTree({
+    //   owner:login, 
+    //   repo:repo, 
+    //   tree_sha: sha, 
+    //   recursive: 1    
+    // })
+    
+    // return repos
+    const octokit = new Octokit({ auth: token });
+
+    const {
+      data: { login },
+    } = await octokit.rest.users.getAuthenticated();
+  
+    const files = await octokit.rest.repos.getContent({
+      owner: login,
+      repo: repo,
+      path: path
+    });
+    return files;
 
 }
 
-module.exports = { getRepoNames , getPRFiles, getContent };
+
+module.exports = { getRepoNames, getPRFiles, getContent, getAllContent };
+
