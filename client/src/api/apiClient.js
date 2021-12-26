@@ -47,19 +47,14 @@ export async function invalidateToken() {
   return result.success;
 }
 
-export async function getRepo(repo) {
-  const data = {
-    repo: repo,
-  };
-  return await perform("post", `/getcontent`, data);
-}
 
-export async function getAllRepo(repo, path) {
+
+export async function getRepo(repo, path) {
   const data = {
     repo: repo,
     path: path 
   };
-  return await perform("post", `/getallcontent`, data);
+  return await perform("post", `/getcontent`, data);
 }
 
 export async function getRepos() {

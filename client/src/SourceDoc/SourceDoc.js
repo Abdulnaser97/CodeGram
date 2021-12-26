@@ -65,7 +65,6 @@ function searchCodeBase() {
 
 function SourceDoc(props) {
   const state = useSelector((state) => state);
-  //console.log(state);
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
   // state for search
@@ -116,7 +115,9 @@ function SourceDoc(props) {
     setSearch(event.target.value);
   };
 
+  
   var repoContent = renderRepoContent(state.repoFiles);
+  
   return (
     <Container
       className="sourceDocContainer"
@@ -181,7 +182,8 @@ function SourceDoc(props) {
           <Typography variant="h5" textAlign="left">
             Repository Content
           </Typography>
-          <div
+          <div 
+            className='repoContainer'
             style={{
               position: "relative",
               height: "35vh",

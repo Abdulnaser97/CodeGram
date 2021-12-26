@@ -15,7 +15,6 @@ const {
   repoContentController, 
   pullRequestController, 
   repoNamesController, 
-  fullRepoController
  } = require("./Endpoints");
   
 const app = express();
@@ -45,9 +44,6 @@ app.use(
 app.post("/pr", pullRequestController());
 
 app.post("/getcontent", repoContentController());
-
-app.post("/getallcontent", fullRepoController());
-
 
 app.post("/getrepos", repoNamesController());
 

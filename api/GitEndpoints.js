@@ -36,21 +36,6 @@ async function downloadZipArchive(token, repo) {
   return files;
 }
 
-// Get Repository Content
-async function getContent(token, repo) {
-  const octokit = new Octokit({ auth: token });
-
-  const {
-    data: { login },
-  } = await octokit.rest.users.getAuthenticated();
-
-  const files = await octokit.rest.repos.getContent({
-    owner: login,
-    repo: repo,
-  });
-  return files;
-}
-
 async function getRepoNames(token){
   const octokit = new Octokit({ auth: token });
 
@@ -64,28 +49,8 @@ async function getRepoNames(token){
   return repos
 }
 
-async function getAllContent(token, repo, path){
-    // const octokit = new Octokit({ auth: token });
+async function getContent(token, repo, path){
 
-    // const {
-    //   data: { login },
-    // } = await octokit.rest.users.getAuthenticated();
-
-    // const ret = await octokit.rest.repos.getBranch({
-    //   owner:login,
-    //   repo:repo,
-    //   branch:'master', //TODO: user will have to set or find default 
-    // });
-    
-    // let sha = ret['data']['commit']['sha'] 
-
-    // const repos = await octokit.rest.git.getTree({
-    //   owner:login, 
-    //   repo:repo, 
-    //   tree_sha: sha, 
-    //   recursive: 1    
-    // })
-    
     // return repos
     const octokit = new Octokit({ auth: token });
 
@@ -103,5 +68,5 @@ async function getAllContent(token, repo, path){
 }
 
 
-module.exports = { getRepoNames, getPRFiles, getContent, getAllContent };
+module.exports = { getRepoNames, getPRFiles, getContent};
 
