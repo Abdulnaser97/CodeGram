@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import { getRepo } from "../../api/apiClient";
 import { FETCH_REPO_FILES, STORE_REPO_FILES } from "../constants";
 

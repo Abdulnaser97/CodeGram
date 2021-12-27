@@ -3,7 +3,7 @@ export async function perform(method, resource, data) {
   const accessToken = sessionStorage.getItem("access_token");
   try {
     let reqParams;
-    if (method === "post") {
+    if (method === "post" || method === "put") {
       reqParams = {
         method: method,
         credentials: "include",
@@ -55,11 +55,9 @@ export async function getRepo(repo) {
 }
 
 export async function getRepos() {
-  const data = {
-  };
+  const data = {};
   return await perform("post", `/getrepos`, data);
 }
-
 
 export async function getPR(repo, prNum) {
   const data = {
@@ -67,6 +65,17 @@ export async function getPR(repo, prNum) {
     prNum: prNum,
   };
   return await perform("post", `/pr`, data);
+}
+
+export async function save(repo, content) {
+  // const str = JSON.stringify(content); // Convert Object to a String
+  // const encodedString = Buffer.from(str, "base64"); // String to base64
+
+  const data = {
+    repo: repo,
+    content: content,
+  };
+  return await perform("put", `/save`, data);
 }
 
 export async function getUser() {

@@ -1,13 +1,6 @@
 // styling
 import "./App.css";
 import axios from "axios";
-
-// react
-import styled from "styled-components";
-import Github2 from "./Media/github.png";
-
-import Logo3 from "./Media/Logo3.svg";
-
 import React, { useCallback, useState, useRef, useEffect } from "react";
 
 // api calls
@@ -17,6 +10,7 @@ import {
   getPR,
   getUser,
   getRepos,
+  save,
 } from "./api/apiClient";
 
 // material ui components
@@ -30,11 +24,15 @@ import {
   FormControl,
   Select,
 } from "@mui/material";
-import LogoutIcon from "@mui/icons-material/Logout";
-import GitHubIcon from "@mui/icons-material/GitHub";
+
 // redux
-import ReactFlow, { removeElements, addEdge } from "react-flow-renderer";
-import { connect } from "react-redux";
+import ReactFlow, {
+  removeElements,
+  addEdge,
+  useStoreState,
+  ReactFlowProvider,
+} from "react-flow-renderer";
+import { connect, useSelector } from "react-redux";
 import { addNodeToArray, deleteNodeFromArray } from "./Redux/actions/nodes";
 import { useDispatch } from "react-redux";
 import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
@@ -44,11 +42,15 @@ import { theme } from "./Themes";
 
 // custom components
 import SourceDoc from "./SourceDoc/SourceDoc";
-import MyNavigationBar from "./components/MyNavigationBar";
 
 // pages
 import { LandingPage } from "./Landing/LandingPage";
 import ToolBar from "./components/ToolBar.js";
+import { loadDiagram } from "./Redux/actions/loadDiagram";
+import { ReactFlowWrapper } from "./Canvas";
+import NavigationBar, { LogoTopNav } from "./components/NavBar";
+import { LogoutIcon } from "@mui/icons-material/Logout";
+import GitHubIcon from "@mui/icons-material/GitHub";
 
 const getNodeId = () => `randomnode_${+new Date()}`;
 
@@ -56,17 +58,6 @@ const getNodeId = () => `randomnode_${+new Date()}`;
 function login() {
   window.open("http://localhost:8080/auth/github", "_self");
 }
-
-const LogoTopNav = styled.div`
-  position: relative;
-  left: 0;
-  padding-right: 1.25vw;
-  height: 3vw;
-  width: 3vw;
-  background-image: url(${Logo3});
-  background-size: contain;
-  background-repeat: no-repeat;
-`;
 
 var initialElements = [
   {
@@ -85,8 +76,21 @@ var initialElements = [
     },
   },
 ];
-
+/**
+ *
+ *
+ *
+ *
+ * App starts here
+ *
+ *
+ *
+ */
 function App(props) {
+  const { nodesArr, repoFiles } = useSelector((state) => {
+    return { nodesArr: state.nodes.nodesArr, repoFiles: state.repoFiles };
+  });
+
   const [user, setUser] = useState([]);
   const [content, setContent] = useState([]);
   const [repos, setRepos] = useState([]);
@@ -104,14 +108,18 @@ function App(props) {
   const yPos = useRef(0);
   const [rfInstance, setRfInstance] = useState(null);
   const [elements, setElements] = useState(initialElements);
-  const onConnect = (params) => setElements((els) => addEdge(params, els));
+  const onConnect = (params) => {
+    setElements((els) => {
+      addEdge(params, els);
+      console.log("els >>>>>>>>>>>>>>>>>>>>>>>>>>", els);
+      console.log("params >>>>>>>>>>>>>>>>>>>>>>>>>>", params);
+    });
+  };
   const onElementClick = (event, element) => {
     console.log("click", element);
     setSelectedEL(element);
   };
 
-  // redux
-  const nodesArr = props.nodes.nodesArr;
   const dispatch = useDispatch();
 
   // add node function
@@ -152,6 +160,14 @@ function App(props) {
     [setElements, nodeName, dispatch, selectedFile]
   );
 
+  // Refresh Diagram when nodesArr in store changes
+  useEffect(() => {
+    if (nodesArr) {
+      setElements(nodesArr);
+    }
+  }, [nodesArr]);
+
+  // Delete Node
   const onElementsRemove = (elementsToRemove) => {
     if (elementsToRemove.length == 0) {
       console.log("nothing selected");
@@ -160,39 +176,28 @@ function App(props) {
     dispatch(deleteNodeFromArray(elementsToRemove[0]));
   };
 
-  // get all repos in users account
+  // Get all repos in users account
   const getRepoList = async () => {
     const userRepos = await getRepos();
     setRepos(userRepos);
   };
 
-  // set new repo from drop down menu
+  // Set new repo from drop down menu
   const handleRepoChange = (event) => {
     setRepo(event.target.value);
     setElements(initialElements);
     dispatch(getRepoFiles(event.target.value));
   };
 
+  // Load saved diagram when new repo is selected
+  useEffect(() => {
+    if (repo && !repoFiles.isFetchingFiles && repoFiles.repoFiles[0]) {
+      dispatch(loadDiagram(repoFiles.repoFiles[0]));
+    }
+  }, [repo, dispatch, repoFiles]);
+
   const handleName = (event, newValue) => {
     setNodeName(event.target.value);
-  };
-
-  const renderRepos = () => {
-    var repoNames = [];
-    var repoChoiceItems = [];
-
-    if (repos.length !== 0 && repos.data !== undefined) {
-      repoChoiceItems.push(<MenuItem value={""}>Repository</MenuItem>);
-      for (var i = 0; i < repos.data.length; i++) {
-        var name = repos.data[i].name;
-        repoNames.push(name);
-        repoChoiceItems.push(<MenuItem value={name}>{name}</MenuItem>);
-      }
-    } else {
-      return <MenuItem value="">Login to see repositories!</MenuItem>;
-    }
-
-    return repoChoiceItems;
   };
 
   const getPRContent = async () => {
@@ -200,18 +205,13 @@ function App(props) {
     setContent(PRContent);
   };
 
-  const logout = async () => {
-    await invalidateToken();
-    sessionStorage.clear();
-    window.location.assign("/");
-    setLoggedIn(false);
-  };
-
   // Retrieves user details once authenticated
   useEffect(() => {
     getUser().then((userDetails) => {
-      setUser(userDetails.user);
-      setLoggedIn(true);
+      if (userDetails) {
+        setUser(userDetails.user);
+        setLoggedIn(true);
+      }
     });
   }, []);
 
@@ -256,11 +256,54 @@ function App(props) {
       }
     });
   };
+
+  const renderRepos = () => {
+    var repoNames = [];
+    var repoChoiceItems = [];
+
+    if (repos.length !== 0 && repos.data !== undefined) {
+      repoChoiceItems.push(<MenuItem value={""}>Repository</MenuItem>);
+      for (var i = 0; i < repos.data.length; i++) {
+        var name = repos.data[i].name;
+        repoNames.push(name);
+        repoChoiceItems.push(<MenuItem value={name}>{name}</MenuItem>);
+      }
+    } else {
+      return <MenuItem value="">Login to see repositories!</MenuItem>;
+    }
+
+    return repoChoiceItems;
+  };
+
+  // Save Diagram: Push redux store content to github repo
+  const saveChanges = async () => {
+    const saveResult = await save(repo, nodesArr);
+    console.log(saveResult);
+  };
+
+  const logout = async () => {
+    await invalidateToken();
+    sessionStorage.clear();
+    window.location.assign("/");
+    props.setLoggedIn(false);
+  };
+
   if (loggedIn) {
     return (
       <ThemeProvider theme={theme}>
         <div className="App">
-          {/* move app bar to its own navigation component  */}
+          {/* <NavigationBar
+            functions={{
+              handleRepoChange: handleRepoChange,
+              setLoggedIn: setLoggedIn,
+            }}
+            data={{
+              repo: repo,
+              repos: repos,
+              nodesArr: nodesArr,
+            }}
+          /> */}
+
           <AppBar
             elevation={0}
             position="sticky"
@@ -310,7 +353,10 @@ function App(props) {
               </Box>
 
               <Box mx={1} sx={{ "box-shadow": 0 }}>
-                <div className="loginButton github">
+                <div
+                  className="loginButton github"
+                  onClick={() => saveChanges()}
+                >
                   <Typography mx={2} fontWeight="Medium" color="primary">
                     {" "}
                     Push{" "}
@@ -326,7 +372,6 @@ function App(props) {
               </Box>
             </Toolbar>
           </AppBar>
-          {/* everything from here down can be in a cashboard component */}
           <h1
             className="welcomeMessage"
             style={{
@@ -339,6 +384,14 @@ function App(props) {
           </h1>
           <ToolBar />
           <Container className="canvasContainer">
+            {/* <ReactFlowWrapper
+              elements={elements}
+              onElementsRemove={onElementsRemove}
+              onConnect={onConnect}
+              onLoad={setRfInstance}
+              onElementClick={onElementClick}
+            ></ReactFlowWrapper> */}
+
             <div className="canvas">
               <ReactFlow
                 elements={elements}

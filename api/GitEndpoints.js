@@ -1,4 +1,5 @@
 const { Octokit } = require("octokit");
+const { Base64 } = require("js-base64");
 
 // Get PR info
 async function getPRFiles(token, repo, pullNumber) {
@@ -51,30 +52,49 @@ async function getContent(token, repo) {
   return files;
 }
 
-async function getRepoNames(token){
+async function getRepoNames(token) {
   const octokit = new Octokit({ auth: token });
 
   const {
     data: { login },
   } = await octokit.rest.users.getAuthenticated();
 
-  const repos = await octokit.request('GET /user/repos')
-  return repos
-  // octokit
-  // .paginate(
-  //   "'GET /user/repos'",
-  //   { owner: login},
-  //   (response) => response.data.map((repo) =>repo.name)
-  // )
-  // .then((repoNames) => {
-  //   // issueTitles is now an array with the titles only
-  //   console.log(repoNames)
-  //   return repoNames;
-
-  // });
-
-
-
+  const repos = await octokit.request("GET /user/repos");
+  return repos;
 }
 
-module.exports = { getRepoNames , getPRFiles, getContent };
+//Get Repository Content
+async function saveFileToRepo(token, repo, content) {
+  const octokit = new Octokit({ auth: token });
+
+  const {
+    data: { login },
+  } = await octokit.rest.users.getAuthenticated();
+
+  const contentEncoded = Base64.encode(JSON.stringify(content));
+
+  let params = {
+    owner: login,
+    repo: repo,
+    path: "Diagram1.CodeGram",
+    message: "CodeGram: Save",
+    content: contentEncoded,
+  };
+
+  const files = await octokit.rest.repos.getContent({
+    owner: login,
+    repo: repo,
+  });
+
+  files.data.forEach((file) => {
+    if (file.name.includes(".CodeGram")) {
+      params["sha"] = file.sha;
+    }
+  });
+
+  const result = await octokit.rest.repos.createOrUpdateFileContents(params);
+
+  return result;
+}
+
+module.exports = { getRepoNames, getPRFiles, getContent, saveFileToRepo };
