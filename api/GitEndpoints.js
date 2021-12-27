@@ -36,21 +36,6 @@ async function downloadZipArchive(token, repo) {
   return files;
 }
 
-// Get Repository Content
-async function getContent(token, repo) {
-  const octokit = new Octokit({ auth: token });
-
-  const {
-    data: { login },
-  } = await octokit.rest.users.getAuthenticated();
-
-  const files = await octokit.rest.repos.getContent({
-    owner: login,
-    repo: repo,
-  });
-  return files;
-}
-
 async function getRepoNames(token){
   const octokit = new Octokit({ auth: token });
 
@@ -58,23 +43,30 @@ async function getRepoNames(token){
     data: { login },
   } = await octokit.rest.users.getAuthenticated();
 
-  const repos = await octokit.request('GET /user/repos')
+  const repos = await octokit.rest.repos.listForUser({
+    username: login
+  });
   return repos
-  // octokit
-  // .paginate(
-  //   "'GET /user/repos'",
-  //   { owner: login},
-  //   (response) => response.data.map((repo) =>repo.name)
-  // )
-  // .then((repoNames) => {
-  //   // issueTitles is now an array with the titles only
-  //   console.log(repoNames)
-  //   return repoNames;
+}
 
-  // });
+async function getContent(token, repo, path){
 
+    // return repos
+    const octokit = new Octokit({ auth: token });
 
+    const {
+      data: { login },
+    } = await octokit.rest.users.getAuthenticated();
+  
+    const files = await octokit.rest.repos.getContent({
+      owner: login,
+      repo: repo,
+      path: path
+    });
+    return files;
 
 }
 
-module.exports = { getRepoNames , getPRFiles, getContent };
+
+module.exports = { getRepoNames, getPRFiles, getContent};
+
