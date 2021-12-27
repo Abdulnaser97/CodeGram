@@ -11,8 +11,12 @@ const passport = require("passport");
 const passportSetup = require("./passport");
 const authRoute = require("./routes/auth");
 
-const { repoContentController, pullRequestController, repoNamesController } = require("./Endpoints");
-
+const { 
+  repoContentController, 
+  pullRequestController, 
+  repoNamesController, 
+ } = require("./Endpoints");
+  
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
