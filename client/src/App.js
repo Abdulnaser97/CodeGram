@@ -132,9 +132,9 @@ function App(props) {
           documentation: ["url1", "url2"],
           description: "",
           url: file.url !== undefined ? file.url : "",
-          type: file.nodeType !== undefined ? file.nodeType: "default",
+          type: file.nodeType !== undefined ? file.nodeType: "squareContainer",
         },
-        type: file.nodeType !== undefined ? file.nodeType: "default",
+        type: file.nodeType !== undefined ? file.nodeType: "squareContainer",
         position: { x: 500, y: 400 },
         animated: true,
       };

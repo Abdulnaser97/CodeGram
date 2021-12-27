@@ -83,8 +83,8 @@ const CustomNodeComponent = ({ data }) => {
         {/* TODO: Create an X button to remove node */}
         {/* <button onClick={data.onElementsRemove}>X</button> */}
         <div className="node-label">{data.label}</div>
-        <Handle className="handle target" type="target" position="bottom" style={targetHandleStyle} />
-        <Handle className="handle source" type="source" position="left" style={sourceHandleStyle} />
+        <Handle className="handle target" type="source" position="bottom" style={sourceHandleStyle} />
+        <Handle className="handle source" type="target" position="left" style={targetHandleStyle} />
         <Handle className="handle source" type="source" position="right" style={sourceHandleStyle} />
       </div>
   );
@@ -93,15 +93,15 @@ const CustomNodeComponent = ({ data }) => {
 // dashed border node
 const SquareContainerNodeComponent = ({ data }) => {
   return (
-    <div className="square-container">
-      <Handle className="handle target" type="target" position="top" style={targetHandleStyle} />
-      {/* TODO: Create an X button to remove node */}
-      {/* <button onClick={data.onElementsRemove}>X</button> */}
-      <div className="node-label">{data.label}</div>
-      <Handle className="handle target" type="target" position="bottom" style={targetHandleStyle} />
-      <Handle className="handle source" type="source" position="left" style={sourceHandleStyle} />
-      <Handle className="handle source" type="source" position="right" style={sourceHandleStyle} />
-    </div>
+    <>
+      <div className="node-label corner">{data.label}</div>
+      <div className="square-container">
+        {/* <Handle className="handle target" type="target" position="top" style={{...targetHandleStyle, top: "40%"}} />
+        <Handle className="handle target" type="source" position="bottom" style={sourceHandleStyle} />
+        <Handle className="handle source" type="target" position="left" style={{...targetHandleStyle, top: "70%"}} />
+        <Handle className="handle source" type="source" position="right" style={{...sourceHandleStyle, top: "70%"}} /> */}
+      </div>
+    </>
   );
 };
 
@@ -112,8 +112,8 @@ const CylinderNode = ({ data }) => {
       {/* TODO: Create an X button to remove node */}
       {/* <button onClick={data.onElementsRemove}>X</button> */}
       <div className="node-label">{data.label}</div>
-      <Handle className="handle target" type="target" position="bottom" style={targetHandleStyle} />
-      <Handle className="handle source" type="source" position="left" style={sourceHandleStyle} />
+      <Handle className="handle target" type="source" position="bottom" style={sourceHandleStyle} />
+      <Handle className="handle source" type="target" position="left" style={targetHandleStyle} />
       <Handle className="handle source" type="source" position="right" style={sourceHandleStyle} />
     </div>
   );

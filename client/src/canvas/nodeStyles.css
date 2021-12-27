@@ -13,13 +13,19 @@
 	background-color: none;
 }
 
+.node-label.corner {
+	text-align: left;
+	margin-left: 0px;
+	color: #FF6666;
+}
+
 .cylinder {
-	position: relative;
-	margin: 0 auto;
-	width: 100px;
-	height: 150px;
-	border-radius: 50px/25px;
-	background-color: rgba(160, 160, 160, 0.5);
+	position: absolute;
+    margin: 0 auto;
+    width: 100px;
+    height: 150px;
+    border-radius: 50px/25px;
+    background-color: rgba(160, 160, 160, 0.5);
 }
 
 .cylinder .node-label {
