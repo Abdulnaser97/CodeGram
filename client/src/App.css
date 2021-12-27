@@ -22,7 +22,7 @@
   margin: auto 0;
 }
 
-.loginButton {
+.navbar-button {
   padding: 8px 8px;
   color: white;
   display: flex;
@@ -35,7 +35,7 @@
   transition: ease-in 0.1s;
 }
 
-.loginButton:hover {
+.navbar-button:hover {
   box-shadow: rgba(0, 0, 0, 0.301) 0px 3px 7px;
 }
 
@@ -206,8 +206,8 @@ pre {
   font-size: 10px;
 }
 
-.repoContainer{
-  display:flex; 
+.repoContainer {
+  display: flex;
   flex-direction: column;
   align-items: center;
 }

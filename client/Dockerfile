@@ -2,7 +2,7 @@
 FROM node:16
 
 # Expose ports
-EXPOSE 3000
+EXPOSE 3001
 EXPOSE 35729
 
 # Set working directory

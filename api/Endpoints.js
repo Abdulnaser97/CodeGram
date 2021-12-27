@@ -1,9 +1,9 @@
-const { getPRFiles,
-        getContent, 
-        getRepoNames, 
-     } = require("./GitEndpoints");
-
-
+const {
+  getPRFiles,
+  getContent,
+  getRepoNames,
+  saveFileToRepo,
+} = require("./GitEndpoints");
 
 const pullRequestController = () => {
   return async (req, res) => {
@@ -51,13 +51,9 @@ const repoContentController = () => {
       if (authorization) {
         // Call github API here
         let body = req.body;
-        
-        const resp = await getContent( 
-          authorization, 
-          body.repo, 
-          body.path
-        );
-                                    
+
+        const resp = await getContent(authorization, body.repo, body.path);
+
         console.log(`fullRepoController: Success`);
         res.status(200).json(resp);
       }
@@ -68,8 +64,33 @@ const repoContentController = () => {
   };
 };
 
+const saveCodeGramFileController = () => {
+  return async (req, res) => {
+    try {
+      let { authorization } = req.headers;
+      let body = req.body;
+      console.log(body);
+      // Check if access token exists in request
+      if (authorization) {
+        // Call github API here
+        const resp = await saveFileToRepo(
+          authorization,
+          body.repo,
+          body.content
+        );
+        console.log(`saveCodeGramFileController: Success`);
+        res.status(200).json(resp);
+      }
+    } catch (error) {
+      console.log(`saveCodeGramFileController: Error`);
+      console.log(error);
+    }
+  };
+};
+
 module.exports = {
   repoContentController,
   pullRequestController,
-  repoNamesController, 
+  repoNamesController,
+  saveCodeGramFileController,
 };

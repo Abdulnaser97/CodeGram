@@ -41,7 +41,7 @@ function MyNavigationBar(props) {
         </Box>
 
         <Box mx={1}>
-          <div className="loginButton github">
+          <div className="navbar-button github">
             <Typography> Push </Typography>
             <img src={Github} alt="" className="icon" />
           </div>
@@ -49,7 +49,7 @@ function MyNavigationBar(props) {
 
         <Box mx={1}>
           <div
-            className="loginButton github"
+            className="navbar-button github"
             onClick={() => props.functions.logout()}
           >
             <LogoutIcon> </LogoutIcon>

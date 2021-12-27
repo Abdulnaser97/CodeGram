@@ -10,6 +10,8 @@ import Logo3 from "./Media/Logo3.svg";
 
 import React, { useCallback, useState, useRef, useEffect } from "react";
 
+import { ReactFlowWrapper } from "./components/Canvas";
+
 // api calls
 import {
   invalidateToken,
@@ -17,8 +19,11 @@ import {
   getPR,
   getUser,
   getRepos,
-  getAllRepo
+  getAllRepo,
+  save,
 } from "./api/apiClient";
+
+import { connect, useSelector } from "react-redux";
 
 // material ui components
 import {
@@ -35,13 +40,13 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import GitHubIcon from "@mui/icons-material/GitHub";
 // redux
 import ReactFlow, { removeElements, addEdge } from "react-flow-renderer";
-import { connect } from "react-redux";
 import { addNodeToArray, deleteNodeFromArray } from "./Redux/actions/nodes";
 import { useDispatch } from "react-redux";
 import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
 import { getRepoFiles } from "./Redux/actions/repoFiles";
 import { ThemeProvider } from "@material-ui/core";
 import { theme } from "./Themes";
+import { loadDiagram } from "./Redux/actions/loadDiagram";
 
 // custom components
 import SourceDoc from "./SourceDoc/SourceDoc";
@@ -86,8 +91,21 @@ var initialElements = [
     },
   },
 ];
-
+/**
+ *
+ *
+ *
+ *
+ * App starts here
+ *
+ *
+ *
+ */
 function App(props) {
+  const { nodesArr, repoFiles } = useSelector((state) => {
+    return { nodesArr: state.nodes.nodesArr, repoFiles: state.repoFiles };
+  });
+
   const [user, setUser] = useState([]);
   const [content, setContent] = useState([]);
   const [repos, setRepos] = useState([]);
@@ -112,7 +130,6 @@ function App(props) {
   };
 
   // redux
-  const nodesArr = props.nodes.nodesArr;
   const dispatch = useDispatch();
 
   // add node function
@@ -153,6 +170,7 @@ function App(props) {
     [setElements, nodeName, dispatch, selectedFile]
   );
 
+  // Delete Node
   const onElementsRemove = (elementsToRemove) => {
     if (elementsToRemove.length == 0) {
       console.log("nothing selected");
@@ -208,6 +226,45 @@ function App(props) {
     setLoggedIn(false);
   };
 
+  const printNodesArr = () => {
+    console.log(`nodesArr:`);
+    console.log(nodesArr);
+    const jsonNodes = JSON.stringify(nodesArr);
+    console.log("JSON String:");
+    console.log(jsonNodes);
+
+    const fs = require("browserify-fs");
+    fs.writeFile("newNodes.txt", jsonNodes, { flag: "w+" }, (err) => {
+      if (err) {
+        console.log("Error writing file", err);
+      } else {
+        console.log("Successfully wrote file");
+      }
+    });
+  };
+
+  // Save Diagram: Push redux store content to github repo
+  const saveChanges = async () => {
+    const saveResult = await save(repo, nodesArr);
+    console.log(saveResult);
+  };
+
+  /** useEffect Hools ************************************************* useEffect Hools *****************************************************************/
+
+  // Refresh Diagram when nodesArr in store changes
+  useEffect(() => {
+    if (nodesArr) {
+      setElements(nodesArr);
+    }
+  }, [nodesArr]);
+
+  // Load saved diagram when new repo is selected
+  useEffect(() => {
+    if (repo && !repoFiles.isFetchingFiles && repoFiles.repoFiles[0]) {
+      dispatch(loadDiagram(repoFiles.repoFiles[0]));
+    }
+  }, [repo, dispatch, repoFiles]);
+
   // Retrieves user details once authenticated
   useEffect(() => {
     getUser().then((userDetails) => {
@@ -241,22 +298,6 @@ function App(props) {
     }
   }, [selectedEL]);
 
-  const printNodesArr = () => {
-    console.log(`nodesArr:`);
-    console.log(nodesArr);
-    const jsonNodes = JSON.stringify(nodesArr);
-    console.log("JSON String:");
-    console.log(jsonNodes);
-
-    const fs = require("browserify-fs");
-    fs.writeFile("newNodes.txt", jsonNodes, { flag: "w+" }, (err) => {
-      if (err) {
-        console.log("Error writing file", err);
-      } else {
-        console.log("Successfully wrote file");
-      }
-    });
-  };
   if (loggedIn) {
     return (
       <ThemeProvider theme={theme}>
@@ -311,7 +352,10 @@ function App(props) {
               </Box>
 
               <Box mx={1} sx={{ "box-shadow": 0 }}>
-                <div className="loginButton github">
+                <div
+                  className="navbar-button github"
+                  onClick={() => saveChanges()}
+                >
                   <Typography mx={2} fontWeight="Medium" color="primary">
                     {" "}
                     Push{" "}
@@ -321,7 +365,7 @@ function App(props) {
               </Box>
 
               <Box sx={{ "box-shadow": 0 }}>
-                <div className="loginButton github" onClick={() => logout()}>
+                <div className="navbar-button github" onClick={() => logout()}>
                   <LogoutIcon color="primary"> </LogoutIcon>
                 </div>
               </Box>
@@ -340,15 +384,13 @@ function App(props) {
           </h1>
           <ToolBar />
           <Container className="canvasContainer">
-            <div className="canvas">
-              <ReactFlow
-                elements={elements}
-                onElementsRemove={onElementsRemove}
-                onConnect={onConnect}
-                onLoad={setRfInstance}
-                onElementClick={onElementClick}
-              />
-            </div>
+            <ReactFlowWrapper
+              elements={elements}
+              onElementsRemove={onElementsRemove}
+              onConnect={onConnect}
+              onLoad={setRfInstance}
+              onElementClick={onElementClick}
+            ></ReactFlowWrapper>
           </Container>
           <SourceDoc
             functions={{

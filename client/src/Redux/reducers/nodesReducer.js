@@ -2,6 +2,7 @@ import {
   ADD_NODE_TO_ARRAY,
   SAVE_NODES_TO_FILE,
   DELETE_NODES_FROM_ARRAY,
+  LOAD_DIAGRAM_TO_STORE,
 } from "../constants";
 
 const initialState = {
@@ -19,6 +20,11 @@ const nodesReducer = (state = initialState, action) => {
       return {
         ...state,
         nodesArr: state.nodesArr.filter((node) => action.nodeId !== node.id),
+      };
+    case LOAD_DIAGRAM_TO_STORE:
+      return {
+        ...state,
+        nodesArr: action.payload,
       };
     default:
       return state;
