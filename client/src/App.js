@@ -100,7 +100,7 @@ function App(props) {
   // Selected node
   const [selectedEL, setSelectedEL] = useState(initialElements[0]);
   // state for selected file
-  const [selectedFile, setSelectedFile] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
   // react flow
   const yPos = useRef(0);
   const [rfInstance, setRfInstance] = useState(null);
@@ -169,6 +169,7 @@ function App(props) {
 
   // set new repo from drop down menu
   const handleRepoChange = (event) => {
+    setSelectedFile(null)
     setRepo(event.target.value);
     setElements(initialElements);
     dispatch(getRepoFiles(event.target.value));

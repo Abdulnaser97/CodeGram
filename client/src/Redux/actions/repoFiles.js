@@ -7,15 +7,19 @@ async function recursiveRepoBuilder(repoName, subRepo){
   for (const file of subRepo){
     if (file.type === "dir"){
       const contents = await getRepo(repoName,file.path);
-      var subFiles = recursiveRepoBuilder(repoName, contents.data)
+      var subFiles =  await recursiveRepoBuilder(repoName, contents.data)
       subProcessedFiles.push({ 
         fileName: file.name, 
-        contents: subFiles, 
+        contents: subFiles,
+        type: file.type,
+        path: file.path,   
         url: file.download_url 
       })
     } else {
       subProcessedFiles.push({ 
-        fileName: file.name, 
+        fileName: file.name,  
+        type: file.type, 
+        path: file.path, 
         url: file.download_url 
       })
     }

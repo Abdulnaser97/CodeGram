@@ -15,7 +15,7 @@ import {
 import PropTypes from "prop-types";
 
 // react
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // redux
 import { useSelector } from "react-redux";
@@ -65,30 +65,42 @@ function searchCodeBase() {
 
 function SourceDoc(props) {
   const state = useSelector((state) => state);
+  console.log(state)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
   // state for search
   const [search, setSearch] = useState("search");
 
-  function renderRepoContent(repoData) {
-    if (repoData.repoFiles[0] !== undefined) {
+  const [dir, setDir] = useState("")
+  const [sourceFiles, setSourceFiles] = useState(null)
+  const [path, setPath] = useState(null)
+  
+  useEffect(() => {
+    if(props.data.selectedFile === null) {
+      setDir(state.repoFiles.repoFiles[0])
+    }
+
+    if (dir !== undefined && dir !== null) {
       var repoList = [];
-      const files = repoData.repoFiles[0];
+      const files = dir;
+
       for (var i = 0; i < files.length; i++) {
+     
         repoList.push(
           <SourceDocFile
             addNode={props.functions.addNode}
             setSelectedFile={props.functions.setSelectedFile}
             file={files[i]}
             selectedFile={props.data.selectedFile}
+            setDir={setDir}
+            setPath={setPath}
           />
         );
       }
-      return repoList;
+      setSourceFiles(repoList);
     }
 
-    return null;
-  }
+  }, [dir, state]);
 
   function renderFiles() {
     var files = [];
@@ -115,9 +127,7 @@ function SourceDoc(props) {
     setSearch(event.target.value);
   };
 
-  
-  var repoContent = renderRepoContent(state.repoFiles);
-  
+
   return (
     <Container
       className="sourceDocContainer"
@@ -180,7 +190,7 @@ function SourceDoc(props) {
 
         <Box my={3}>
           <Typography variant="h5" textAlign="left">
-            Repository Content
+           {path ? '/' + path : 'Root'} 
           </Typography>
           <div 
             className='repoContainer'
@@ -190,7 +200,7 @@ function SourceDoc(props) {
               "overflow-y": "scroll",
             }}
           >
-            {repoContent}
+            {sourceFiles}
           </div>
         </Box>
 
