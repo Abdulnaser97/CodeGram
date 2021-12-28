@@ -3,18 +3,19 @@ import {
   combineReducers,
   bindActionCreators,
   applyMiddleware,
-  compose,
 } from "redux";
-import nodesReducer from "./reducers/nodesReducer";
+import { RFStateReducer, nodesReducer } from "./reducers/nodesReducer";
 import devToolsEnhancer from "remote-redux-devtools";
 import { addNodeToArray, deleteNodeFromArray } from "./actions/nodes";
 import { fetchRepoFiles, storeRepoFiles } from "./actions/repoFiles";
 import thunk from "redux-thunk";
 import repoReducer from "./reducers/repoReducer";
+import { loadDiagramToStore } from "./actions/loadDiagram";
 
 const rootReducer = combineReducers({
   nodes: nodesReducer,
   repoFiles: repoReducer,
+  RFState: RFStateReducer,
 });
 
 const enhancers = [devToolsEnhancer({ realtime: true })];
@@ -30,11 +31,13 @@ const ActionCreators = Object.assign(
   addNodeToArray,
   deleteNodeFromArray,
   fetchRepoFiles,
-  storeRepoFiles
+  storeRepoFiles,
+  loadDiagramToStore
 );
 export const mapStateToProps = (state) => ({
   nodes: state.nodes,
   repoFiles: state.repoFiles,
+  RFState: state.RFState,
 });
 export const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators(ActionCreators, dispatch),

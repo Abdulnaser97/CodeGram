@@ -3,7 +3,7 @@ export async function perform(method, resource, data) {
   const accessToken = sessionStorage.getItem("access_token");
   try {
     let reqParams;
-    if (method === "post") {
+    if (method === "post" || method === "put") {
       reqParams = {
         method: method,
         credentials: "include",
@@ -47,22 +47,18 @@ export async function invalidateToken() {
   return result.success;
 }
 
-
-
 export async function getRepo(repo, path) {
   const data = {
     repo: repo,
-    path: path 
+    path: path,
   };
   return await perform("post", `/getcontent`, data);
 }
 
 export async function getRepos() {
-  const data = {
-  };  
+  const data = {};
   return await perform("post", `/getrepos`, data);
 }
-
 
 export async function getPR(repo, prNum) {
   const data = {
@@ -74,4 +70,12 @@ export async function getPR(repo, prNum) {
 
 export async function getUser() {
   return await perform("get", `/auth/login/success`);
+}
+
+export async function save(repo, content) {
+  const data = {
+    repo: repo,
+    content: content,
+  };
+  return await perform("put", `/save`, data);
 }

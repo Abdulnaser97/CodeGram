@@ -11,12 +11,13 @@ const passport = require("passport");
 const passportSetup = require("./passport");
 const authRoute = require("./routes/auth");
 
-const { 
-  repoContentController, 
-  pullRequestController, 
-  repoNamesController, 
- } = require("./Endpoints");
-  
+const {
+  repoContentController,
+  pullRequestController,
+  repoNamesController,
+  saveCodeGramFileController,
+} = require("./Endpoints");
+
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -32,7 +33,7 @@ app.use(passport.session());
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "http://localhost:3001",
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   })
@@ -46,6 +47,8 @@ app.post("/pr", pullRequestController());
 app.post("/getcontent", repoContentController());
 
 app.post("/getrepos", repoNamesController());
+
+app.put("/save", saveCodeGramFileController());
 
 // /auth/github to authenticate the user using passport strategy
 app.use("/auth", authRoute);
