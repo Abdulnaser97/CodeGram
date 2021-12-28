@@ -78,8 +78,13 @@ function SourceDoc(props) {
   useEffect(() => {
     if(props.data.selectedFile === null) {
       setDir(state.repoFiles.repoFiles[0])
+    } else {
+      if (props.data.selectedFile.contents){
+        setDir(props.data.selectedFile.contents)
+        setPath(props.data.selectedFile.path)
+      }
     }
-
+   // setPath(path => [...path, props.data.selectedFile.fileName])
     if (dir !== undefined && dir !== null) {
       var repoList = [];
       const files = dir;
@@ -97,10 +102,23 @@ function SourceDoc(props) {
           />
         );
       }
+      
+      
       setSourceFiles(repoList);
     }
 
-  }, [dir, state]);
+  }, [dir, state, props.data.selectedFile]);
+
+
+  function renderPath(){
+    var renderedPath = []
+    for (const f of path){
+      renderedPath.push(
+        <p> </p> 
+      )
+    }
+  }
+
 
   function renderFiles() {
     var files = [];
@@ -189,7 +207,8 @@ function SourceDoc(props) {
         </Button>
 
         <Box my={3}>
-          <Typography variant="h5" textAlign="left">
+          <Typography variant="h6" textAlign="left" my={2}>
+           {/* {path.length ? '/' + path[-1].contents : 'Root'}  */}
            {path ? '/' + path : 'Root'} 
           </Typography>
           <div 
