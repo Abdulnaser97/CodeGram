@@ -1,7 +1,7 @@
 import "./App.css";
 import styled from "styled-components";
 import Logo3 from "./Media/Logo3.svg";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useReactFlowWrapper } from "./components/Canvas";
 import {
   invalidateToken,
@@ -77,6 +77,7 @@ function App() {
     onElementsRemove,
     initialElements,
     selectedEL,
+    rfInstance,
   } = useReactFlowWrapper({ dispatch });
   // get all repos in users account
   const getRepoList = async () => {
@@ -143,19 +144,15 @@ function App() {
   };
 
   // Save Diagram: Push redux store content to github repo
-  const saveChanges = async () => {
-    const saveResult = await save(repo, nodesArr);
-    console.log(saveResult);
-  };
+  const onSave = useCallback(async () => {
+    if (rfInstance) {
+      const flow = rfInstance.toObject();
+      const result = await save(repo, flow);
+      console.log(result);
+    }
+  }, [repo, rfInstance]);
 
   /** useEffect Hools ************************************************* useEffect Hools *****************************************************************/
-
-  // Refresh Diagram when nodesArr in store changes
-  useEffect(() => {
-    if (nodesArr) {
-      setElements(nodesArr);
-    }
-  }, [nodesArr]);
 
   // Load saved diagram when new repo is selected
   useEffect(() => {
@@ -224,10 +221,7 @@ function App() {
               </Box>
 
               <Box mx={1} sx={{ "box-shadow": 0 }}>
-                <div
-                  className="navbar-button github"
-                  onClick={() => saveChanges()}
-                >
+                <div className="navbar-button github" onClick={() => onSave()}>
                   <Typography mx={2} fontWeight="Medium" color="primary">
                     Push
                   </Typography>

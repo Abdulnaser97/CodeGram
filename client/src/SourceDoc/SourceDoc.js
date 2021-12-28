@@ -128,7 +128,6 @@ function SourceDoc(props) {
         .get(props.data.selectedEL.data.url)
         .then(function (response) {
           // handle success
-          console.log(response);
           setCurCode(response.data);
         })
         .catch(function (error) {

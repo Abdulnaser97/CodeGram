@@ -1,10 +1,7 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 
-import ReactFlow, {
-  addEdge,
-  ReactFlowProvider,
-  useStoreState,
-} from "react-flow-renderer";
+import ReactFlow, { addEdge, useZoomPanHelper } from "react-flow-renderer";
+import { useSelector } from "react-redux";
 import { addNodeToArray, deleteNodeFromArray } from "../Redux/actions/nodes";
 
 var initialElements = [
@@ -27,7 +24,15 @@ var initialElements = [
 
 const getNodeId = () => `randomnode_${+new Date()}`;
 
+/**
+ *
+ * Component Starts Here
+ *
+ **/
 export function useReactFlowWrapper({ dispatch }) {
+  const { RFState } = useSelector((state) => {
+    return { RFState: state.RFState };
+  });
   const [elements, setElements] = useState(initialElements);
   const [nodeName, setNodeName] = useState("nodeName");
 
@@ -45,7 +50,7 @@ export function useReactFlowWrapper({ dispatch }) {
 
   // Delete Node
   const onElementsRemove = (elementsToRemove) => {
-    if (elementsToRemove.length == 0) {
+    if (elementsToRemove.length === 0) {
       console.log("nothing selected");
       return;
     }
@@ -90,6 +95,13 @@ export function useReactFlowWrapper({ dispatch }) {
     [setElements, nodeName, dispatch]
   );
 
+  // Refresh Diagram when nodesArr in store changes
+  // useEffect(() => {
+  //   if (repo && RFState) {
+  //     setElements((els) => (els = RFState));
+  //   }
+  // }, [RFState, repo]);
+
   return {
     render: (
       <div className="canvas">
@@ -100,7 +112,7 @@ export function useReactFlowWrapper({ dispatch }) {
           onLoad={setRfInstance}
           onElementClick={onElementClick}
         >
-          <ReactFlowStoreInterface />
+          <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>
       </div>
     ),
@@ -110,73 +122,22 @@ export function useReactFlowWrapper({ dispatch }) {
     onElementsRemove: onElementsRemove,
     initialElements: initialElements,
     selectedEL: selectedEL,
+    rfInstance: rfInstance,
   };
 }
 
-export function ReactFlowStoreInterface() {
-  const reactFlowState = useStoreState((state) => state);
-  console.log(reactFlowState);
+export function ReactFlowStoreInterface({ RFState, setElements }) {
+  // Uncomment below to view reactFlowState
+  //const reactFlowState = useStoreState((state) => state);
+  const { transform } = useZoomPanHelper();
+
+  useEffect(() => {
+    if (RFState && RFState.RFState.position) {
+      const [x = 0, y = 0] = RFState.RFState.position;
+      setElements(RFState.RFState.elements || []);
+      transform({ x, y, zoom: RFState.RFState.zoom || 0 });
+    }
+  }, [RFState, setElements, transform]);
 
   return null;
 }
-
-// const flowKey = 'example-flow';
-
-// const getNodeId = () => `randomnode_${+new Date()}`;
-
-// const SaveRestore = () => {
-//   const [rfInstance, setRfInstance] = useState(null);
-//   const [elements, setElements] = useState(null);
-
-//   const onSave = useCallback(() => {
-//     if (rfInstance) {
-//       const flow = rfInstance.toObject();
-//       localforage.setItem(flowKey, flow);
-//     }
-//   }, [rfInstance]);
-
-//   const onRestore = useCallback(() => {
-//     const restoreFlow = async () => {
-//       const flow = await localforage.getItem(flowKey);
-
-//       if (flow) {
-//         const [x = 0, y = 0] = flow.position;
-//         setElements(flow.elements || []);
-//         transform({ x, y, zoom: flow.zoom || 0 });
-//       }
-//     };
-
-//     restoreFlow();
-//   }, [setElements, transform]);
-
-//   const onAdd = useCallback(() => {
-//     const newNode = {
-//       id: getNodeId(),
-//       data: { label: 'Added node' },
-//       position: {
-//         x: Math.random() * window.innerWidth - 100,
-//         y: Math.random() * window.innerHeight,
-//       },
-//     };
-//     setElements((els) => els.concat(newNode));
-//   }, [setElements]);
-
-//   return (
-//     <ReactFlowProvider>
-//       <ReactFlow
-//         elements={elements}
-//         onElementsRemove={onElementsRemove}
-//         onConnect={onConnect}
-//         onLoad={setRfInstance}
-//       >
-//         <div className="save__controls">
-//           <button onClick={onSave}>save</button>
-//           <button onClick={onRestore}>restore</button>
-//           <button onClick={onAdd}>add node</button>
-//         </div>
-//       </ReactFlow>
-//     </ReactFlowProvider>
-//   );
-// };
-
-// export default SaveRestore;

@@ -9,7 +9,7 @@ const initialState = {
   nodesArr: [],
 };
 
-const nodesReducer = (state = initialState, action) => {
+export const nodesReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_NODE_TO_ARRAY:
       return {
@@ -31,4 +31,18 @@ const nodesReducer = (state = initialState, action) => {
   }
 };
 
-export default nodesReducer;
+const RFinitialState = {
+  RFState: {},
+};
+
+export const RFStateReducer = (state = RFinitialState, action) => {
+  switch (action.type) {
+    case LOAD_DIAGRAM_TO_STORE:
+      return {
+        ...state,
+        RFState: action.payload,
+      };
+    default:
+      return state;
+  }
+};
