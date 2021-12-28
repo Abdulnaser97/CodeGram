@@ -1,31 +1,16 @@
-// styling
 import "./App.css";
-import axios from "axios";
-
-// react
 import styled from "styled-components";
-import Github2 from "./Media/github.png";
-
 import Logo3 from "./Media/Logo3.svg";
-
-import React, { useCallback, useState, useRef, useEffect } from "react";
-
-import { ReactFlowWrapper } from "./components/Canvas";
-
-// api calls
+import React, { useState, useEffect } from "react";
+import { useReactFlowWrapper } from "./components/Canvas";
 import {
   invalidateToken,
-  getRepo,
   getPR,
-  getUser,
   getRepos,
-  getAllRepo,
   save,
+  getUser,
 } from "./api/apiClient";
-
 import { connect, useSelector } from "react-redux";
-
-// material ui components
 import {
   Box,
   Typography,
@@ -38,30 +23,15 @@ import {
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import GitHubIcon from "@mui/icons-material/GitHub";
-// redux
-import ReactFlow, { removeElements, addEdge } from "react-flow-renderer";
-import { addNodeToArray, deleteNodeFromArray } from "./Redux/actions/nodes";
 import { useDispatch } from "react-redux";
 import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
 import { getRepoFiles } from "./Redux/actions/repoFiles";
 import { ThemeProvider } from "@material-ui/core";
 import { theme } from "./Themes";
 import { loadDiagram } from "./Redux/actions/loadDiagram";
-
-// custom components
 import SourceDoc from "./SourceDoc/SourceDoc";
-import MyNavigationBar from "./components/MyNavigationBar";
-
-// pages
 import { LandingPage } from "./Landing/LandingPage";
 import ToolBar from "./components/ToolBar.js";
-
-const getNodeId = () => `randomnode_${+new Date()}`;
-
-// api call import
-function login() {
-  window.open("http://localhost:8080/auth/github", "_self");
-}
 
 const LogoTopNav = styled.div`
   position: relative;
@@ -74,23 +44,6 @@ const LogoTopNav = styled.div`
   background-repeat: no-repeat;
 `;
 
-var initialElements = [
-  {
-    id: "1",
-    type: "input", // input node
-    data: { label: "Project Root", url: "" },
-    position: { x: 500, y: 300 },
-    animated: true,
-    style: {
-      borderColor: "#FFAEA6",
-      color: "#6E6E6E",
-      height: "2vw",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-    },
-  },
-];
 /**
  *
  *
@@ -101,7 +54,7 @@ var initialElements = [
  *
  *
  */
-function App(props) {
+function App() {
   const { nodesArr, repoFiles } = useSelector((state) => {
     return { nodesArr: state.nodes.nodesArr, repoFiles: state.repoFiles };
   });
@@ -112,73 +65,19 @@ function App(props) {
   const [repo, setRepo] = useState("");
   const [repoData, setRepoData] = useState(0);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [nodeName, setNodeName] = useState("nodeName");
-  const [curCode, setCurCode] = useState("Select a nnode to view file");
-
-  // Selected node
-  const [selectedEL, setSelectedEL] = useState(initialElements[0]);
-  // state for selected file
-  const [selectedFile, setSelectedFile] = useState("");
-  // react flow
-  const yPos = useRef(0);
-  const [rfInstance, setRfInstance] = useState(null);
-  const [elements, setElements] = useState(initialElements);
-  const onConnect = (params) => setElements((els) => addEdge(params, els));
-  const onElementClick = (event, element) => {
-    console.log("click", element);
-    setSelectedEL(element);
-  };
 
   // redux
   const dispatch = useDispatch();
 
-  // add node function
-  const addNode = useCallback(
-    (file) => {
-      var label = nodeName;
-      const newNode = {
-        id: getNodeId(),
-        // this data will get filled with the array of JSON objects that will come
-        // from Github
-        data: {
-          label: file.fileName !== undefined ? file.fileName : label,
-          name: file.fileName !== undefined ? file.fileName : label,
-          linkedFiles: ["aa.py", "gg.py", "kookoo.py"],
-          childNodes: ["da", "de", "do"],
-          siblingNodes: ["ta", "te", "to"],
-          parentNodes: ["pa", "pe"],
-          documentation: ["url1", "url2"],
-          description: "",
-          url: file.url !== undefined ? file.url : "",
-        },
-        style: {
-          backgroundColor: "#FFAEA6",
-          color: "white",
-          fontWeight: "bold",
-          height: "2vw",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          border: "none",
-        },
-        position: { x: 500, y: 400 },
-        animated: true,
-      };
-      dispatch(addNodeToArray(newNode));
-      setElements((els) => els.concat(newNode));
-    },
-    [setElements, nodeName, dispatch, selectedFile]
-  );
-
-  // Delete Node
-  const onElementsRemove = (elementsToRemove) => {
-    if (elementsToRemove.length == 0) {
-      console.log("nothing selected");
-      return;
-    }
-    dispatch(deleteNodeFromArray(elementsToRemove[0]));
-  };
-
+  const {
+    render,
+    addNode,
+    setElements,
+    setNodeName,
+    onElementsRemove,
+    initialElements,
+    selectedEL,
+  } = useReactFlowWrapper({ dispatch });
   // get all repos in users account
   const getRepoList = async () => {
     const userRepos = await getRepos();
@@ -281,23 +180,6 @@ function App(props) {
     }
   }, [user]);
 
-  useEffect(() => {
-    if (selectedEL.data.url !== undefined) {
-      // calls node url to get file content
-      axios
-        .get(selectedEL.data.url)
-        .then(function (response) {
-          // handle success
-          console.log(response);
-          setCurCode(response.data);
-        })
-        .catch(function (error) {
-          // handle error
-          console.log(error);
-        });
-    }
-  }, [selectedEL]);
-
   if (loggedIn) {
     return (
       <ThemeProvider theme={theme}>
@@ -313,17 +195,7 @@ function App(props) {
                 sx={{ flexGrow: 3 }}
                 style={{ backgroundColor: "transparent" }}
               >
-                <div
-                  style={{
-                    position: "relative",
-                    height: "80%",
-                    left: "0",
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
+                <div className="LogoWrapper">
                   <LogoTopNav className="LogoTopNav" />
                   <h2
                     style={{
@@ -357,8 +229,7 @@ function App(props) {
                   onClick={() => saveChanges()}
                 >
                   <Typography mx={2} fontWeight="Medium" color="primary">
-                    {" "}
-                    Push{" "}
+                    Push
                   </Typography>
                   <GitHubIcon color="primary"> </GitHubIcon>
                 </div>
@@ -372,26 +243,18 @@ function App(props) {
             </Toolbar>
           </AppBar>
           {/* everything from here down can be in a cashboard component */}
-          <h1
+
+          <Typography
             className="welcomeMessage"
-            style={{
-              fontFamily: "Poppins-Thin",
-              "text-align": "left",
-              "padding-left": "5vw",
-            }}
+            fontWeight="light"
+            variant="h6"
+            color="primary.grey"
           >
             Welcome to CodeGram demo {user.username}!
-          </h1>
+          </Typography>
+
           <ToolBar />
-          <Container className="canvasContainer">
-            <ReactFlowWrapper
-              elements={elements}
-              onElementsRemove={onElementsRemove}
-              onConnect={onConnect}
-              onLoad={setRfInstance}
-              onElementClick={onElementClick}
-            ></ReactFlowWrapper>
-          </Container>
+          <Container className="canvasContainer">{render}</Container>
           <SourceDoc
             functions={{
               addNode: addNode,
@@ -399,14 +262,11 @@ function App(props) {
               printNodesArr: printNodesArr,
               getPRContent: getPRContent,
               handleName: handleName,
-              setSelectedFile: setSelectedFile,
             }}
             data={{
               repo: repo,
               repoData: repoData,
               selectedEL: selectedEL,
-              selectedFile: selectedFile,
-              curCode: curCode,
             }}
           />
         </div>

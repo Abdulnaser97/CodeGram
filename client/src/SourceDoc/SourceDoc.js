@@ -15,7 +15,7 @@ import {
 import PropTypes from "prop-types";
 
 // react
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // redux
 import { useSelector } from "react-redux";
@@ -24,6 +24,7 @@ import { connect } from "react-redux";
 
 // components
 import SourceDocFile from "./SourceDocFile";
+import axios from "axios";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -69,6 +70,9 @@ function SourceDoc(props) {
   const [value, setValue] = useState(0);
   // state for search
   const [search, setSearch] = useState("search");
+  const [curCode, setCurCode] = useState("Select a nnode to view file");
+  // state for selected file
+  const [selectedFile, setSelectedFile] = useState("");
 
   function renderRepoContent(repoData) {
     if (repoData.repoFiles[0] !== undefined) {
@@ -78,9 +82,9 @@ function SourceDoc(props) {
         repoList.push(
           <SourceDocFile
             addNode={props.functions.addNode}
-            setSelectedFile={props.functions.setSelectedFile}
+            setSelectedFile={setSelectedFile}
             file={files[i]}
-            selectedFile={props.data.selectedFile}
+            selectedFile={selectedFile}
           />
         );
       }
@@ -115,9 +119,25 @@ function SourceDoc(props) {
     setSearch(event.target.value);
   };
 
-  
   var repoContent = renderRepoContent(state.repoFiles);
-  
+
+  useEffect(() => {
+    if (props.data.selectedEL.data.url !== undefined) {
+      // calls node url to get file content
+      axios
+        .get(props.data.selectedEL.data.url)
+        .then(function (response) {
+          // handle success
+          console.log(response);
+          setCurCode(response.data);
+        })
+        .catch(function (error) {
+          // handle error
+          console.log(error);
+        });
+    }
+  }, [props.data.selectedEL]);
+
   return (
     <Container
       className="sourceDocContainer"
@@ -182,8 +202,8 @@ function SourceDoc(props) {
           <Typography variant="h5" textAlign="left">
             Repository Content
           </Typography>
-          <div 
-            className='repoContainer'
+          <div
+            className="repoContainer"
             style={{
               position: "relative",
               height: "35vh",
@@ -208,7 +228,7 @@ function SourceDoc(props) {
         index={1}
         style={{ height: "90%", overflow: "scroll" }}
       >
-        <pre> {`${props.data.curCode}`} </pre>
+        <pre> {`${curCode}`} </pre>
       </TabPanel>
       <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
         <Box sx={{ disaply: "flex", flexDirection: "column" }}>
