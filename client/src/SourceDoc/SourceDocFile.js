@@ -6,13 +6,6 @@ export default function SourceDocFile(props) {
   var fileName = file.fileName;
   var displayClass = "";
 
-    // if (fileName.includes(".")) {
-    //   displayClass = "filetype";
-    // } else {
-    //   fileName = "/" + fileName;
-    //   displayClass = "foldertype";
-    // }
-
   if (file.type !== "dir") {
     displayClass = "filetype";
   } else {

@@ -65,32 +65,41 @@ function searchCodeBase() {
 
 function SourceDoc(props) {
   const state = useSelector((state) => state);
-  console.log(state)
+  //console.log(state)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
   // state for search
   const [search, setSearch] = useState("search");
 
-  const [dir, setDir] = useState("")
+  const [dirksi, setDir] = useState("")
   const [sourceFiles, setSourceFiles] = useState(null)
-  const [path, setPath] = useState(null)
-  
+  //const [path, setPath] = useState(null)
+  const [path, setPath] = useState([])
+  const [pathComponent, setPathComponent] = useState(null)
+  console.log(props.data.selectedFile)
+
   useEffect(() => {
+    var dir = null
+    var curPath = null 
     if(props.data.selectedFile === null) {
-      setDir(state.repoFiles.repoFiles[0])
+      //setDir(state.repoFiles.repoFiles[0])
+      dir =state.repoFiles.repoFiles[0] 
     } else {
       if (props.data.selectedFile.contents){
-        setDir(props.data.selectedFile.contents)
-        setPath(props.data.selectedFile.path)
+        //setDir(props.data.selectedFile.contents)
+        dir=props.data.selectedFile.contents
+        //setPath(props.data.selectedFile.path)
+        // curPath = path
+        // curPath.push(props.data.selectedFile)
+        setPath(path => [...path, props.data.selectedFile])
+       
       }
     }
-   // setPath(path => [...path, props.data.selectedFile.fileName])
+
     if (dir !== undefined && dir !== null) {
       var repoList = [];
       const files = dir;
-
       for (var i = 0; i < files.length; i++) {
-     
         repoList.push(
           <SourceDocFile
             addNode={props.functions.addNode}
@@ -102,21 +111,54 @@ function SourceDoc(props) {
           />
         );
       }
-      
-      
+      //renderPath()
       setSourceFiles(repoList);
     }
+    // console.log(sourceFiles)
+    // console.log(path)
+    // var pathElement  = []
+    // var pathCopy = path
+    // for (var i = 0; i < path.length; i++) { 
+    //   console.log(path[i].fileName)
+    //   pathElement.push(
+    //     <li key={i} onClick={() => { 
+    //       pathCopy.length= i+1 
+    //       setPath(pathCopy)
+    //       props.functions.setSelectedFile(path[i])
+    //     }}> 
+    //       {path[i].fileName} 
+    //     </li>
+    //   )
+    // }
+    // console.log(pathElement)
+    // setPathComponent(pathElement)
+    // console.log(pathComponent)
+  }, [state,  props.data.selectedFile]);
 
-  }, [dir, state, props.data.selectedFile]);
+  
+  
+  useEffect(() => {
+    console.log(path)
+    setPathComponent(renderPath(path))
+  }, [path])
 
-
-  function renderPath(){
+ 
+  function renderPath(curPath){
     var renderedPath = []
-    for (const f of path){
+    for (var i = 0; i < curPath.length; i++){
+      var curFile = curPath[i]
       renderedPath.push(
-        <p> </p> 
-      )
+         <p  key={i} onClick={() => { 
+               
+                props.functions.setSelectedFile(curFile)
+                curPath.length= i+1 
+                setPath(curPath)
+               }}
+         >{`/${curPath[i].fileName}`}</p>  
+      );
     }
+    //setPathComponent(renderedPath)
+    return renderedPath
   }
 
 
@@ -144,6 +186,7 @@ function SourceDoc(props) {
     //console.log(found)
     setSearch(event.target.value);
   };
+
 
 
   return (
@@ -207,10 +250,18 @@ function SourceDoc(props) {
         </Button>
 
         <Box my={3}>
-          <Typography variant="h6" textAlign="left" my={2}>
-           {/* {path.length ? '/' + path[-1].contents : 'Root'}  */}
-           {path ? '/' + path : 'Root'} 
-          </Typography>
+          {/* <Typography variant="h6" textAlign="left" my={2}> */}
+          <div className = "pathContainer">
+           {/* {path.length ? '/' + pathComponent : 'Root'}
+           {
+            //  pathComponent.length ? 
+            //  pathComponent.map
+           }  */}
+           {path.length ? pathComponent : 'Root'} 
+    
+
+          </div>
+          {/* </Typography> */}
           <div 
             className='repoContainer'
             style={{
