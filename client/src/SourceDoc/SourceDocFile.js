@@ -1,7 +1,7 @@
 import AddBoxIcon from "@mui/icons-material/AddBox";
 
 export default function SourceDocFile(props) {
-  const { file, addNode, setSelectedFile, selectedFile, setDir, setPath } = props;
+  const { file, addNode, setSelectedFile, selectedFile } = props;
 
   var fileName = file.fileName;
   var displayClass = "";
@@ -16,11 +16,6 @@ export default function SourceDocFile(props) {
   var selected = selectedFile === file ? "selected" : "";
 
   function fileClickHandler(file){ 
-    if (file.contents){
-      //console.log(file.contents)
-      //setDir(file.contents)
-      //setPath(path => [...path, file.path])
-    }
     setSelectedFile(file)  
   }
 

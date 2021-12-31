@@ -222,7 +222,8 @@ pre {
 .pathContainer p {
   display: inline;
   margin:0;
-  color:rgba(0, 0, 0, 0.769) 
+  color:rgba(0, 0, 0, 0.769);
+  font-size: 12px; 
 }
 
 .pathContainer p:hover{

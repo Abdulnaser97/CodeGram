@@ -63,11 +63,9 @@ function searchCodeBase() {
   return null;
 }
 
-
-
 function SourceDoc(props) {
   const state = useSelector((state) => state);
-  console.log(state)
+  //console.log(state)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
   // state for search
@@ -78,102 +76,100 @@ function SourceDoc(props) {
   //const [path, setPath] = useState(null)
   const [path, setPath] = useState([])
   const [pathComponent, setPathComponent] = useState(null)
-  //console.log(props.data.selectedFile)
 
   useEffect(() => {
-    if(props.data.repo){ 
+    if (props.data.repo) {
       var homePath = {
-        fileName: props.data.repo,  
+        fileName: props.data.repo,
         dir: state.repoFiles.repoFiles[0],
-        path: props.data.repo,  
+        path: props.data.repo,
       }
-      setPath(path => [...path, homePath]) 
+      var newPath = [homePath]
+      setPath(newPath)
+      props.functions.setSelectedFile(homePath)
     }
-  }, [props.data.repo]);
 
+  }, [state.repoFiles.repoFiles]);
+
+  // logic for updating our path variable 
   useEffect(() => {
     var dir = null
-    var curPath = null 
-    if(props.data.selectedFile === null) {
-      dir =state.repoFiles.repoFiles[0] 
-    } else {
-      if (props.data.selectedFile.contents){
-        dir=props.data.selectedFile.contents
-        if (path.includes(props.data.selectedFile)){
-          var curPath = path
-          curPath.length = path.indexOf(props.data.selectedFile)+1
-          setPath(curPath) 
-        } else { 
-          setPath(path => [...path, props.data.selectedFile])  
+    var curPath = null
+
+    if (props.data.selectedFile) {
+      if (props.data.selectedFile.dir) {
+        dir = props.data.selectedFile.dir
+      } else {
+        dir = props.data.selectedFile.contents
+      }
+
+      if (path.includes(props.data.selectedFile)) {
+        let curPath = [...path]
+        curPath.length = path.indexOf(props.data.selectedFile) + 1
+        setPath(curPath)
+      } else {
+        if (props.data.selectedFile.contents) {
+          setPath(path => [...path, props.data.selectedFile])
         }
+      }
 
+      if (dir !== undefined && dir !== null) {
+        var repoList = [];
+        const files = dir;
+        for (var i = 0; i < files.length; i++) {
+          repoList.push(
+            <SourceDocFile
+              addNode={props.functions.addNode}
+              setSelectedFile={props.functions.setSelectedFile}
+              file={files[i]}
+              selectedFile={props.data.selectedFile}
+            />
+          );
+        }
+        setSourceFiles(repoList);
       }
     }
-
-    if (dir !== undefined && dir !== null) {
-      var repoList = [];
-      const files = dir;
-      for (var i = 0; i < files.length; i++) {
-        repoList.push(
-          <SourceDocFile
-            addNode={props.functions.addNode}
-            setSelectedFile={props.functions.setSelectedFile}
-            file={files[i]}
-            selectedFile={props.data.selectedFile}
-            setDir={setDir}
-            setPath={setPath}
-          />
-        );
-      }
-      //renderPath()
-      setSourceFiles(repoList);
+  }, [state, props.data.selectedFile]);
 
 
-    }
-  }, [state,  props.data.selectedFile]);
-
-  function pathClickHandler(curFile, i, curPath){
-    //console.log(curFile)
+  // separate for now as may need more logic here in future
+  function pathClickHandler(curFile) {
     props.functions.setSelectedFile(curFile)
-    //console.log(curPath)
-    //curPath.length=i+1
-    //curPath.slice(0,i)
-    //console.log(curPath)
-    //setPath(curPath)
   }
 
-  function PathPart(props){
-    const {curFile, i, curPath} = props; 
+  // path component which is clickable 
+  function PathPart(props) {
+    const { curFile, i } = props;
     return (
-      <p  key={i} onClick={() => {  
-        pathClickHandler(curFile, i, curPath)
-       }}
+      <p key={i} onClick={() => {
+        pathClickHandler(curFile)
+      }}
       >
         {`/${curFile.fileName}`}
-      </p>  
+      </p>
     )
   }
 
-  
-  useEffect(() => {
-    setPathComponent(renderPath(path))
-  }, [path])
-
- 
-  function renderPath(curPath){
+  // render method to loop through path and create elements
+  function renderPath(curPath) {
     var renderedPath = []
-    for (var i = 0; i < curPath.length; i++){
+    for (var i = 0; i < curPath.length; i++) {
       var curFile = curPath[i]
       renderedPath.push(
-        <PathPart 
+        <PathPart
           curFile={curFile}
-          curPath={curPath}
-          i={i}  
+          i={i}
         />
       );
     }
     return renderedPath
   }
+
+
+  // re render path component if path ever changes
+  useEffect(() => {
+    setPathComponent(renderPath(path))
+  }, [path])
 
 
   function renderFiles() {
@@ -196,11 +192,8 @@ function SourceDoc(props) {
     const found = props.data.repoData.data.find((file) =>
       file.name.startsWith(searchVal)
     );
-    //console.log(found)
     setSearch(event.target.value);
   };
-
-
 
   return (
     <Container
@@ -263,13 +256,10 @@ function SourceDoc(props) {
         </Button>
 
         <Box my={3}>
-          {/* <Typography variant="h6" textAlign="left" my={2}> */}
-          <div className = "pathContainer">
-           {path.length ? pathComponent : 'Root'} 
+          <div className="pathContainer">
+            {path.length ? pathComponent : 'Root'}
           </div>
-
-          {/* </Typography> */}
-          <div 
+          <div
             className='repoContainer'
             style={{
               position: "relative",
