@@ -22,7 +22,7 @@
   margin: auto 0;
 }
 
-.loginButton {
+.navbar-button {
   padding: 8px 8px;
   color: white;
   display: flex;
@@ -35,7 +35,7 @@
   transition: ease-in 0.1s;
 }
 
-.loginButton:hover {
+.navbar-button:hover {
   box-shadow: rgba(0, 0, 0, 0.301) 0px 3px 7px;
 }
 
@@ -54,10 +54,11 @@
 
 .welcomeMessage {
   font-size: 2.2vw;
-  color: rgb(212, 212, 212);
-  font-family: "Poppins-Medium";
+  font-family: "Poppins-Thin";
   letter-spacing: 0.02em;
   line-height: 1.5em;
+  text-align: left;
+  padding-left: 5vw;
 }
 
 .CodeGram {
@@ -182,6 +183,16 @@ body {
   z-index: 1;
 }
 
+.LogoWrapper {
+  position: relative;
+  height: 80%;
+  left: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
 .background {
   position: absolute;
   top: -100vh;
@@ -206,8 +217,8 @@ pre {
   font-size: 10px;
 }
 
-.repoContainer{
-  display:flex; 
+.repoContainer {
+  display: flex;
   flex-direction: column;
   align-items: center;
 }

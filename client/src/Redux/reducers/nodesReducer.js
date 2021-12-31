@@ -2,13 +2,14 @@ import {
   ADD_NODE_TO_ARRAY,
   SAVE_NODES_TO_FILE,
   DELETE_NODES_FROM_ARRAY,
+  LOAD_DIAGRAM_TO_STORE,
 } from "../constants";
 
 const initialState = {
   nodesArr: [],
 };
 
-const nodesReducer = (state = initialState, action) => {
+export const nodesReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_NODE_TO_ARRAY:
       return {
@@ -20,9 +21,28 @@ const nodesReducer = (state = initialState, action) => {
         ...state,
         nodesArr: state.nodesArr.filter((node) => action.nodeId !== node.id),
       };
+    case LOAD_DIAGRAM_TO_STORE:
+      return {
+        ...state,
+        nodesArr: action.payload,
+      };
     default:
       return state;
   }
 };
 
-export default nodesReducer;
+const RFinitialState = {
+  RFState: {},
+};
+
+export const RFStateReducer = (state = RFinitialState, action) => {
+  switch (action.type) {
+    case LOAD_DIAGRAM_TO_STORE:
+      return {
+        ...state,
+        RFState: action.payload,
+      };
+    default:
+      return state;
+  }
+};
