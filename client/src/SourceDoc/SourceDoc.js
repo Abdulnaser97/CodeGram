@@ -63,9 +63,11 @@ function searchCodeBase() {
   return null;
 }
 
+
+
 function SourceDoc(props) {
   const state = useSelector((state) => state);
-  //console.log(state)
+  console.log(state)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
   // state for search
@@ -76,23 +78,35 @@ function SourceDoc(props) {
   //const [path, setPath] = useState(null)
   const [path, setPath] = useState([])
   const [pathComponent, setPathComponent] = useState(null)
-  console.log(props.data.selectedFile)
+  //console.log(props.data.selectedFile)
+
+  useEffect(() => {
+    if(props.data.repo){ 
+      var homePath = {
+        fileName: props.data.repo,  
+        dir: state.repoFiles.repoFiles[0],
+        path: props.data.repo,  
+      }
+      setPath(path => [...path, homePath]) 
+    }
+  }, [props.data.repo]);
 
   useEffect(() => {
     var dir = null
     var curPath = null 
     if(props.data.selectedFile === null) {
-      //setDir(state.repoFiles.repoFiles[0])
       dir =state.repoFiles.repoFiles[0] 
     } else {
       if (props.data.selectedFile.contents){
-        //setDir(props.data.selectedFile.contents)
         dir=props.data.selectedFile.contents
-        //setPath(props.data.selectedFile.path)
-        // curPath = path
-        // curPath.push(props.data.selectedFile)
-        setPath(path => [...path, props.data.selectedFile])
-       
+        if (path.includes(props.data.selectedFile)){
+          var curPath = path
+          curPath.length = path.indexOf(props.data.selectedFile)+1
+          setPath(curPath) 
+        } else { 
+          setPath(path => [...path, props.data.selectedFile])  
+        }
+
       }
     }
 
@@ -113,32 +127,35 @@ function SourceDoc(props) {
       }
       //renderPath()
       setSourceFiles(repoList);
+
+
     }
-    // console.log(sourceFiles)
-    // console.log(path)
-    // var pathElement  = []
-    // var pathCopy = path
-    // for (var i = 0; i < path.length; i++) { 
-    //   console.log(path[i].fileName)
-    //   pathElement.push(
-    //     <li key={i} onClick={() => { 
-    //       pathCopy.length= i+1 
-    //       setPath(pathCopy)
-    //       props.functions.setSelectedFile(path[i])
-    //     }}> 
-    //       {path[i].fileName} 
-    //     </li>
-    //   )
-    // }
-    // console.log(pathElement)
-    // setPathComponent(pathElement)
-    // console.log(pathComponent)
   }, [state,  props.data.selectedFile]);
 
-  
+  function pathClickHandler(curFile, i, curPath){
+    //console.log(curFile)
+    props.functions.setSelectedFile(curFile)
+    //console.log(curPath)
+    //curPath.length=i+1
+    //curPath.slice(0,i)
+    //console.log(curPath)
+    //setPath(curPath)
+  }
+
+  function PathPart(props){
+    const {curFile, i, curPath} = props; 
+    return (
+      <p  key={i} onClick={() => {  
+        pathClickHandler(curFile, i, curPath)
+       }}
+      >
+        {`/${curFile.fileName}`}
+      </p>  
+    )
+  }
+
   
   useEffect(() => {
-    console.log(path)
     setPathComponent(renderPath(path))
   }, [path])
 
@@ -148,16 +165,13 @@ function SourceDoc(props) {
     for (var i = 0; i < curPath.length; i++){
       var curFile = curPath[i]
       renderedPath.push(
-         <p  key={i} onClick={() => { 
-               
-                props.functions.setSelectedFile(curFile)
-                curPath.length= i+1 
-                setPath(curPath)
-               }}
-         >{`/${curPath[i].fileName}`}</p>  
+        <PathPart 
+          curFile={curFile}
+          curPath={curPath}
+          i={i}  
+        />
       );
     }
-    //setPathComponent(renderedPath)
     return renderedPath
   }
 
@@ -169,7 +183,6 @@ function SourceDoc(props) {
         <li className="SourceDocFile foldertype">hello</li>;
       });
     }
-
     return files;
   }
 
@@ -252,15 +265,9 @@ function SourceDoc(props) {
         <Box my={3}>
           {/* <Typography variant="h6" textAlign="left" my={2}> */}
           <div className = "pathContainer">
-           {/* {path.length ? '/' + pathComponent : 'Root'}
-           {
-            //  pathComponent.length ? 
-            //  pathComponent.map
-           }  */}
            {path.length ? pathComponent : 'Root'} 
-    
-
           </div>
+
           {/* </Typography> */}
           <div 
             className='repoContainer'

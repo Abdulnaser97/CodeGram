@@ -17,7 +17,7 @@ export default function SourceDocFile(props) {
 
   function fileClickHandler(file){ 
     if (file.contents){
-      console.log(file.contents)
+      //console.log(file.contents)
       //setDir(file.contents)
       //setPath(path => [...path, file.path])
     }
