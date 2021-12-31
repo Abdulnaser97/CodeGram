@@ -1,22 +1,26 @@
 import { getRepo } from "../../api/apiClient";
 import { FETCH_REPO_FILES, STORE_REPO_FILES } from "../constants";
 
-async function recursiveRepoBuilder(repoName, subRepo) {
-  var subProcessedFiles = [];
-  for (const file of subRepo) {
-    if (file.type === "dir") {
-      const contents = await getRepo(repoName, file.path);
-      var subFiles = recursiveRepoBuilder(repoName, contents.data);
-      subProcessedFiles.push({
-        fileName: file.name,
+async function recursiveRepoBuilder(repoName, subRepo){
+  var subProcessedFiles = []
+  for (const file of subRepo){
+    if (file.type === "dir"){
+      const contents = await getRepo(repoName,file.path);
+      var subFiles =  await recursiveRepoBuilder(repoName, contents.data)
+      subProcessedFiles.push({ 
+        fileName: file.name, 
         contents: subFiles,
-        url: file.download_url,
-      });
+        type: file.type,
+        path: file.path,   
+        url: file.download_url 
+      })
     } else {
-      subProcessedFiles.push({
-        fileName: file.name,
-        url: file.download_url,
-      });
+      subProcessedFiles.push({ 
+        fileName: file.name,  
+        type: file.type, 
+        path: file.path, 
+        url: file.download_url 
+      })
     }
   }
   return subProcessedFiles;

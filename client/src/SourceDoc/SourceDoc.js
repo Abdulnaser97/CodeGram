@@ -15,7 +15,7 @@ import {
 import PropTypes from "prop-types";
 
 // react
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
 // redux
 import { useSelector } from "react-redux";
@@ -66,6 +66,7 @@ function searchCodeBase() {
 
 function SourceDoc(props) {
   const state = useSelector((state) => state);
+  //console.log(state)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
   // state for search
@@ -74,25 +75,104 @@ function SourceDoc(props) {
   // state for selected file
   const [selectedFile, setSelectedFile] = useState("");
 
-  function renderRepoContent(repoData) {
-    if (repoData.repoFiles[0] !== undefined) {
-      var repoList = [];
-      const files = repoData.repoFiles[0];
-      for (var i = 0; i < files.length; i++) {
-        repoList.push(
-          <SourceDocFile
-            addNode={props.functions.addNode}
-            setSelectedFile={setSelectedFile}
-            file={files[i]}
-            selectedFile={selectedFile}
-          />
-        );
+  const [sourceFiles, setSourceFiles] = useState(null)
+  const [path, setPath] = useState([])
+  const [pathComponent, setPathComponent] = useState(null)
+
+  useEffect(() => {
+    if (props.data.repo) {
+      var homePath = {
+        fileName: props.data.repo,
+        dir: state.repoFiles.repoFiles[0],
+        path: props.data.repo,
       }
-      return repoList;
+      var newPath = [homePath]
+      setPath(newPath)
+      setSelectedFile(homePath)
     }
 
-    return null;
+  }, [state.repoFiles.repoFiles]);
+
+  // logic for updating our path variable 
+  useEffect(() => {
+    var dir = null
+    var curPath = null
+
+    if (selectedFile) {
+      if (selectedFile.dir) {
+        dir = selectedFile.dir
+      } else {
+        dir = selectedFile.contents
+      }
+
+      if (path.includes(selectedFile)) {
+        let curPath = [...path]
+        curPath.length = path.indexOf(selectedFile) + 1
+        setPath(curPath)
+      } else {
+        if (selectedFile.contents) {
+          setPath(path => [...path, selectedFile])
+        }
+      }
+
+      if (dir !== undefined && dir !== null) {
+        var repoList = [];
+        const files = dir;
+        for (var i = 0; i < files.length; i++) {
+          repoList.push(
+            <SourceDocFile
+              addNode={props.functions.addNode}
+              setSelectedFile={setSelectedFile}
+              file={files[i]}
+              selectedFile={selectedFile}
+            />
+          );
+        }
+        setSourceFiles(repoList);
+      }
+    }
+  }, [state, selectedFile]);
+
+
+  // separate for now as may need more logic here in future
+  function pathClickHandler(curFile) {
+    setSelectedFile(curFile)
   }
+
+  // path component which is clickable 
+  function PathPart(props) {
+    const { curFile, i } = props;
+    return (
+      <p key={i} onClick={() => {
+        pathClickHandler(curFile)
+      }}
+      >
+        {`/${curFile.fileName}`}
+      </p>
+    )
+  }
+
+  // render method to loop through path and create elements
+  function renderPath(curPath) {
+    var renderedPath = []
+    for (var i = 0; i < curPath.length; i++) {
+      var curFile = curPath[i]
+      renderedPath.push(
+        <PathPart
+          curFile={curFile}
+          i={i}
+        />
+      );
+    }
+    return renderedPath
+  }
+
+
+  // re render path component if path ever changes
+  useEffect(() => {
+    setPathComponent(renderPath(path))
+  }, [path])
+
 
   function renderFiles() {
     var files = [];
@@ -101,7 +181,6 @@ function SourceDoc(props) {
         <li className="SourceDocFile foldertype">hello</li>;
       });
     }
-
     return files;
   }
 
@@ -115,11 +194,9 @@ function SourceDoc(props) {
     const found = props.data.repoData.data.find((file) =>
       file.name.startsWith(searchVal)
     );
-    //console.log(found)
     setSearch(event.target.value);
   };
 
-  var repoContent = renderRepoContent(state.repoFiles);
 
   useEffect(() => {
     if (props.data.selectedEL.data.url !== undefined) {
@@ -198,18 +275,18 @@ function SourceDoc(props) {
         </Button>
 
         <Box my={3}>
-          <Typography variant="h5" textAlign="left">
-            Repository Content
-          </Typography>
+          <div className="pathContainer">
+            {path.length ? pathComponent : 'Root'}
+          </div>
           <div
-            className="repoContainer"
+            className='repoContainer'
             style={{
               position: "relative",
               height: "35vh",
               "overflow-y": "scroll",
             }}
           >
-            {repoContent}
+            {sourceFiles}
           </div>
         </Box>
 
