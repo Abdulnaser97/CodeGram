@@ -30,6 +30,10 @@ import { ThemeProvider } from "@material-ui/core";
 import { theme } from "./Themes";
 import { loadDiagram } from "./Redux/actions/loadDiagram";
 import SourceDoc from "./SourceDoc/SourceDoc";
+
+import { CustomNodeComponent, WrapperNodeComponent } from "./canvas/custom_node";
+
+// pages
 import { LandingPage } from "./Landing/LandingPage";
 import ToolBar from "./components/ToolBar.js";
 
@@ -79,6 +83,7 @@ function App() {
     selectedEL,
     rfInstance,
   } = useReactFlowWrapper({ dispatch });
+  
   // get all repos in users account
   const getRepoList = async () => {
     const userRepos = await getRepos();

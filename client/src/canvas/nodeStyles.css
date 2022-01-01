@@ -1,0 +1,113 @@
+.node-label {
+	margin: 10px;
+}
+
+.default {
+	border-color: #FFAEA6;
+	color: #6E6E6E;
+	height: 2vw;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.circle {
+	border-radius: 50%;
+	background-color: none;
+	border: 1px solid #6E6E6E;
+	color: #6E6E6E;
+	padding: 0.25em;
+
+	/* Center the text contents */
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	}
+
+.circle .node-label {
+	/* Set the height to 0 and overflow to visible to not interfere with the square styles */
+	overflow: visible;
+	height: 0;
+
+	/* Vertically center text since we set its height to 0 */
+	margin-top: -1em;
+}
+
+.circle:after {
+	content: '';
+	padding-bottom: 100%;
+}
+
+.fileNode {
+	opacity: 1.0;
+	height: 5vw;
+	width: auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border: 1px solid #DEDEDE;
+	border-radius: 5px;
+}
+
+.square-container {
+	height: 5vw;
+	width: auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border: 1px dashed #FF6666;
+	border-radius: 5px;
+	background-color: none;
+}
+
+.node-label.corner {
+	text-align: left;
+	margin-left: 0px;
+	color: #FF6666;
+}
+
+.cylinder {
+	position: relative;
+    margin: 0 auto;
+    width: 100px;
+    height: 150px;
+    border-radius: 50px/25px;
+    background-color: rgba(160, 160, 160, 0.5);
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cylinder .node-label {
+	text-align: center;
+}
+
+.cylinder:before {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100px;
+	height: 50px;
+	border-radius: 50px/25px;
+	background-color: rgba(160, 160, 160, 0.2);
+	content: '';
+}
+
+.cylinder:after {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100px;
+	height: 50px;
+	border-radius: 50px/25px;
+	background-color: rgba(160, 160, 160, 0.4);
+	content: '';
+}
+
+.react-flow__node.selected {
+	box-shadow: none;
+}
+
+.react-flow__node:hover{
+	filter:brightness(0.9);
+}
