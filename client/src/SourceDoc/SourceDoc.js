@@ -66,7 +66,7 @@ function searchCodeBase() {
 
 function SourceDoc(props) {
   const state = useSelector((state) => state);
-  //console.log(state)
+  console.log(state)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
   // state for search
@@ -90,7 +90,7 @@ function SourceDoc(props) {
       setSelectedFile(homePath)
     }
 
-  }, [state.repoFiles.repoFiles]);
+  }, [state.repoFiles]);
 
   // logic for updating our path variable 
   useEffect(() => {
