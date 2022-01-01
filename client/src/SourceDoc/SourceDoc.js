@@ -78,7 +78,6 @@ function SourceDoc(props) {
   const [sourceFiles, setSourceFiles] = useState(null)
   const [path, setPath] = useState([])
   const [pathComponent, setPathComponent] = useState(null)
-  console.log(selectedFile)
   useEffect(() => {
     if (props.data.repo) {
       var homePath = {
