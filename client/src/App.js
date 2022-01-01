@@ -30,6 +30,10 @@ import { ThemeProvider } from "@material-ui/core";
 import { theme } from "./Themes";
 import { loadDiagram } from "./Redux/actions/loadDiagram";
 import SourceDoc from "./SourceDoc/SourceDoc";
+
+import { CustomNodeComponent, WrapperNodeComponent } from "./canvas/custom_node";
+
+// pages
 import { LandingPage } from "./Landing/LandingPage";
 import ToolBar from "./components/ToolBar.js";
 
@@ -79,6 +83,44 @@ function App() {
     selectedEL,
     rfInstance,
   } = useReactFlowWrapper({ dispatch });
+  // add node function
+  // const addNode = useCallback(
+  //   (file) => {
+  //     var label = nodeName;
+  //     const newNode = {
+  //       id: getNodeId(),
+  //       // this data will get filled with the array of JSON objects that will come
+  //       // from Github
+  //       data: {
+  //         label: file.fileName !== undefined ? file.fileName : label,
+  //         name: file.fileName !== undefined ? file.fileName : label,
+  //         linkedFiles: ["aa.py", "gg.py", "kookoo.py"],
+  //         childNodes: ["da", "de", "do"],
+  //         siblingNodes: ["ta", "te", "to"],
+  //         parentNodes: ["pa", "pe"],
+  //         documentation: ["url1", "url2"],
+  //         description: "",
+  //         url: file.url !== undefined ? file.url : "",
+  //         type: file.nodeType !== undefined ? file.nodeType: "default",
+  //       },
+  //       type: file.nodeType !== undefined ? file.nodeType: "default",
+  //       position: { x: 500, y: 400 },
+  //       animated: true,
+  //     };
+  //     dispatch(addNodeToArray(newNode));
+  //     setElements((els) => els.concat(newNode));
+  //   },
+  //   [setElements, nodeName, dispatch, selectedFile]
+  // );
+
+  // const onElementsRemove = (elementsToRemove) => {
+  //   if (elementsToRemove.length == 0) {
+  //     console.log("nothing selected");
+  //     return;
+  //   }
+  //   dispatch(deleteNodeFromArray(elementsToRemove[0]));
+  // };
+
   // get all repos in users account
   const getRepoList = async () => {
     const userRepos = await getRepos();

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-
+import { CustomNodeComponent, WrapperNodeComponent } from "../canvas/custom_node";
 import ReactFlow, { addEdge, useZoomPanHelper } from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import { addNodeToArray, deleteNodeFromArray } from "../Redux/actions/nodes";
@@ -75,17 +75,10 @@ export function useReactFlowWrapper({ dispatch }) {
           documentation: ["url1", "url2"],
           description: "",
           url: file.url !== undefined ? file.url : "",
+          type: "circle",
+          // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
         },
-        style: {
-          backgroundColor: "#FFAEA6",
-          color: "white",
-          fontWeight: "bold",
-          height: "2vw",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          border: "none",
-        },
+        type: "circle",
         position: { x: 500, y: 400 },
         animated: true,
       };
@@ -95,17 +88,18 @@ export function useReactFlowWrapper({ dispatch }) {
     [setElements, nodeName, dispatch]
   );
 
-  // Refresh Diagram when nodesArr in store changes
-  // useEffect(() => {
-  //   if (repo && RFState) {
-  //     setElements((els) => (els = RFState));
-  //   }
-  // }, [RFState, repo]);
 
   return {
     render: (
       <div className="canvas">
         <ReactFlow
+          nodeTypes={{
+            default: CustomNodeComponent, 
+            fileNode: CustomNodeComponent,
+            wrapperNode: WrapperNodeComponent,
+            cylinder: CustomNodeComponent,
+            circle: CustomNodeComponent,
+          }}
           elements={elements}
           onElementsRemove={onElementsRemove}
           onConnect={onConnect}
