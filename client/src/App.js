@@ -92,9 +92,9 @@ function App() {
 
   // set new repo from drop down menu
   const handleRepoChange = (event) => {
-    setRepo(event.target.value);
     setElements(initialElements);
     dispatch(getRepoFiles(event.target.value));
+    setRepo(event.target.value);
   };
 
   const handleName = (event, newValue) => {
