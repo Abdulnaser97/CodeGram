@@ -73,6 +73,9 @@
     height: 150px;
     border-radius: 50px/25px;
     background-color: rgba(160, 160, 160, 0.5);
+    display:flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .cylinder .node-label {
@@ -99,4 +102,12 @@
 	border-radius: 50px/25px;
 	background-color: rgba(160, 160, 160, 0.4);
 	content: '';
+}
+
+.react-flow__node.selected {
+	box-shadow: none;
+}
+
+.react-flow__node:hover{
+	filter:brightness(0.9);
 }

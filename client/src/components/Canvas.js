@@ -75,10 +75,12 @@ export function useReactFlowWrapper({ dispatch }) {
           documentation: ["url1", "url2"],
           description: "",
           url: file.url !== undefined ? file.url : "",
-          type: "circle",
+          // can set this type to whatever is selected in the tool bar for now
+          // but the type will probably be set from a few different places 
+          type: "cylinder",
           // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
         },
-        type: "circle",
+        type: "cylinder",
         position: { x: 500, y: 400 },
         animated: true,
       };
