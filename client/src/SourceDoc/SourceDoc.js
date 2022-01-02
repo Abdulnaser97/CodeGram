@@ -77,8 +77,9 @@ function SourceDoc(props) {
   const [sourceFiles, setSourceFiles] = useState(null);
   const [path, setPath] = useState([]);
   const [pathComponent, setPathComponent] = useState(null);
+
   useEffect(() => {
-    if (props.data.repo) {
+    if (props.data.repo && state.repoFiles.repoFiles[0]) {
       var homePath = {
         fileName: props.data.repo,
         dir: state.repoFiles.repoFiles[0],
@@ -88,7 +89,7 @@ function SourceDoc(props) {
       setPath(newPath);
       setSelectedFile(homePath);
     }
-  }, [state.repoFiles]);
+  }, [props.data.repo, state.repoFiles.repoFiles]);
 
   // logic for updating our path variable
   useEffect(() => {
