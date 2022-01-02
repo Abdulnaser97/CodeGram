@@ -229,10 +229,22 @@ function App() {
               </Box>
 
               <Box mx={1} sx={{ "box-shadow": 0 }}>
-                <div className="navbar-button github" onClick={() => onSave()}>
-                  <Typography mx={2} fontWeight="Medium" color="primary">
-                    Save
-                  </Typography>
+                <div
+                  className="navbar-button github"
+                  style={{ backgroundColor: "transparent" }}
+                  onClick={() => onSave()}
+                >
+                  <Box mx={2} className="SaveButtonWrapper">
+                    <Typography
+                      mx={1}
+                      my={0.8}
+                      fontSize="1.3vw"
+                      fontWeight="Thin"
+                      color="primary"
+                    >
+                      Save
+                    </Typography>
+                  </Box>
                   <GitHubIcon color="primary"> </GitHubIcon>
                 </div>
               </Box>

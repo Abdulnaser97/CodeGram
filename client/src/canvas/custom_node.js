@@ -1,5 +1,5 @@
 import React from "react";
-import { Handle, useStoreActions, useStoreState } from "react-flow-renderer";
+import { Handle } from "react-flow-renderer";
 import { Resizable } from "re-resizable";
 
 import "./nodeStyles.css";
@@ -39,9 +39,6 @@ const CustomNodeComponent = (props) => {
     props.data.height = height;
     props.data.width = width;
   }, [height, width]);
-
-  const state = useStoreState((state) => state);
-  console.log(state);
 
   return (
     <Resizable
