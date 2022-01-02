@@ -33,6 +33,7 @@
   min-height: 4vh;
   min-width: 4vh;
   transition: ease-in 0.1s;
+  border: 10px solid white;
 }
 
 .navbar-button:hover {
@@ -224,22 +225,28 @@ pre {
   align-items: center;
 }
 
-.pathContainer{
-  margin:2% 0; 
-  padding: 1% 5%; 
+.pathContainer {
+  margin: 2% 0;
+  padding: 1% 5%;
   background-color: rgb(241, 241, 241);
   border-radius: 1vw;
 }
 
 .pathContainer p {
   display: inline;
-  margin:0;
-  color:rgba(0, 0, 0, 0.769);
-  font-size: 12px; 
+  margin: 0;
+  color: rgba(0, 0, 0, 0.769);
+  font-size: 12px;
 }
 
-.pathContainer p:hover{
+.pathContainer p:hover {
   cursor: pointer;
   color: #f58282;
   text-decoration: underline;
+}
+.SaveButtonWrapper {
+  position: relative;
+  background-color: black;
+  border: 10px solid #ffaea6;
+  border-radius: 1vw;
 }

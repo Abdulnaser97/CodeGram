@@ -31,7 +31,10 @@ import { theme } from "./Themes";
 import { loadDiagram } from "./Redux/actions/loadDiagram";
 import SourceDoc from "./SourceDoc/SourceDoc";
 
-import { CustomNodeComponent, WrapperNodeComponent } from "./canvas/custom_node";
+import {
+  CustomNodeComponent,
+  WrapperNodeComponent,
+} from "./canvas/custom_node";
 
 // pages
 import { LandingPage } from "./Landing/LandingPage";
@@ -83,7 +86,7 @@ function App() {
     selectedEL,
     rfInstance,
   } = useReactFlowWrapper({ dispatch });
-  
+
   // get all repos in users account
   const getRepoList = async () => {
     const userRepos = await getRepos();
@@ -228,7 +231,7 @@ function App() {
               <Box mx={1} sx={{ "box-shadow": 0 }}>
                 <div className="navbar-button github" onClick={() => onSave()}>
                   <Typography mx={2} fontWeight="Medium" color="primary">
-                    Push
+                    Save
                   </Typography>
                   <GitHubIcon color="primary"> </GitHubIcon>
                 </div>

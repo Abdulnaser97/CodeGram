@@ -1,5 +1,8 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { CustomNodeComponent, WrapperNodeComponent } from "../canvas/custom_node";
+import {
+  CustomNodeComponent,
+  WrapperNodeComponent,
+} from "../canvas/custom_node";
 import ReactFlow, { addEdge, useZoomPanHelper } from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import { addNodeToArray, deleteNodeFromArray } from "../Redux/actions/nodes";
@@ -8,13 +11,14 @@ var initialElements = [
   {
     id: "1",
     type: "input",
-    data: { label: "Project Root", url: "" },
+    data: { label: "Project Root", url: "", width: 200, height: 150 },
     position: { x: 500, y: 300 },
     animated: true,
     style: {
       borderColor: "#FFAEA6",
       color: "#6E6E6E",
-      height: "2vw",
+      height: "200px",
+      width: "150px",
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
@@ -76,11 +80,15 @@ export function useReactFlowWrapper({ dispatch }) {
           description: "",
           url: file.url !== undefined ? file.url : "",
           // can set this type to whatever is selected in the tool bar for now
-          // but the type will probably be set from a few different places 
-          type: "cylinder",
+          // but the type will probably be set from a few different places
+          type: "fileNode",
+          width: 200,
+          height: 200,
           // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
         },
-        type: "cylinder",
+        type: "fileNode",
+        width: 200,
+        height: 200,
         position: { x: 500, y: 400 },
         animated: true,
       };
@@ -90,13 +98,12 @@ export function useReactFlowWrapper({ dispatch }) {
     [setElements, nodeName, dispatch]
   );
 
-
   return {
     render: (
       <div className="canvas">
         <ReactFlow
           nodeTypes={{
-            default: CustomNodeComponent, 
+            default: CustomNodeComponent,
             fileNode: CustomNodeComponent,
             wrapperNode: WrapperNodeComponent,
             cylinder: CustomNodeComponent,
