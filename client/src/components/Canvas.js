@@ -3,9 +3,17 @@ import {
   CustomNodeComponent,
   WrapperNodeComponent,
 } from "../canvas/custom_node";
-import ReactFlow, { addEdge, useZoomPanHelper } from "react-flow-renderer";
+import ReactFlow, { addEdge, useZoomPanHelper, EdgeTypesType, Edge, ArrowHeadType } from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import { addNodeToArray, deleteNodeFromArray } from "../Redux/actions/nodes";
+
+import { getNodeIntersection, getEdgePosition, getEdgeParams } from "../canvas/utils.ts";
+import FloatingEdge from "../canvas/FloatingEdge.tsx";
+import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
+
+const edgeTypes = {
+  floating: FloatingEdge,
+};
 
 var initialElements = [
   {
@@ -50,7 +58,7 @@ export function useReactFlowWrapper({ dispatch }) {
     setSelectedEL(element);
   };
 
-  const onConnect = (params) => setElements((els) => addEdge(params, els));
+  const onConnect = (params) => setElements((els) => addEdge({ ...params, type: 'floating', arrowHeadType: ArrowHeadType.Arrow }, els));
 
   // Delete Node
   const onElementsRemove = (elementsToRemove) => {
@@ -110,6 +118,8 @@ export function useReactFlowWrapper({ dispatch }) {
             circle: CustomNodeComponent,
           }}
           elements={elements}
+          edgeTypes={edgeTypes}
+          connectionLineComponent={FloatingConnectionLine}
           onElementsRemove={onElementsRemove}
           onConnect={onConnect}
           onLoad={setRfInstance}
