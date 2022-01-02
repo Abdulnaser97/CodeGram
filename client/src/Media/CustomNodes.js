@@ -1,0 +1,47 @@
+import styled from "styled-components";
+
+const nodeWrapper = styled.div`
+  position: relative;
+  height: 100%;
+  width: 100%;
+`;
+
+export const Cylinder = () => {
+  return (
+    <nodeWrapper className="nodeWrapper">
+      <svg
+        width="290"
+        height="363"
+        viewBox="0 0 290 363"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g id="cylinder">
+          <rect
+            id="Rectangle 86"
+            y="66"
+            width="290"
+            height="232"
+            fill="#E6E6E6"
+          />
+          <ellipse
+            id="Ellipse 20"
+            cx="145"
+            cy="65.5"
+            rx="145"
+            ry="65.5"
+            fill="#D8D8D8"
+          />
+          <ellipse
+            id="Ellipse 21"
+            cx="145"
+            cy="297.5"
+            rx="145"
+            ry="65.5"
+            fill="#E6E6E6"
+          />
+        </g>
+      </svg>
+    </nodeWrapper>
+  );
+};
