@@ -22,6 +22,14 @@ const sourceHandleStyle = {
   zIndex: 999,
 };
 
+const isValidConnection =(connection) => {
+  if (connection.source != connection.target) {
+    console.log("validConnection");
+    return true;
+  }
+  return false;
+}
+
 const CustomNodeComponent = (props) => {
   // const nodeElement = document.querySelector(
   //   `.react-flow__node[data-id="${props.id}"]`
@@ -66,6 +74,7 @@ const CustomNodeComponent = (props) => {
         type="target"
         position="top"
         style={targetHandleStyle}
+        isValidConnection={isValidConnection}
       />
       {/* TODO: Create an X button to remove node */}
       {/* <button onClick={data.onElementsRemove}>X</button> */}
@@ -81,18 +90,21 @@ const CustomNodeComponent = (props) => {
         type="source"
         position="bottom"
         style={sourceHandleStyle}
+        isValidConnection={isValidConnection}
       />
       <Handle
         className="handle source"
         type="target"
         position="left"
         style={targetHandleStyle}
+        isValidConnection={isValidConnection}
       />
       <Handle
         className="handle source"
         type="source"
         position="right"
         style={sourceHandleStyle}
+        isValidConnection={isValidConnection}
       />
     </Resizable>
   );

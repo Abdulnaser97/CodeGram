@@ -7,7 +7,6 @@ import ReactFlow, { addEdge, useZoomPanHelper, EdgeTypesType, Edge, ArrowHeadTyp
 import { useSelector } from "react-redux";
 import { addNodeToArray, deleteNodeFromArray } from "../Redux/actions/nodes";
 
-import { getNodeIntersection, getEdgePosition, getEdgeParams } from "../canvas/utils.ts";
 import FloatingEdge from "../canvas/FloatingEdge.tsx";
 import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
 
@@ -58,8 +57,20 @@ export function useReactFlowWrapper({ dispatch }) {
     setSelectedEL(element);
   };
 
-  const onConnect = (params) => setElements((els) => addEdge({ ...params, type: 'floating', arrowHeadType: ArrowHeadType.Arrow }, els));
-
+  const onConnect = (params) =>{
+    console.log(params);
+    setElements((els) => addEdge({ ...params, type: 'floating', arrowHeadType: ArrowHeadType.Arrow }, els));
+  } 
+  const onConnectStart = (event, { nodeId, handleType }) => {
+    console.log('on connect start', { nodeId, handleType });
+  }; 
+  const onConnectStop = (event) => {
+    console.log('on connect stop', event);
+  };
+  const onConnectEnd = (event) => {
+    console.log('on connect end', event);
+  };
+  
   // Delete Node
   const onElementsRemove = (elementsToRemove) => {
     if (elementsToRemove.length === 0) {
@@ -124,6 +135,9 @@ export function useReactFlowWrapper({ dispatch }) {
           onConnect={onConnect}
           onLoad={setRfInstance}
           onElementClick={onElementClick}
+          onConnectStart={onConnectStart}
+          onConnectStop={onConnectStop}
+          onConnectEnd={onConnectEnd}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>
