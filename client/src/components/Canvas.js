@@ -3,7 +3,12 @@ import {
   CustomNodeComponent,
   WrapperNodeComponent,
 } from "../canvas/custom_node";
-import ReactFlow, { addEdge, useZoomPanHelper, EdgeTypesType, Edge, ArrowHeadType, useStoreState } from "react-flow-renderer";
+import ReactFlow, {
+  addEdge,
+  useZoomPanHelper,
+  ArrowHeadType,
+  useStoreState,
+} from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import { addNodeToArray, deleteNodeFromArray } from "../Redux/actions/nodes";
 
@@ -44,7 +49,7 @@ export function useReactFlowWrapper({ dispatch }) {
   const { RFState } = useSelector((state) => {
     return { RFState: state.RFState };
   });
-  
+
   const [elements, setElements] = useState(initialElements);
   const [nodeName, setNodeName] = useState("nodeName");
 
@@ -52,36 +57,45 @@ export function useReactFlowWrapper({ dispatch }) {
   const [selectedEL, setSelectedEL] = useState(initialElements[0]);
   const yPos = useRef(0);
   const [rfInstance, setRfInstance] = useState(null);
+  const [connectionStarted, setConnectionStarted] = useState(false);
+  const [floatTargetHandle, setFloatTargetHandle] = useState(false); // This is a hacky method to force rendering
 
   const onElementClick = (event, element) => {
     console.log("click", element);
     setSelectedEL(element);
   };
 
-  const onConnect = (params) =>{
+  const onConnect = (params) => {
     console.log(params);
-    setElements((els) => addEdge({ ...params, type: 'floating', arrowHeadType: ArrowHeadType.Arrow }, els));
-  } 
+    setElements((els) =>
+      addEdge(
+        { ...params, type: "floating", arrowHeadType: ArrowHeadType.Arrow },
+        els
+      )
+    );
+  };
   const onConnectStart = (event, { nodeId, handleType }) => {
-    console.log('on connect start', { nodeId, handleType });
-  }; 
+    setConnectionStarted(true);
+  };
   const onConnectStop = (event) => {
-    console.log('on connect stop', event);
+    setConnectionStarted(false);
   };
   const onConnectEnd = (event) => {
-    console.log('on connect end', event);
+    setConnectionStarted(false);
   };
 
   const onNodeMouseEnter = (event, node) => {
-    console.log('on node mouse enter', { event, node });
-  }
-  const onNodeMouseMove = (event, node) => {
-    console.log('on node mouse move', { event, node });
-  }
+    if (connectionStarted) {
+      node.data.floatTargetHandle = true;
+      setFloatTargetHandle(true);
+    }
+  };
+  const onNodeMouseMove = (event, node) => {};
   const onNodeMouseLeave = (event, node) => {
-    console.log('on node mouse leave', { event, node });
-  }
-  
+    node.data.floatTargetHandle = false;
+    setFloatTargetHandle(false);
+  };
+
   // Delete Node
   const onElementsRemove = (elementsToRemove) => {
     if (elementsToRemove.length === 0) {
@@ -108,6 +122,7 @@ export function useReactFlowWrapper({ dispatch }) {
           parentNodes: ["pa", "pe"],
           documentation: ["url1", "url2"],
           description: "",
+          floatTargetHandle: false,
           url: file.url !== undefined ? file.url : "",
           // can set this type to whatever is selected in the tool bar for now
           // but the type will probably be set from a few different places
@@ -149,7 +164,7 @@ export function useReactFlowWrapper({ dispatch }) {
           onConnectStart={onConnectStart}
           onConnectStop={onConnectStop}
           onConnectEnd={onConnectEnd}
-          connectionMode={'loose'}
+          connectionMode={"loose"}
           onNodeMouseEnter={onNodeMouseEnter}
           onNodeMouseMove={onNodeMouseMove}
           onNodeMouseLeave={onNodeMouseLeave}
@@ -170,7 +185,7 @@ export function useReactFlowWrapper({ dispatch }) {
 
 export function ReactFlowStoreInterface({ RFState, setElements }) {
   // Uncomment below to view reactFlowState
-  const reactFlowState = useStoreState((state) => state);
+  // const reactFlowState = useStoreState((state) => state);
   const { transform } = useZoomPanHelper();
 
   useEffect(() => {
@@ -181,6 +196,5 @@ export function ReactFlowStoreInterface({ RFState, setElements }) {
     }
   }, [RFState, setElements, transform]);
 
-  // console.log(reactFlowState);
   return null;
 }

@@ -10,9 +10,11 @@ import { theme } from "../Themes";
 
 const targetHandleStyle = {
   borderRadius: 5,
-  background: theme.palette.primary.darkGrey,
+  background: "transparent",
   border: "transparent",
-  zIndex: 999
+  zIndex: 999,
+  width: "inherit",
+  height: "inherit",
 };
 
 const sourceHandleStyle = {
@@ -25,21 +27,7 @@ const sourceHandleStyle = {
   width: "10px",
 };
 
-const isValidConnection =(connection) => {
-  // if (connection.source != connection.target) {
-    console.log("validConnection");
-    console.log(connection);
-  //   return true;
-  // }
-  // return false;
-  return true;
-}
-
 const CustomNodeComponent = (props) => {
-  // const nodeElement = document.querySelector(
-  //   `.react-flow__node[data-id="${props.id}"]`
-  // );
-
   const [width, setWidth] = useState(props.data.width ? props.data.width : 200);
   const [height, setHeight] = useState(
     props.data.height ? props.data.height : 200
@@ -77,17 +65,20 @@ const CustomNodeComponent = (props) => {
     >
       <Handle
         className="handle target"
-        id={`bottom-handle-${props.id}`}
-        type="target"
-        position="top"
-        style={{...targetHandleStyle}}
-      />
-      <Handle
-        className="handle target"
         id={`top-handle-${props.id}`}
         type="source"
         position="top"
-        style={{...sourceHandleStyle, top: "-20px"}}
+        style={{ ...sourceHandleStyle, top: "-20px" }}
+      />
+
+      <Handle
+        className="handle target"
+        id={`target-handle-${props.id}`}
+        type="target"
+        style={{
+          ...targetHandleStyle,
+          "z-index": `${props.data.floatTargetHandle ? 9999 : -1}`,
+        }}
       />
       {/* TODO: Create an X button to remove node */}
       {/* <button onClick={data.onElementsRemove}>X</button> */}
@@ -103,21 +94,21 @@ const CustomNodeComponent = (props) => {
         id={`bottom-handle-${props.id}`}
         type="source"
         position="bottom"
-        style={{...sourceHandleStyle, bottom: "-20px"}}
+        style={{ ...sourceHandleStyle, bottom: "-20px" }}
       />
       <Handle
         className="handle source"
         id={`left-handle-${props.id}`}
         type="source"
         position="left"
-        style={{...sourceHandleStyle, left: "-20px"}}
+        style={{ ...sourceHandleStyle, left: "-20px" }}
       />
       <Handle
         className="handle source"
         id={`right-handle-${props.id}`}
         type="source"
         position="right"
-        style={{...sourceHandleStyle, right: "-20px"}}
+        style={{ ...sourceHandleStyle, right: "-20px" }}
       />
     </Resizable>
   );
