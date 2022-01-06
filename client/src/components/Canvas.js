@@ -3,7 +3,7 @@ import {
   CustomNodeComponent,
   WrapperNodeComponent,
 } from "../canvas/custom_node";
-import ReactFlow, { addEdge, useZoomPanHelper, EdgeTypesType, Edge, ArrowHeadType } from "react-flow-renderer";
+import ReactFlow, { addEdge, useZoomPanHelper, EdgeTypesType, Edge, ArrowHeadType, useStoreState } from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import { addNodeToArray, deleteNodeFromArray } from "../Redux/actions/nodes";
 
@@ -44,6 +44,7 @@ export function useReactFlowWrapper({ dispatch }) {
   const { RFState } = useSelector((state) => {
     return { RFState: state.RFState };
   });
+  
   const [elements, setElements] = useState(initialElements);
   const [nodeName, setNodeName] = useState("nodeName");
 
@@ -70,6 +71,16 @@ export function useReactFlowWrapper({ dispatch }) {
   const onConnectEnd = (event) => {
     console.log('on connect end', event);
   };
+
+  const onNodeMouseEnter = (event, node) => {
+    console.log('on node mouse enter', { event, node });
+  }
+  const onNodeMouseMove = (event, node) => {
+    console.log('on node mouse move', { event, node });
+  }
+  const onNodeMouseLeave = (event, node) => {
+    console.log('on node mouse leave', { event, node });
+  }
   
   // Delete Node
   const onElementsRemove = (elementsToRemove) => {
@@ -138,6 +149,10 @@ export function useReactFlowWrapper({ dispatch }) {
           onConnectStart={onConnectStart}
           onConnectStop={onConnectStop}
           onConnectEnd={onConnectEnd}
+          connectionMode={'loose'}
+          onNodeMouseEnter={onNodeMouseEnter}
+          onNodeMouseMove={onNodeMouseMove}
+          onNodeMouseLeave={onNodeMouseLeave}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>
@@ -155,7 +170,7 @@ export function useReactFlowWrapper({ dispatch }) {
 
 export function ReactFlowStoreInterface({ RFState, setElements }) {
   // Uncomment below to view reactFlowState
-  //const reactFlowState = useStoreState((state) => state);
+  const reactFlowState = useStoreState((state) => state);
   const { transform } = useZoomPanHelper();
 
   useEffect(() => {
@@ -166,5 +181,6 @@ export function ReactFlowStoreInterface({ RFState, setElements }) {
     }
   }, [RFState, setElements, transform]);
 
+  // console.log(reactFlowState);
   return null;
 }
