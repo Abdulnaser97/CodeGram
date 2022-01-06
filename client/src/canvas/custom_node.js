@@ -1,5 +1,5 @@
 import React from "react";
-import { Handle } from "react-flow-renderer";
+import { Handle, useStoreState } from "react-flow-renderer";
 import { Resizable } from "re-resizable";
 
 import "./nodeStyles.css";
@@ -35,6 +35,9 @@ const CustomNodeComponent = (props) => {
     `${Math.min(width, height) / 12}px`
   );
 
+  var selected = props.selected ? 'highlightedNode' : ''
+
+
   useEffect(() => {
     props.data.height = height;
     props.data.width = width;
@@ -42,7 +45,7 @@ const CustomNodeComponent = (props) => {
 
   return (
     <Resizable
-      className={`${props.data.type}`}
+      className={`${props.data.type} ${selected}`}
       size={{ width, height }}
       onResizeStart={(e, direction, ref, d) => {
         ref.className = `${props.data.type} nodrag`;
@@ -70,12 +73,13 @@ const CustomNodeComponent = (props) => {
       {/* TODO: Create an X button to remove node */}
       {/* <button onClick={data.onElementsRemove}>X</button> */}
       <Typography
-        color="primary.darkGrey"
+        color={props.selected ? "white" : "primary.darkGrey"} 
         fontWeight="Medium"
         style={{ "font-size": fontSize }}
       >
         {props.data.label}
       </Typography>
+
       <Handle
         className="handle target"
         type="source"

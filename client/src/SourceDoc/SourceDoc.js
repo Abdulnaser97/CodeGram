@@ -117,6 +117,8 @@ function SourceDoc(props) {
       if (el){
         setSelectedElements(el)
         props.functions.setSelectedEL(el)
+      } else {
+        setSelectedElements([])
       }
     }
   }, [openArtifact])
@@ -196,7 +198,7 @@ function SourceDoc(props) {
         setPath(curPath)
       }
       //location exists and is a directory (has contents member) 
-       else if (repository[openArtifact.path].contents) {
+       else if (repository[openArtifact.path] && repository[openArtifact.path].contents) {
           setPath(pathCreator(openArtifact.path.split("/")))
       } 
       // else set path to parent directory of a openArtifact
@@ -327,20 +329,40 @@ function SourceDoc(props) {
 function searchCodeBase() {
   setSDContent(fuse.search(search)) 
 }
-  if(props.data.isOpenSD){
+  //if(props.data.isOpenSD){
   return (
+    <div className={props.data.isOpenSD ? "openSD" : "hiddenSD" }> 
+      
+      <TextField
+        margin="dense"
+        placeholder="Search your repository!"
+        inputProps={{ "aria-label": "search" }}
+        onChange={handleSearch}
+        onKeyPress={searchCodeBase}
+        sx={{         
+          position: "fixed",
+          top: "8vh",
+          right: "2vw",
+          width: "35vw",
+          "z-index": 0,
+          borderRadius: "10px",
+          border:'none',
+          backgroundColor: "white",
+          boxShadow: 2
+        }} 
+    ></TextField>
     <Container
       className="sourceDocContainer"
       variant="absolute"
+      sx={{ boxShadow: 2, p: 1, }}
       style={{
         position: "fixed",
-        padding:"2vh",
-        top: "7vh",
-        right: "0",
-        width: "42vw",
-        height: "95vh",
+        top: "17vh",
+        right: "2vw",
+        width: "35vw",
+        height: "80vh",
         "z-index": 0,
-  
+        borderRadius: "10px",
       }}
     >
       <Box sx={{ }}>
@@ -367,14 +389,23 @@ function searchCodeBase() {
         index={0}
         sx={{ display: "flex", flexDirection: "column"}}
       >
-        <TextField
-          margin="dense"
-          placeholder="Search your repository!"
-          inputProps={{ "aria-label": "search" }}
-          onChange={handleSearch}
-          onKeyPress={searchCodeBase}
-          fullWidth
-        ></TextField>
+
+        <Box>
+          <div className="pathContainer">
+            {path.length ? pathComponent : "Root"}
+          </div>
+          <div
+            className="repoContainer"
+            style={{
+              position: "relative",
+              height: "35vh",
+              "overflow-y": "scroll",
+            }}
+          >
+            {sourceFiles}
+          </div>
+        </Box>
+        
         <Typography variant="h6" textAlign="left">
           Create Node
         </Typography>
@@ -393,28 +424,17 @@ function searchCodeBase() {
         >
           Create Node
         </Button>
-        <Box my={3}>
-          <div className="pathContainer">
-            {path.length ? pathComponent : "Root"}
-          </div>
-          <div
-            className="repoContainer"
-            style={{
-              position: "relative",
-              height: "35vh",
-              "overflow-y": "scroll",
-            }}
-          >
-            {sourceFiles}
-          </div>
-        </Box>
-
       </TabPanel>
       <TabPanel
         value={value}
         index={1}
         style={{ height: "90%", overflow: "scroll" }}
       >
+          <Typography variant="h4" fontWeight="bold"      
+          style={{
+              position: "sticky", zIndex:1}}>
+            {props.data.selectedEL.data.label}
+          </Typography>
         <pre> {`${curCode}`} </pre>
       </TabPanel>
       <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
@@ -445,11 +465,11 @@ function searchCodeBase() {
         </Box>
       </TabPanel>
     </Container>
-  
+  </div>
   );
-  } else {
-    return null 
-  }
+  // } else {
+  //   return null 
+  // }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SourceDoc);

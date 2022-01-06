@@ -9,8 +9,17 @@
   right: 10vw;
   height: 60vh;
   width: 35vw;
-  background-color: #ffffff;
-  border: 2px rgb(226, 226, 226) solid;
-  border-top: none;
+  background-color: rgb(255, 255, 255);
   margin: auto 0;
+}
+
+.openSD {
+  opacity:1; 
+  transition-duration: 0.2s;
+}
+
+.hiddenSD { 
+  opacity:0;
+  transition-duration: 0.2s;
+  pointer-events: none;
 }

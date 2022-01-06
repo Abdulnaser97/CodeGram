@@ -193,7 +193,7 @@ function App() {
           <AppBar
             elevation={0}
             position="sticky"
-            sx={{ backgroundColor: "#ffffff", borderColor: "black", borderWidth:"1", height:"8vh"}}
+            sx={{ backgroundColor: "#f7f7f7", borderColor: "black", borderWidth:"1", height:"8vh"}}
             >
             <Toolbar>
               <MenuItem
@@ -215,12 +215,13 @@ function App() {
               <Box sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}>
                 <FormControl fullWidth variant="outlined">
                   <Select
+        
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     value={repo}
                     label="Repository"
                     onChange={handleRepoChange}
-                    sx={{ height:"5vh",backgroundColor: "white", border:"none"}}
+                    size="small"
                     displayEmpty
                     >
                     {renderRepos()}
@@ -234,7 +235,7 @@ function App() {
                   style={{ backgroundColor: "transparent" }}
                   onClick={() => onSave()}
                 >
-                  <Box mx={2} className="SaveButtonWrapper">
+                  <Box className="SaveButtonWrapper">
                     <Typography
                       mx={1}
                       my={0.8}
@@ -245,14 +246,22 @@ function App() {
                       Save
                     </Typography>
                   </Box>
-                  <GitHubIcon color="primary"> </GitHubIcon>
                 </div>
               </Box>
 
               <Box sx={{ "box-shadow": 0 }}>
                 <div className="navbar-button github" onClick={() => setIsOpenSD(prevIsOpenSD => !prevIsOpenSD)}>
-                <Typography mx={2} fontWeight="Medium" color="primary">SourceDoc</Typography> 
-                </div>
+                <Box className="SaveButtonWrapper">
+                    <Typography
+                      mx={1}
+                      my={0.8}
+                      fontSize="1.3vw"
+                      fontWeight="Thin"
+                      color="primary"
+                    >
+                      SourceDoc
+                    </Typography>
+                  </Box></div>
               </Box>
 
               <Box sx={{ "box-shadow": 0 }}>

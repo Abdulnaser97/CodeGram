@@ -37,9 +37,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid #adadad;
+  border: 2px solid #adadad;
   border-radius: 20px;
   background-color: #ffffff;
+  transition: ease-in-out 0.2s;
 }
 
 .square-container {
@@ -61,7 +62,7 @@
   position: relative;
   margin: 0 auto;
   border-radius: 5%;
-  background-color: rgba(160, 160, 160, 0.5);
+  background-color: rgba(209, 209, 209, 0.856);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -81,6 +82,11 @@
 	border-width: 2px;
 }
 
-.fileNode.selected{
-  border-color: lightcoral; 
+.highlightedNode{
+  transition: ease-in-out 0.1s;
+  color:white;
+  font-weight: bold;
+  background-color: #FF8B8B;
+  border:#FF8B8B; 
+  box-shadow: -5px 8px 10px #A36363;
 }

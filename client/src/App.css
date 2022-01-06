@@ -117,8 +117,7 @@ body {
 }
 
 .selectedFile {
-  box-shadow: rgba(0, 0, 0, 0.623) 1.95px 1.95px 2.6px;
-  background-color: #f58282;
+  box-shadow:  #ff6666 1.95px 1.95px 2.6px;
 }
 
 
@@ -219,7 +218,7 @@ pre {
 }
 
 .pathContainer {
-  margin: 2% 0;
+  margin-bottom: 2%;
   padding: 1% 5%;
   background-color: rgb(241, 241, 241);
   border-radius: 1vw;
@@ -253,3 +252,4 @@ pre {
   color: white;
   font-weight: 500;
 }
+
