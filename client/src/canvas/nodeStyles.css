@@ -44,9 +44,9 @@
 }
 
 .square-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  /* display: flex;
+  justify-content: center; */
+  /* align-items: center; */
   border: 1px dashed #ff6666;
   border-radius: 5px;
   background-color: none;
@@ -89,4 +89,9 @@
   background-color: #FF8B8B;
   border:#FF8B8B; 
   box-shadow: -5px 8px 10px #A36363;
+}
+
+.highlightedWrapper {
+  transition: ease-in-out 0.1s;
+  border: 3px dashed #ff6666;
 }

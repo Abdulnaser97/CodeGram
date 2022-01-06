@@ -38,7 +38,7 @@ export function useReactFlowWrapper({ dispatch }) {
     return { RFState: state.RFState };
   });
   const [elements, setElements] = useState(initialElements);
-  const [nodeName, setNodeName] = useState("nodeName");
+  const [nodeName, setNodeName] = useState("");
 
   // Selected node
   const [selectedEL, setSelectedEL] = useState(initialElements[0]);
@@ -83,13 +83,13 @@ export function useReactFlowWrapper({ dispatch }) {
           path: file.path,
           // can set this type to whatever is selected in the tool bar for now
           // but the type will probably be set from a few different places
-          type: "fileNode",
+          type: file.name !== undefined ? 'fileNode' : 'square-container',
           width: 200,
           height: 200,
           // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
           file: file
         },
-        type: "fileNode",
+        type: file.name !== undefined ? 'fileNode' : 'wrapperNode',
         width: 200,
         height: 200,
         position: { x: 500, y: 400 },

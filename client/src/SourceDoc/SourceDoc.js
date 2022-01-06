@@ -348,13 +348,13 @@ function searchCodeBase() {
           borderRadius: "10px",
           border:'none',
           backgroundColor: "white",
-          boxShadow: 2
+          boxShadow: 6
         }} 
     ></TextField>
     <Container
       className="sourceDocContainer"
       variant="absolute"
-      sx={{ boxShadow: 2, p: 1, }}
+      sx={{ boxShadow: 6, pt: 2, }}
       style={{
         position: "fixed",
         top: "17vh",
@@ -407,7 +407,7 @@ function searchCodeBase() {
         </Box>
         
         <Typography variant="h6" textAlign="left">
-          Create Node
+          Create Wrapper Node
         </Typography>
         <TextField
           margin="dense"
