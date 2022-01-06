@@ -3,9 +3,10 @@ import {
   CustomNodeComponent,
   WrapperNodeComponent,
 } from "../canvas/custom_node";
-import ReactFlow, { addEdge, useZoomPanHelper } from "react-flow-renderer";
+import ReactFlow, { addEdge, SmoothStepEdge, useZoomPanHelper, StraightEdge, StepEdge } from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import { addNodeToArray, deleteNodeFromArray } from "../Redux/actions/nodes";
+import {useToolBar} from "../components/ToolBar.js";
 
 var initialElements = [
   {
@@ -26,6 +27,13 @@ var initialElements = [
   },
 ];
 
+const edgeTypes = {
+    default: SmoothStepEdge,
+    straight: StraightEdge,
+    step: StepEdge,
+    smoothstep: SmoothStepEdge
+};
+
 const getNodeId = () => `randomnode_${+new Date()}`;
 
 /**
@@ -41,9 +49,12 @@ export function useReactFlowWrapper({ dispatch }) {
   const [nodeName, setNodeName] = useState("nodeName");
 
   // Selected node
-  const [selectedEL, setSelectedEL] = useState(initialElements[0]);
+  const [selectedEL, setSelectedEL] = useState(initialElements[0]); ///////////////////////////////////////////////
   const yPos = useRef(0);
   const [rfInstance, setRfInstance] = useState(null);
+
+  //Selected node style
+  const {toolBarRender, selectedNodeStyle, selectedNodeStyleName} = useToolBar();
 
   const onElementClick = (event, element) => {
     console.log("click", element);
@@ -61,10 +72,11 @@ export function useReactFlowWrapper({ dispatch }) {
     dispatch(deleteNodeFromArray(elementsToRemove[0]));
   };
 
-  // add node function
+  // Add node function
   const addNode = useCallback(
     (file) => {
       var label = nodeName;
+      //const [selectedNodeType, selectedNodeTypeName] = SendNodeType();
       const newNode = {
         id: getNodeId(),
         // this data will get filled with the array of JSON objects that will come
@@ -81,12 +93,14 @@ export function useReactFlowWrapper({ dispatch }) {
           url: file.url !== undefined ? file.url : "",
           // can set this type to whatever is selected in the tool bar for now
           // but the type will probably be set from a few different places
-          type: "fileNode",
+
+          //Change type to reflect user's selection with some default if not already defined
+          type: selectedNodeStyleName !== undefined ? selectedNodeStyleName : "fileNode",
           width: 200,
           height: 200,
-          // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
+          
         },
-        type: "fileNode",
+        type: selectedNodeStyleName !== undefined ? selectedNodeStyleName : "fileNode", //not sure why this is repeated but ok. 
         width: 200,
         height: 200,
         position: { x: 500, y: 400 },
@@ -114,6 +128,8 @@ export function useReactFlowWrapper({ dispatch }) {
           onConnect={onConnect}
           onLoad={setRfInstance}
           onElementClick={onElementClick}
+          edgeTypes={edgeTypes}
+          key="edges"
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>

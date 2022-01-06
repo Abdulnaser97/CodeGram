@@ -189,7 +189,7 @@ function SourceDoc(props) {
     setSearch(event.target.value);
   };
 
-  useEffect(() => {
+  useEffect(() => { ////////////////////////////////////////////////////////////////////////////////////////
     if (props.data.selectedEL.data.url !== undefined) {
       // calls node url to get file content
       axios

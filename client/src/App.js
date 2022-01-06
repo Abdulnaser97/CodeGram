@@ -38,7 +38,8 @@ import {
 
 // pages
 import { LandingPage } from "./Landing/LandingPage";
-import ToolBar from "./components/ToolBar.js";
+import useToolBar from "./components/ToolBar.js";
+
 
 const LogoTopNav = styled.div`
   position: relative;
@@ -75,6 +76,9 @@ function App() {
 
   // redux
   const dispatch = useDispatch();
+
+  //Dereference ToolBar function to access render
+  const { toolBarRender, NodeStyle, NodeStyleName} = useToolBar();
 
   const {
     render,
@@ -267,7 +271,8 @@ function App() {
             Welcome to CodeGram demo {user.username}!
           </Typography>
 
-          <ToolBar />
+          {toolBarRender}
+
           <Container className="canvasContainer">{render}</Container>
           <SourceDoc
             functions={{
