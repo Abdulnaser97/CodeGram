@@ -278,8 +278,8 @@ function App() {
           <Typography
             className="welcomeMessage"
             fontWeight="light"
-            variant="h6"
             color="primary.grey"
+            fontWeight={"2vh"}
             >
             Welcome to CodeGram demo {user.username}!
           </Typography>

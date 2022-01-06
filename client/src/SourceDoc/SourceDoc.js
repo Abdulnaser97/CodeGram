@@ -342,14 +342,14 @@ function searchCodeBase() {
           display:"flex",
           flexDirection:"row",
           position: "fixed",
-          top: "10vh",
+          top: "8vh",
           right: "2vw",
           width: "40vw",
         }}
       >
 
       <Typography
-        fontSize={'3vh'}
+        fontSize={'2vh'}
         color={"#f58282"}
         fontWeight={"bold"}
         mx={1}
@@ -367,8 +367,9 @@ function searchCodeBase() {
           border:'none',
           backgroundColor: "rgb(247, 247, 247)",
           boxShadow: 6,
-          fontSize:"3vh",
+          fontSize:"2vh",
           outline:"none",
+          width:"65%"
           
         }} 
       />    
