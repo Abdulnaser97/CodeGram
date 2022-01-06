@@ -1,5 +1,5 @@
 import "../App.css";
-
+import "./SourceDoc.css"
 // mui components
 import {
   Box,
@@ -13,6 +13,8 @@ import {
 
 // third party dependecnies
 import PropTypes from "prop-types";
+import { useStoreActions } from 'react-flow-renderer';
+import Fuse from 'fuse.js'
 
 // react
 import { useState, useEffect } from "react";
@@ -25,6 +27,25 @@ import { connect } from "react-redux";
 // components
 import SourceDocFile from "./SourceDocFile";
 import axios from "axios";
+
+const options = {
+  // isCaseSensitive: false,
+  // includeScore: false,
+  // shouldSort: true,
+  // includeMatches: false,
+  // findAllMatches: false,
+  // minMatchCharLength: 1,
+  // location: 0,
+  // threshold: 0.6,
+  // distance: 100,
+  // useExtendedSearch: false,
+  // ignoreLocation: false,
+  // ignoreFieldNorm: false,
+  // fieldNormWeight: 1,
+  keys: [
+    "name"
+  ]
+};
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -59,113 +80,212 @@ function a11yProps(index) {
   };
 }
 
-// functions needed
-function searchCodeBase() {
-  return null;
-}
+
 
 function SourceDoc(props) {
   const state = useSelector((state) => state);
+  const repository = state.repoFiles.repoFiles[0]
+
+  //console.log(state)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
   // state for search
   const [search, setSearch] = useState("search");
   const [curCode, setCurCode] = useState("Select a nnode to view file");
+
   // state for selected file
-  const [selectedFile, setSelectedFile] = useState("");
+  const [openArtifact, setOpenArtifact] = useState("");
+  const [sourceFiles, setSourceFiles] = useState(null)
+  const [path, setPath] = useState([])
+  const [homePath, setHomePath] = useState(null)
+  const [pathComponent, setPathComponent] = useState(null)
+  const [fuse, setFuse] = useState(null)
+  const [SDContent, setSDContent] = useState (null)
+  const setSelectedElements = useStoreActions((actions) => actions.setSelectedElements); 
+  
 
-  const [sourceFiles, setSourceFiles] = useState(null);
-  const [path, setPath] = useState([]);
-  const [pathComponent, setPathComponent] = useState(null);
-
+  // change open artifact to beb the file from react flow
   useEffect(() => {
-    if (props.data.repo && state.repoFiles.repoFiles[0]) {
-      var homePath = {
-        fileName: props.data.repo,
-        dir: state.repoFiles.repoFiles[0],
-        path: props.data.repo,
-      };
-      var newPath = [homePath];
-      setPath(newPath);
-      setSelectedFile(homePath);
+    if (repository)
+      setOpenArtifact(repository[props.data.selectedEL.data.path])
+  }, [props.data.selectedEL])
+
+  // highlight node on canvas if exists -> may need optimizing 
+  useEffect(() => {
+    if (openArtifact){
+      var el = state.nodes.nodesArr.find(node => node.data.path == openArtifact.path)
+      if (el){
+        setSelectedElements(el)
+        props.functions.setSelectedEL(el)
+      }
     }
-  }, [props.data.repo, state.repoFiles.repoFiles]);
-
-  // logic for updating our path variable
+  }, [openArtifact])
+ 
+  // set content of sourceDoc 
   useEffect(() => {
-    var dir = null;
-    var curPath = null;
-
-    if (selectedFile) {
-      if (selectedFile.dir) {
-        dir = selectedFile.dir;
-      } else {
-        dir = selectedFile.contents;
-      }
-
-      if (path.includes(selectedFile)) {
-        let curPath = [...path];
-        curPath.length = path.indexOf(selectedFile) + 1;
-        setPath(curPath);
-      } else {
-        if (selectedFile.contents) {
-          setPath((path) => [...path, selectedFile]);
-        }
-      }
-
-      if (dir !== undefined && dir !== null) {
+    if (SDContent === null || SDContent === undefined){
+      return
+    }
+    else if (SDContent[0] && SDContent[0].length > 1) { 
+      if (SDContent !== undefined && SDContent !== null) {
         var repoList = [];
-        const files = dir;
-        for (var i = 0; i < files.length; i++) {
+        const files = SDContent;
+        for (const [key,value] of Object.entries(files)){
           repoList.push(
             <SourceDocFile
               addNode={props.functions.addNode}
-              setSelectedFile={setSelectedFile}
-              file={files[i]}
-              selectedFile={selectedFile}
+              setOpenArtifact={setOpenArtifact}
+              file={value[1]}
+              openArtifact={openArtifact}
             />
           );
         }
         setSourceFiles(repoList);
       }
     }
-  }, [state, selectedFile]);
+    else {
+      if (SDContent !== undefined && SDContent !== null) {
+        var repoList = [];
+        const files = SDContent;
+        for (const f of files){
+          repoList.push(
+            <SourceDocFile
+              addNode={props.functions.addNode}
+              setOpenArtifact={setOpenArtifact}
+              file={f}
+              openArtifact={openArtifact}
+            />
+          );
+        }
+        setSourceFiles(repoList);
+      }
+    } 
+  }, [SDContent, props.data.selectedEL, openArtifact])
+  
+  useEffect(() => {
+    if (props.data.repo && repository ) {
+      var homeDir = []
+      // push home directory files into home path 
+      for (const [key,val] of Object.entries(repository)){
+        key.split('/').length === 1 && homeDir.push(val)
+      }
 
-  // separate for now as may need more logic here in future
-  function pathClickHandler(curFile) {
-    setSelectedFile(curFile);
-  }
+      var hPath = {
+        name: props.data.repo,
+        dir: homeDir,
+        path: props.data.repo,
+      }
+      // IMPORTANT: Fuse search object currently created here 
+      // May be good to move to state so it can be a shared function to 
+      // search through the react flow nodes array or the repo files array
+      const myFuse = new Fuse(Object.values(repository), options);
+      setHomePath(hPath)
+      setPath([hPath])
+      setOpenArtifact(hPath)
+      setFuse(myFuse)
+    }
+  }, [props.data.repo, state.repoFiles.repoFiles]);
 
-  // path component which is clickable
-  function PathPart(props) {
-    const { curFile, i } = props;
-    return (
-      <p
-        key={i}
-        onClick={() => {
-          pathClickHandler(curFile);
-        }}
-      >
-        {`/${curFile.fileName}`}
-      </p>
-    );
+  // logic for updating our path variable whenever the selected File changes
+  useEffect(() => {
+    if (openArtifact && repository) {
+      // if new openArtifact iis on the path already 
+      if (path.includes(openArtifact)) {
+        let curPath = [...path]
+        curPath.length = path.indexOf(openArtifact) + 1
+        setPath(curPath)
+      }
+      //location exists and is a directory (has contents member) 
+       else if (repository[openArtifact.path].contents) {
+          setPath(pathCreator(openArtifact.path.split("/")))
+      } 
+      // else set path to parent directory of a openArtifact
+      else {
+        let curPath = openArtifact.path.split("/")
+        var pathArr = curPath.slice(0,curPath.length)
+        pathArr.length -= 1 
+        setPath(pathCreator(pathArr))
+      }
+    }
+  }, [state, openArtifact]);
+
+  // create path state which is a list of path subsection name and the subpath
+  function pathCreator(path){
+    var newPath = path
+    var toBePath = [homePath] 
+    for (var i = 0; i < newPath.length; i++){
+      toBePath.push( 
+        {
+          name: newPath[i], 
+          path: newPath.slice(0, i+1).join("/")
+        }
+      )
+    }
+    return toBePath
   }
 
   // render method to loop through path and create elements
   function renderPath(curPath) {
     var renderedPath = [];
     for (var i = 0; i < curPath.length; i++) {
-      var curFile = curPath[i];
-      renderedPath.push(<PathPart curFile={curFile} i={i} />);
+      var curFile = curPath[i]
+      renderedPath.push(
+        <PathPart 
+          key={i}
+          pathPart={curFile}
+        />
+      );
     }
     return renderedPath;
   }
 
-  // re render path component if path ever changes
-  useEffect(() => {
-    setPathComponent(renderPath(path));
-  }, [path]);
+  // path component which is clickable 
+  function PathPart(props) {
+    const { pathPart } = props;
+    return (
+      <p onClick={() => {
+        pathClickHandler(pathPart)
+      }}
+      >
+        {` > ${pathPart.name}`}
+      </p>
+    )
+  }
 
+  // separate for now as may need more logic here in future
+  function pathClickHandler(curFile) {
+    // if clicked path has SDContent member (root directory)
+    if (curFile.dir){
+      setOpenArtifact(curFile)
+    }
+    // else find file from state 
+    else {
+      setOpenArtifact(repository[curFile.path])
+    }
+  }
+
+  // re render path component and directory if path ever changes
+  useEffect(() => {
+    // guard the use effect 
+    if (path.length && repository){
+      // create new path component 
+      setPathComponent(renderPath(path))
+      // render home root 
+      if (
+        (openArtifact.dir || path.length === 1) 
+          && 
+        !openArtifact.path.includes("/")) 
+      {
+        setSDContent(homePath.dir)
+      }
+      // all other files and directories
+      else { 
+        setSDContent(repository[path[path.length-1].path].contents)
+      }
+    }
+  }, [path])
+
+  // 
   function renderFiles() {
     var files = [];
     if (props.data.selectedEL.data.parentNodes) {
@@ -182,10 +302,8 @@ function SourceDoc(props) {
   };
 
   const handleSearch = (event, newValue) => {
-    var searchVal = event.target.value;
-    const found = props.data.repoData.data.find((file) =>
-      file.name.startsWith(searchVal)
-    );
+    // set null during search so any clicks after a serach still trigger rerender
+    setOpenArtifact(null)
     setSearch(event.target.value);
   };
 
@@ -205,23 +323,27 @@ function SourceDoc(props) {
     }
   }, [props.data.selectedEL]);
 
+// search method
+function searchCodeBase() {
+  setSDContent(fuse.search(search)) 
+}
+  if(props.data.isOpenSD){
   return (
     <Container
       className="sourceDocContainer"
       variant="absolute"
-      sx={{ boxShadow: 10, m: 3, p: 3 }}
       style={{
         position: "fixed",
-        top: "12vh",
-        right: "1vw",
-        width: "35vw",
-        height: "80vh",
+        padding:"2vh",
+        top: "7vh",
+        right: "0",
+        width: "42vw",
+        height: "95vh",
         "z-index": 0,
-        borderRadius: "10px",
-        backgroundColor: "white",
+  
       }}
     >
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+      <Box sx={{ }}>
         <Tabs
           TabIndicatorProps={{
             style: {
@@ -243,16 +365,23 @@ function SourceDoc(props) {
       <TabPanel
         value={value}
         index={0}
-        sx={{ display: "flex", flexDirection: "column" }}
+        sx={{ display: "flex", flexDirection: "column"}}
       >
-        <Typography variant="h5" textAlign="left">
+        <TextField
+          margin="dense"
+          placeholder="Search your repository!"
+          inputProps={{ "aria-label": "search" }}
+          onChange={handleSearch}
+          onKeyPress={searchCodeBase}
+          fullWidth
+        ></TextField>
+        <Typography variant="h6" textAlign="left">
           Create Node
         </Typography>
         <TextField
           margin="dense"
           placeholder="Name.."
           inputProps={{ "aria-label": "search" }}
-          onKeyPress={searchCodeBase}
           onChange={props.functions.handleName}
           fullWidth
         ></TextField>
@@ -264,7 +393,6 @@ function SourceDoc(props) {
         >
           Create Node
         </Button>
-
         <Box my={3}>
           <div className="pathContainer">
             {path.length ? pathComponent : "Root"}
@@ -281,14 +409,6 @@ function SourceDoc(props) {
           </div>
         </Box>
 
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={props.functions.printNodesArr}
-          fullWidth
-        >
-          Save Diagram
-        </Button>
       </TabPanel>
       <TabPanel
         value={value}
@@ -325,7 +445,11 @@ function SourceDoc(props) {
         </Box>
       </TabPanel>
     </Container>
+  
   );
+  } else {
+    return null 
+  }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SourceDoc);

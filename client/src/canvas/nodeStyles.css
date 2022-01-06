@@ -71,10 +71,16 @@
   text-align: center;
 }
 
-.react-flow__node.selected {
-  box-shadow: none;
+.react-flow__node {
+	border-width: 2px;
 }
 
-.react-flow__node:hover {
-  filter: brightness(0.9);
+.react-flow__node.selected {
+	box-shadow: none;
+	border-color: lightcoral;
+	border-width: 2px;
+}
+
+.fileNode.selected{
+  border-color: lightcoral; 
 }

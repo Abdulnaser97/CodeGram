@@ -103,7 +103,7 @@ body {
   position: relative;
   height: 5%;
   width: 85%;
-  border-radius: 1vw;
+  border-radius: 1vh;
   margin: 1%;
   padding: 2% 5%;
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
@@ -116,13 +116,11 @@ body {
   box-shadow: rgba(0, 0, 0, 0.623) 1.95px 1.95px 2.6px;
 }
 
-.selected {
-  box-shadow: rgba(0, 0, 0, 0.603) 0px 3px 8px;
+.selectedFile {
+  box-shadow: rgba(0, 0, 0, 0.623) 1.95px 1.95px 2.6px;
+  background-color: #f58282;
 }
 
-.selected:hover {
-  box-shadow: rgba(0, 0, 0, 0.603) 0px 3px 8px;
-}
 
 .foldertype {
   background-color: rgb(226, 226, 226);
@@ -211,7 +209,7 @@ a:hover {
 }
 
 pre {
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .repoContainer {
@@ -229,15 +227,14 @@ pre {
 
 .pathContainer p {
   display: inline;
-  margin: 0;
-  color: rgba(0, 0, 0, 0.769);
-  font-size: 12px;
+  margin:0;
+  color:rgba(0, 0, 0, 0.769);
+  font-size: 14px; 
 }
 
 .pathContainer p:hover {
   cursor: pointer;
   color: #f58282;
-  text-decoration: underline;
 }
 
 .SaveButtonWrapper {

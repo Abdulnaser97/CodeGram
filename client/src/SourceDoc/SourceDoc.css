@@ -9,7 +9,8 @@
   right: 10vw;
   height: 60vh;
   width: 35vw;
-  background-color: rgb(247, 247, 247);
-  border: 1px darkgrey solid;
+  background-color: #ffffff;
+  border: 2px rgb(226, 226, 226) solid;
+  border-top: none;
   margin: auto 0;
 }

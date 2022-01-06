@@ -30,11 +30,8 @@ import { ThemeProvider } from "@material-ui/core";
 import { theme } from "./Themes";
 import { loadDiagram } from "./Redux/actions/loadDiagram";
 import SourceDoc from "./SourceDoc/SourceDoc";
-
-import {
-  CustomNodeComponent,
-  WrapperNodeComponent,
-} from "./canvas/custom_node";
+import { ReactFlowProvider } from "react-flow-renderer";
+import { CustomNodeComponent, WrapperNodeComponent } from "./canvas/custom_node";
 
 // pages
 import { LandingPage } from "./Landing/LandingPage";
@@ -72,7 +69,7 @@ function App() {
   const [repo, setRepo] = useState("");
   const [repoData, setRepoData] = useState(0);
   const [loggedIn, setLoggedIn] = useState(false);
-
+  const [isOpenSD, setIsOpenSD] = useState(true);
   // redux
   const dispatch = useDispatch();
 
@@ -85,6 +82,7 @@ function App() {
     initialElements,
     selectedEL,
     rfInstance,
+    setSelectedEL
   } = useReactFlowWrapper({ dispatch });
 
   // get all repos in users account
@@ -188,18 +186,20 @@ function App() {
   if (loggedIn) {
     return (
       <ThemeProvider theme={theme}>
+        <ReactFlowProvider> 
+
         <div className="App">
           {/* move app bar to its own navigation component  */}
           <AppBar
             elevation={0}
             position="sticky"
-            style={{ backgroundColor: "#f7f7f7" }}
-          >
+            sx={{ backgroundColor: "#ffffff", borderColor: "black", borderWidth:"1", height:"8vh"}}
+            >
             <Toolbar>
               <MenuItem
                 sx={{ flexGrow: 3 }}
                 style={{ backgroundColor: "transparent" }}
-              >
+                >
                 <div className="LogoWrapper">
                   <LogoTopNav className="LogoTopNav" />
                   <h2
@@ -207,7 +207,7 @@ function App() {
                       fontFamily: "Poppins-Thin",
                       color: "#FFAEA6",
                     }}
-                  >
+                    >
                     CodeGram
                   </h2>
                 </div>
@@ -220,9 +220,9 @@ function App() {
                     value={repo}
                     label="Repository"
                     onChange={handleRepoChange}
-                    sx={{ backgroundColor: "white" }}
+                    sx={{ height:"5vh",backgroundColor: "white", border:"none"}}
                     displayEmpty
-                  >
+                    >
                     {renderRepos()}
                   </Select>
                 </FormControl>
@@ -250,6 +250,12 @@ function App() {
               </Box>
 
               <Box sx={{ "box-shadow": 0 }}>
+                <div className="navbar-button github" onClick={() => setIsOpenSD(prevIsOpenSD => !prevIsOpenSD)}>
+                <Typography mx={2} fontWeight="Medium" color="primary">SourceDoc</Typography> 
+                </div>
+              </Box>
+
+              <Box sx={{ "box-shadow": 0 }}>
                 <div className="navbar-button github" onClick={() => logout()}>
                   <LogoutIcon color="primary"> </LogoutIcon>
                 </div>
@@ -263,7 +269,7 @@ function App() {
             fontWeight="light"
             variant="h6"
             color="primary.grey"
-          >
+            >
             Welcome to CodeGram demo {user.username}!
           </Typography>
 
@@ -276,14 +282,17 @@ function App() {
               printNodesArr: printNodesArr,
               getPRContent: getPRContent,
               handleName: handleName,
+              setSelectedEL: setSelectedEL
             }}
             data={{
               repo: repo,
               repoData: repoData,
               selectedEL: selectedEL,
+              isOpenSD: isOpenSD
             }}
-          />
+            />
         </div>
+      </ReactFlowProvider>
       </ThemeProvider>
     );
   } else {

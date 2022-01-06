@@ -1,11 +1,17 @@
 import AddBoxIcon from "@mui/icons-material/AddBox";
+import { ListItem } from "@mui/material";
 
 export default function SourceDocFile(props) {
-  const { file, addNode, setSelectedFile, selectedFile } = props;
+  const { addNode, setOpenArtifact, openArtifact } = props;
+  var { file } = props; 
 
-  var fileName = file.fileName;
+  // search results from fuse are returned as items
+  file = file.item ? file.item : file 
+
+  var fileName = file.name 
   var displayClass = "";
 
+  // cstyle lass rendering 
   if (file.type !== "dir") {
     displayClass = "filetype";
   } else {
@@ -13,40 +19,46 @@ export default function SourceDocFile(props) {
     displayClass = "foldertype";
   }
 
-  var selected = selectedFile === file ? "selected" : "";
+  // openArtifact must exist to match names 
+  var selected = openArtifact && openArtifact.name === file.name ? "selectedFile" : "";
 
   function fileClickHandler(file){ 
-    setSelectedFile(file)  
+    setOpenArtifact(file)  
   }
 
   return (
     <div
       className={`SourceDocFile ${displayClass} ${selected} `}
+      >
+      <div 
       onClick={() => fileClickHandler(file)}
-    >
+      style = {{width:"100%", height:"100%", padding:0}}> 
       <div
         style={{
           position: "relative",
           display: "flex",
-          justifyContent: "center",
           alignItems: "center",
         }}
-      >
+        >
         <p
           style={{
             fontFamily: "Poppins-Bold",
             "font-size": "70%",
             color: "#25252",
+            margin:0
           }}
-        >
+          >
           {fileName}
         </p>
+          
+      </div>
       </div>
       <div className="iconWrapper">
         <AddBoxIcon
           fontSize="small"
           onClick={() => {
             addNode(file);
+            setOpenArtifact(file)
           }}
         />
       </div>

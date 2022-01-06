@@ -46,10 +46,11 @@ export function useReactFlowWrapper({ dispatch }) {
   const [rfInstance, setRfInstance] = useState(null);
 
   const onElementClick = (event, element) => {
-    console.log("click", element);
+    //console.log("click", element);
     setSelectedEL(element);
   };
 
+  console.log(selectedEL)
   const onConnect = (params) => setElements((els) => addEdge(params, els));
 
   // Delete Node
@@ -70,21 +71,23 @@ export function useReactFlowWrapper({ dispatch }) {
         // this data will get filled with the array of JSON objects that will come
         // from Github
         data: {
-          label: file.fileName !== undefined ? file.fileName : label,
-          name: file.fileName !== undefined ? file.fileName : label,
+          label: file.name !== undefined ? file.name : label,
+          name: file.name !== undefined ? file.name : label,
           linkedFiles: ["aa.py", "gg.py", "kookoo.py"],
           childNodes: ["da", "de", "do"],
           siblingNodes: ["ta", "te", "to"],
           parentNodes: ["pa", "pe"],
           documentation: ["url1", "url2"],
           description: "",
-          url: file.url !== undefined ? file.url : "",
+          url: file.download_url !== undefined ? file.download_url : file.url,
+          path: file.path,
           // can set this type to whatever is selected in the tool bar for now
           // but the type will probably be set from a few different places
           type: "fileNode",
           width: 200,
           height: 200,
           // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
+          file: file
         },
         type: "fileNode",
         width: 200,
@@ -114,6 +117,7 @@ export function useReactFlowWrapper({ dispatch }) {
           onConnect={onConnect}
           onLoad={setRfInstance}
           onElementClick={onElementClick}
+          connectionMode={"loose"}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>
@@ -126,6 +130,7 @@ export function useReactFlowWrapper({ dispatch }) {
     initialElements: initialElements,
     selectedEL: selectedEL,
     rfInstance: rfInstance,
+    setSelectedEL: setSelectedEL
   };
 }
 
