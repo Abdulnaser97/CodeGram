@@ -3,9 +3,21 @@ import {
   CustomNodeComponent,
   WrapperNodeComponent,
 } from "../canvas/custom_node";
-import ReactFlow, { addEdge, useZoomPanHelper } from "react-flow-renderer";
+import ReactFlow, {
+  addEdge,
+  useZoomPanHelper,
+  ArrowHeadType,
+  useStoreState,
+} from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import { addNodeToArray, deleteNodeFromArray } from "../Redux/actions/nodes";
+
+import FloatingEdge from "../canvas/FloatingEdge.tsx";
+import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
+
+const edgeTypes = {
+  floating: FloatingEdge,
+};
 
 var initialElements = [
   {
@@ -37,6 +49,7 @@ export function useReactFlowWrapper({ dispatch }) {
   const { RFState } = useSelector((state) => {
     return { RFState: state.RFState };
   });
+
   const [elements, setElements] = useState(initialElements);
   const [nodeName, setNodeName] = useState("nodeName");
 
@@ -44,13 +57,44 @@ export function useReactFlowWrapper({ dispatch }) {
   const [selectedEL, setSelectedEL] = useState(initialElements[0]);
   const yPos = useRef(0);
   const [rfInstance, setRfInstance] = useState(null);
+  const [connectionStarted, setConnectionStarted] = useState(false);
+  const [floatTargetHandle, setFloatTargetHandle] = useState(false); // This is a hacky method to force rendering
 
   const onElementClick = (event, element) => {
     console.log("click", element);
     setSelectedEL(element);
   };
 
-  const onConnect = (params) => setElements((els) => addEdge(params, els));
+  const onConnect = (params) => {
+    console.log(params);
+    setElements((els) =>
+      addEdge(
+        { ...params, type: "floating", arrowHeadType: ArrowHeadType.Arrow },
+        els
+      )
+    );
+  };
+  const onConnectStart = (event, { nodeId, handleType }) => {
+    setConnectionStarted(true);
+  };
+  const onConnectStop = (event) => {
+    setConnectionStarted(false);
+  };
+  const onConnectEnd = (event) => {
+    setConnectionStarted(false);
+  };
+
+  const onNodeMouseEnter = (event, node) => {
+    if (connectionStarted) {
+      node.data.floatTargetHandle = true;
+      setFloatTargetHandle(true);
+    }
+  };
+  const onNodeMouseMove = (event, node) => {};
+  const onNodeMouseLeave = (event, node) => {
+    node.data.floatTargetHandle = false;
+    setFloatTargetHandle(false);
+  };
 
   // Delete Node
   const onElementsRemove = (elementsToRemove) => {
@@ -78,6 +122,7 @@ export function useReactFlowWrapper({ dispatch }) {
           parentNodes: ["pa", "pe"],
           documentation: ["url1", "url2"],
           description: "",
+          floatTargetHandle: false,
           url: file.url !== undefined ? file.url : "",
           // can set this type to whatever is selected in the tool bar for now
           // but the type will probably be set from a few different places
@@ -110,10 +155,19 @@ export function useReactFlowWrapper({ dispatch }) {
             circle: CustomNodeComponent,
           }}
           elements={elements}
+          edgeTypes={edgeTypes}
+          connectionLineComponent={FloatingConnectionLine}
           onElementsRemove={onElementsRemove}
           onConnect={onConnect}
           onLoad={setRfInstance}
           onElementClick={onElementClick}
+          onConnectStart={onConnectStart}
+          onConnectStop={onConnectStop}
+          onConnectEnd={onConnectEnd}
+          connectionMode={"loose"}
+          onNodeMouseEnter={onNodeMouseEnter}
+          onNodeMouseMove={onNodeMouseMove}
+          onNodeMouseLeave={onNodeMouseLeave}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>
@@ -131,7 +185,7 @@ export function useReactFlowWrapper({ dispatch }) {
 
 export function ReactFlowStoreInterface({ RFState, setElements }) {
   // Uncomment below to view reactFlowState
-  //const reactFlowState = useStoreState((state) => state);
+  // const reactFlowState = useStoreState((state) => state);
   const { transform } = useZoomPanHelper();
 
   useEffect(() => {
