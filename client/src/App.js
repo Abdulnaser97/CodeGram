@@ -226,6 +226,8 @@ function App() {
                     >
                     {renderRepos()}
                   </Select>
+
+                  
                 </FormControl>
               </Box>
 
@@ -239,7 +241,7 @@ function App() {
                     <Typography
                       mx={1}
                       my={0.8}
-                      fontSize="1.3vw"
+                      fontSize=".8vw"
                       fontWeight="Thin"
                       color="primary"
                     >
@@ -255,7 +257,7 @@ function App() {
                     <Typography
                       mx={1}
                       my={0.8}
-                      fontSize="1.3vw"
+                      fontSize=".8vw"
                       fontWeight="Thin"
                       color="primary"
                     >
@@ -291,7 +293,8 @@ function App() {
               printNodesArr: printNodesArr,
               getPRContent: getPRContent,
               handleName: handleName,
-              setSelectedEL: setSelectedEL
+              setSelectedEL: setSelectedEL,
+              setIsOpenSD:setIsOpenSD
             }}
             data={{
               repo: repo,

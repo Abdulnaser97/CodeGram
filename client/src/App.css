@@ -112,12 +112,13 @@ body {
 }
 
 .SourceDocFile:hover {
-  cursor: pointer;
   box-shadow: rgba(0, 0, 0, 0.623) 1.95px 1.95px 2.6px;
+  cursor: default;
 }
 
 .selectedFile {
-  box-shadow:  #ff6666 1.95px 1.95px 2.6px;
+  background-color: #f58282;
+  color:white;
 }
 
 
@@ -253,3 +254,12 @@ pre {
   font-weight: 500;
 }
 
+.maxButton:hover {
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  cursor:pointer;
+
+} 
+
+::placeholder{
+  color: rgb(189, 189, 189);
+}

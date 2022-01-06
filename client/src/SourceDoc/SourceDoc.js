@@ -27,6 +27,7 @@ import { connect } from "react-redux";
 // components
 import SourceDocFile from "./SourceDocFile";
 import axios from "axios";
+import { fontWeight } from "@mui/system";
 
 const options = {
   // isCaseSensitive: false,
@@ -327,45 +328,66 @@ function SourceDoc(props) {
 
 // search method
 function searchCodeBase() {
-  setSDContent(fuse.search(search)) 
+  if (fuse && search)
+    setSDContent(fuse.search(search))
 }
   //if(props.data.isOpenSD){
   return (
     <div className={props.data.isOpenSD ? "openSD" : "hiddenSD" }> 
       
-      <TextField
-        margin="dense"
-        placeholder="Search your repository!"
-        inputProps={{ "aria-label": "search" }}
+      {/* TODO: extract this compontnt to dashboard if team wants to do "terminal/key
+      board command idea on one side of screen */}  
+      <div
+        style ={{
+          display:"flex",
+          flexDirection:"row",
+          position: "fixed",
+          top: "10vh",
+          right: "2vw",
+          width: "40vw",
+        }}
+      >
+
+      <Typography
+        variant={'h5'}
+        color={"#f58282"}
+        fontWeight={"bold"}
+        mx={1}
+        >
+        codeGram =>: 
+      </Typography>
+
+      <input
+        placeholder=" Start typing to search!" 
         onChange={handleSearch}
         onKeyPress={searchCodeBase}
-        sx={{         
-          position: "fixed",
-          top: "8vh",
-          right: "2vw",
-          width: "35vw",
+        style={{         
           "z-index": 0,
-          borderRadius: "10px",
           border:'none',
-          backgroundColor: "white",
-          boxShadow: 6
+          backgroundColor: "rgb(247, 247, 247)",
+          boxShadow: 6,
+          fontSize:"3vh",
+          outline:"none",
+          
         }} 
-    ></TextField>
+      />    
+    </div>
+
     <Container
       className="sourceDocContainer"
       variant="absolute"
-      sx={{ boxShadow: 6, pt: 2, }}
+      sx={{ pt: 2 }}
       style={{
         position: "fixed",
-        top: "17vh",
+        top: "16vh",
         right: "2vw",
-        width: "35vw",
+        width: "40vw",
         height: "80vh",
         "z-index": 0,
         borderRadius: "10px",
       }}
     >
-      <Box sx={{ }}>
+      <Box m={0}>
         <Tabs
           TabIndicatorProps={{
             style: {

@@ -1,5 +1,6 @@
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import { ListItem } from "@mui/material";
+import { display } from "@mui/system";
 
 export default function SourceDocFile(props) {
   const { addNode, setOpenArtifact, openArtifact } = props;
@@ -22,6 +23,8 @@ export default function SourceDocFile(props) {
   // openArtifact must exist to match names 
   var selected = openArtifact && openArtifact.name === file.name ? "selectedFile" : "";
 
+  displayClass = selected ? "" : displayClass 
+  
   function fileClickHandler(file){ 
     setOpenArtifact(file)  
   }
