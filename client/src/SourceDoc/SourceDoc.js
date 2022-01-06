@@ -349,10 +349,11 @@ function searchCodeBase() {
       >
 
       <Typography
-        variant={'h5'}
+        fontSize={'3vh'}
         color={"#f58282"}
         fontWeight={"bold"}
         mx={1}
+        my={0}
         >
         codeGram =>: 
       </Typography>
