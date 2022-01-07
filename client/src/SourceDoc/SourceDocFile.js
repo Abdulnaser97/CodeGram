@@ -3,7 +3,7 @@ import { ListItem } from "@mui/material";
 import { display } from "@mui/system";
 
 export default function SourceDocFile(props) {
-  const { addNode, setOpenArtifact, openArtifact, selectedEL } = props;
+  const { addNode, setOpenArtifact, openArtifact } = props;
   var { file } = props; 
 
   // search results from fuse are returned as items
@@ -21,7 +21,7 @@ export default function SourceDocFile(props) {
   }
 
   // openArtifact must exist to match names 
-  var selected =  openArtifact === file && selectedEL.label === file.name ? "selectedFile" : "";
+  var selected = openArtifact === file ? "selectedFile" : "";
 
   displayClass = selected ? "" : displayClass 
   
