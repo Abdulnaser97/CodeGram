@@ -28,6 +28,9 @@ const sourceHandleStyle = {
   width: "10px",
 };
 
+
+// TODO: need to store data from here in state then dispatch to 
+// the react elemnts array when done typing/editing 
 const CustomNodeComponent = (props) => {
   const [width, setWidth] = useState(props.data.width ? props.data.width : 200);
   const [height, setHeight] = useState(
@@ -56,6 +59,7 @@ const CustomNodeComponent = (props) => {
   return (
     <div>
       {
+        // this is bunch of conditonal code to decide what renders on a custom node 
         (props.data.type === 'square-container' ||
           props.data.type === 'cylinder')
         &&
