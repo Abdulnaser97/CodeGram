@@ -362,7 +362,7 @@ function App() {
               <div className="SourceDocMinimize" />
 
               <Typography
-                fontSize={"2vh"}
+                fontSize={"1vw"}
                 color={"#f58282"}
                 fontWeight={"bold"}
                 mx={1}
@@ -380,9 +380,11 @@ function App() {
                   border: "none",
                   backgroundColor: "rgb(247, 247, 247)",
                   boxShadow: 6,
-                  fontSize:".8vw",
+                  color: "grey",
+                  fontSize:"1vw",
                   outline: "none",
                   width: "65%",
+                  fontWeight:'bold'
                 }}
               />
             </div>
