@@ -73,6 +73,7 @@ export function useToolBar(props) {
   const [active, setActive] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
 
+
   //initialization of shape type to be drawn
   const [selectedShape, setSelectedShape] = useState(<Rectangle />);
   const selectedShapeName = useRef("rect");
@@ -82,8 +83,10 @@ export function useToolBar(props) {
     setActive("selectShape");
   };
 
+
   //handles user's choice of shape
   const shapeSelect = (shape, name) => {
+    console.log(shape)
     setAnchorEl(null);
     setSelectedShape(shape);
     selectedShapeName.current = name;
@@ -195,7 +198,8 @@ export function useToolBar(props) {
       </ToolBarBox>
     ), 
     selectedShape:selectedShape, 
-    selectedShapeName:selectedShapeName
+    selectedShapeName:selectedShapeName, 
+    activeShape: active
   }
 }
 

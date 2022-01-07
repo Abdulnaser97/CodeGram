@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { Typography } from "@mui/material";
 import { theme } from "../Themes";
+import { rootShouldForwardProp } from "@mui/material/styles/styled";
 
 const targetHandleStyle = {
   borderRadius: 5,
@@ -36,13 +37,15 @@ const CustomNodeComponent = (props) => {
   const [borderRadius, setBorderRadius] = useState(
     `${Math.min(width, height) / 12}px`
   );
-  
+
   var selected = ''
-  if (props.selected){
-    selected = props.data.type === 'square-container' ? 
-    'highlightedWrapper' 
-      : 
-    'highlightedNode'
+  if (props.selected) {
+    if (props.data.type === 'square-container')
+      selected = 'highlightedWrapper'
+    else if (props.data.type === 'fileNode')
+      selected = 'highlightedNode'
+    else if (props.data.type === 'cylinder')
+      selected = 'highlightedContainer'
   }
 
   useEffect(() => {
@@ -51,81 +54,147 @@ const CustomNodeComponent = (props) => {
   }, [height, width]);
 
   return (
-    <div> 
-     {props.data.type === 'square-container' && <div className="node-label corner">{props.data.label}</div>}
-    <Resizable
-      className={`${props.data.type} ${selected}`}
-      size={{ width, height }}
-      onResizeStart={(e, direction, ref, d) => {
-        ref.className = `${props.data.type} nodrag`;
-      }}
-      onResize={(e, direction, ref, d) => {
-        setFontSize(`${(width + d.width) / 200}em`);
-        setBorderRadius(
-          `${Math.min(width + d.width, height + d.height) / 12}px`
+    <div>
+      {
+        (props.data.type === 'square-container' ||
+          props.data.type === 'cylinder')
+        &&
+
+        <div className="node-label corner">
+
+          {props.data.type === "cylinder" &&
+            props.data.label &&
+            <input
+              placeholder="container"
+              // onChange={handleSearch}
+              // onKeyPress={handleSearch}
+              style={{
+                "z-index": 0,
+                border: "none",
+                fontSize: "100%",
+                outline: "none",
+                width: "100%",
+                background: 'transparent',
+                color: '#4D4D4D',
+                fontWeight: 'bold'
+              }}
+            />
+            
+          }
+
+
+          {props.data.type === "square-container"
+            &&
+            <input
+              placeholder="wrapper"
+              // onChange={handleSearch}
+              // onKeyPress={handleSearch}
+              style={{
+                "z-index": 0,
+                border: "none",
+                fontSize: "100%",
+                outline: "none",
+                width: "100%",
+                background: 'transparent',
+                color: '#ff6666',
+                fontWeight: 'bold'
+              }}
+            />
+          }
+
+
+        </div>}
+      <Resizable
+        className={`${props.data.type} ${selected}`}
+        size={{ width, height }}
+        onResizeStart={(e, direction, ref, d) => {
+          ref.className = `${props.data.type} nodrag`;
+        }}
+        onResize={(e, direction, ref, d) => {
+          setFontSize(`${(width + d.width) / 200}em`);
+          setBorderRadius(
+            `${Math.min(width + d.width, height + d.height) / 12}px`
           );
         }}
         onResizeStop={(e, direction, ref, d) => {
           setWidth(width + d.width);
           setHeight(height + d.height);
-          
+
           ref.className = `${props.data.type}`;
         }}
         style={{ "border-radius": borderRadius }}
-        >
-     
-     { props.data.type !== 'square-container' && 
-      <Typography
-        color={props.selected ? "white" : "primary.darkGrey"} 
-        fontWeight="Medium"
-        style={{ "font-size": fontSize }}
-        >
-        {props.data.label}
-      </Typography> 
-      }
+      >
 
-      <Handle
-        className="handle target"
-        id={`top-handle-${props.id}`}
-        type="source"
-        position="top"
-        style={{ ...sourceHandleStyle, top: "-20px" }}
-      />
+        {(props.data.type !== 'square-container' && props.data.type !== 'cylinder') &&
+          <Typography
+            color={props.selected ? "white" : "primary.darkGrey"}
+            fontWeight="Medium"
+            style={{ "font-size": fontSize }}
+            textAlign="center"
+          >
+            {props.data.label ?
+              props.data.label : 
+              <input
+                placeholder="__"
+                // onChange={handleSearch}
+                // onKeyPress={handleSearch}
+                style={{
+                  "z-index": 0,
+                  border: "none",
+                  textAlign: "center",
+                  fontSize: "100%",
+                  outline: "none",
+                  width: "80%",
+                  padding: 'none',
+                  borderRadius: '10px'
+                }}
+              />
+            }
+          </Typography>
+        }
 
-      <Handle
-        className="handle target"
-        id={`target-handle-${props.id}`}
-        type="target"
-        style={{
-          ...targetHandleStyle,
-          "z-index": `${props.data.floatTargetHandle ? 9999 : -1}`,
-        }}
-      />
-      {/* TODO: Create an X button to remove node */}
-      {/* <button onClick={data.onElementsRemove}>X</button> */}
-      <Handle
-        className="handle target"
-        id={`bottom-handle-${props.id}`}
-        type="source"
-        position="bottom"
-        style={{ ...sourceHandleStyle, bottom: "-20px" }}
-      />
-      <Handle
-        className="handle source"
-        id={`left-handle-${props.id}`}
-        type="source"
-        position="left"
-        style={{ ...sourceHandleStyle, left: "-20px" }}
-      />
-      <Handle
-        className="handle source"
-        id={`right-handle-${props.id}`}
-        type="source"
-        position="right"
-        style={{ ...sourceHandleStyle, right: "-20px" }}
-      />
-    </Resizable>
-        </div>
+        <Handle
+          className="handle target"
+          id={`top-handle-${props.id}`}
+          type="source"
+          position="top"
+          style={{ ...sourceHandleStyle, top: "-20px" }}
+        />
+
+        <Handle
+          className="handle target"
+          id={`target-handle-${props.id}`}
+          type="target"
+          style={{
+            ...targetHandleStyle,
+            "z-index": `${props.data.floatTargetHandle ? 9999 : -1}`,
+          }}
+        />
+        {/* TODO: Create an X button to remove node */}
+        {/* <button onClick={data.onElementsRemove}>X</button> */}
+        <Handle
+          className="handle target"
+          id={`bottom-handle-${props.id}`}
+          type="source"
+          position="bottom"
+          style={{ ...sourceHandleStyle, bottom: "-20px" }}
+        />
+        <Handle
+          className="handle source"
+          id={`left-handle-${props.id}`}
+          type="source"
+          position="left"
+          style={{ ...sourceHandleStyle, left: "-20px" }}
+        />
+        <Handle
+          className="handle source"
+          id={`right-handle-${props.id}`}
+          type="source"
+          position="right"
+          style={{ ...sourceHandleStyle, right: "-20px" }}
+        />
+      </Resizable>
+    </div>
   );
 };
 
@@ -149,36 +218,33 @@ const WrapperNodeComponent = (props) => {
   }, [height, width]);
 
   return (
-    <div> 
-     <div className="node-label corner">{props.data.label}</div>
-    <Resizable
-      className={`${props.data.type} ${selected}`}
-      size={{ width, height }}
-      onResizeStart={(e, direction, ref, d) => {
-        ref.className = `${props.data.type} nodrag`;
-      }}
-      onResize={(e, direction, ref, d) => {
-        setFontSize(`${(width + d.width) / 200}em`);
-        setBorderRadius(
-          `${Math.min(width + d.width, height + d.height) / 12}px`
+    <div>
+      <div className="node-label corner">{props.data.label}</div>
+      <Resizable
+        className={`${props.data.type} ${selected}`}
+        size={{ width, height }}
+        onResizeStart={(e, direction, ref, d) => {
+          ref.className = `${props.data.type} nodrag`;
+        }}
+        onResize={(e, direction, ref, d) => {
+          setFontSize(`${(width + d.width) / 200}em`);
+          setBorderRadius(
+            `${Math.min(width + d.width, height + d.height) / 12}px`
           );
         }}
         onResizeStop={(e, direction, ref, d) => {
           setWidth(width + d.width);
           setHeight(height + d.height);
-          
+
           ref.className = `${props.data.type}`;
         }}
         style={{ "border-radius": borderRadius }}
-        >
+      >
+        {/* TODO: Create an X button to remove node */}
+        {/* <button onClick={data.onElementsRemove}>X</button> */}
 
-
-
-      {/* TODO: Create an X button to remove node */}
-      {/* <button onClick={data.onElementsRemove}>X</button> */}
-
-    </Resizable>
-        </div>
+      </Resizable>
+    </div>
   );
 };
 

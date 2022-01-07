@@ -14,7 +14,7 @@ import ReactFlow, {
 } from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import { addNodeToArray, deleteNodeFromArray } from "../Redux/actions/nodes";
-import {useToolBar} from "../components/ToolBar.js";
+
 
 import FloatingEdge from "../canvas/FloatingEdge.tsx";
 import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
@@ -57,7 +57,7 @@ const getNodeId = () => `randomnode_${+new Date()}`;
  * Component Starts Here
  *
  **/
-export function useReactFlowWrapper({ dispatch, selectedShapeName }) {
+export function useReactFlowWrapper({ dispatch, selectedShapeName, activeShape }) {
   const { RFState } = useSelector((state) => {
     return { RFState: state.RFState };
   });
@@ -74,14 +74,19 @@ export function useReactFlowWrapper({ dispatch, selectedShapeName }) {
 
   // get stat
   const [useShape, setUseShape] = useState(selectedShapeName)
-
   const onElementClick = (event, element) => {
     //console.log("click", element);
     setSelectedEL(element);
   };
 
+  const onPaneClick = (event) => {
+    console.log(event)
+    if (activeShape === "selectShape"){
+      addNodeFromClick(event)
+    }
+  }
+
   const onConnect = (params) => {
-    console.log(params);
     setElements((els) =>
       addEdge(
         // TODO : lookinto styling floating edges  and smoothstep 
@@ -128,27 +133,24 @@ export function useReactFlowWrapper({ dispatch, selectedShapeName }) {
   const addNode = useCallback(
     (file) => {
       var label = nodeName;
-      //const [selectedNodeType, selectedNodeTypeName] = SendNodeType();
       const newNode = {
         id: getNodeId(),
-        // this data will get filled with the array of JSON objects that will come
-        // from Github
         data: {
-          label: file.name !== undefined ? file.name : label,
-          name: file.name !== undefined ? file.name : label,
+          label: file && file.name !== undefined ? file.name : label,
+          name: file && file.name !== undefined ? file.name : label,
           linkedFiles: ["aa.py", "gg.py", "kookoo.py"],
           childNodes: ["da", "de", "do"],
           siblingNodes: ["ta", "te", "to"],
           parentNodes: ["pa", "pe"],
           documentation: ["url1", "url2"],
           description: "",
-          url: file.download_url !== undefined ? file.download_url : file.url,
-          path: file.path,
+          url: file && file.download_url !== undefined ? file.download_url : file.url,
+          path: file && file.path,
           floatTargetHandle: false,
         
           // can set this type to whatever is selected in the tool bar for now
           // but the type will probably be set from a few different places
-          type: file.name !== undefined ? 'fileNode' : 'square-container',
+          type:'fileNode',
           width: 200,
           height: 200,
           // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
@@ -165,6 +167,53 @@ export function useReactFlowWrapper({ dispatch, selectedShapeName }) {
     },
     [setElements, nodeName, dispatch]
   );
+
+  const addNodeFromClick = useCallback(
+    (event) => {
+      var label = nodeName;
+      const newNode = {
+        id: getNodeId(),
+        data: {
+          label: label,
+          name: label,
+          linkedFiles: ["aa.py", "gg.py", "kookoo.py"],
+          childNodes: ["da", "de", "do"],
+          siblingNodes: ["ta", "te", "to"],
+          parentNodes: ["pa", "pe"],
+          documentation: ["url1", "url2"],
+          description: "",
+          floatTargetHandle: false,
+        
+          // can set this type to whatever is selected in the tool bar for now
+          // but the type will probably be set from a few different places
+          type: typeSelection(),
+          width: 200,
+          height: 200,
+          // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
+        },
+        type: 'fileNode',
+        width: 200,
+        height: 200,
+        position: { x: event.clientX, y: event.clientY },
+        animated: true,
+      };
+      dispatch(addNodeToArray(newNode));
+      setElements((els) => els.concat(newNode));
+    },
+    [setElements, nodeName, dispatch]
+  );
+
+  const typeSelection = () => {
+    console.log(selectedShapeName)
+    if (selectedShapeName.current === "DashedShape"){
+      return 'square-container'
+    } else if (selectedShapeName.current === "rect"){
+      return 'fileNode'
+    } else if (selectedShapeName.current === "CircleShape"){
+      return 'cylinder'
+    }
+  }
+
 
   return {
     render: (
@@ -192,6 +241,8 @@ export function useReactFlowWrapper({ dispatch, selectedShapeName }) {
           onNodeMouseEnter={onNodeMouseEnter}
           onNodeMouseMove={onNodeMouseMove}
           onNodeMouseLeave={onNodeMouseLeave}
+          onPaneClick={onPaneClick}
+          selectNodesOnDrag={false}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>

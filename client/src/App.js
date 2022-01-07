@@ -82,6 +82,7 @@ function App() {
   const [homePath, setHomePath] = useState(null);
   const [openArtifact, setOpenArtifact] = useState("");
   const [search, setSearch] = useState("search");
+  const [cursor, setCursor] = useState('default');
 
   // redux
   const dispatch = useDispatch();
@@ -89,9 +90,11 @@ function App() {
   const options = {
     keys: ["name"],
   };
-  //Dereference ToolBar function to access render
-  const { toolBarRender, selectedShapeName } = useToolBar();
 
+
+
+  //Dereference ToolBar function to access render
+  const { toolBarRender, selectedShapeName, activeShape} = useToolBar();
   const {
     render,
     addNode,
@@ -102,8 +105,17 @@ function App() {
     selectedEL,
     rfInstance,
     setSelectedEL,
-  }  = useReactFlowWrapper({ dispatch, selectedShapeName });
+  }  = useReactFlowWrapper({ dispatch, selectedShapeName, activeShape });
 
+  // change cursor to be opposite as previous
+  useEffect(() => {
+    activeShape === 'selectShape' ? setCursor('crosshair') : setCursor('default')
+  }, [activeShape]); 
+
+  // TODO: think about when to release selecttion on create node 
+  // useEffect(() => setCursor('default'), [selectedEL])
+
+  // create home path, and search engine from new repo
   useEffect(() => {
     if (repo && repository) {
       var homeDir = [];
@@ -117,10 +129,7 @@ function App() {
         dir: homeDir,
         path: repo,
       };
-      console.log(hPath)
-      // IMPORTANT: Fuse search object currently created here
-      // May be good to move to state so it can be a shared function to
-      // search through the react flow nodes array or the repo files array
+
       const myFuse = new Fuse(Object.values(repository), options);
       setHomePath(hPath);
       setFuse(myFuse);
@@ -149,14 +158,14 @@ function App() {
     var repoChoiceItems = [];
 
     if (repos.length !== 0 && repos.data !== undefined) {
-      repoChoiceItems.push(<MenuItem value={""}>Repository</MenuItem>);
+      repoChoiceItems.push(<option value={""}>Repository</option>);
       for (var i = 0; i < repos.data.length; i++) {
         var name = repos.data[i].name;
         repoNames.push(name);
-        repoChoiceItems.push(<MenuItem value={name}>{name}</MenuItem>);
+        repoChoiceItems.push(<option value={name}>{name}</option>);
       }
     } else {
-      return <MenuItem value="">Login to see repositories!</MenuItem>;
+      return <option value="">Login to see repositories!</option>;
     }
 
     return repoChoiceItems;
@@ -227,7 +236,6 @@ function App() {
 
   const handleSearch = (event, newValue) => {
     // set null during search so any clicks after a serach still trigger rerender
-    setOpenArtifact(null);
     setSearch(event.target.value);
   };
 
@@ -236,7 +244,7 @@ function App() {
     return (
       <ThemeProvider theme={theme}>
         <ReactFlowProvider>
-          <div className="App">
+          <div className="App" style={{ cursor: cursor }}>
             {!isOpenSD && (
               <div
                 className="SourceDocButtonWrapper"
@@ -277,21 +285,27 @@ function App() {
                   sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}
                 >
                   <FormControl fullWidth variant="outlined">
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
+                    <select
+                      className=""
                       value={repo}
                       label="Repository"
                       onChange={handleRepoChange}
-                      size="small"
-                      displayEmpty
+                      placeholder="Choose your repository"
                       style={{
-                        "border-radius": "30px",
+                        borderRadius:'0.6vw',
                         "padding-left": "20px",
+                        "padding-right": "20px",
+                        outline:'none',
+                        height:'4vh',
+                        border: '1px solid #ffaea6',
+                        color:'#FFAEA6',
+                        background:'transparent',
+                        appearance:'none',
+                        cursor:'pointer'
                       }}
                     >
                       {renderRepos()}
-                    </Select>
+                    </select>
                   </FormControl>
                 </Box>
 

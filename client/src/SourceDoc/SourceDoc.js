@@ -65,6 +65,10 @@ function a11yProps(index) {
   };
 }
 
+
+//// TODO: fix exiting out of search results by clicking on path.
+//// Set SDContent back to previouus
+
 function SourceDoc(props) {
   const state = useSelector((state) => state);
 
@@ -106,6 +110,7 @@ function SourceDoc(props) {
         props.functions.setSelectedEL(el);
       } else {
         setSelectedElements([]);
+        
       }
     }
   }, [openArtifact]);
@@ -115,7 +120,7 @@ function SourceDoc(props) {
     if (SDContent === null || SDContent === undefined) {
       return;
     } else if (SDContent[0] && SDContent[0].length > 1) {
-      if (SDContent !== undefined && SDContent !== null) {
+      
         var repoList = [];
         const files = SDContent;
         for (const [key, value] of Object.entries(files)) {
@@ -125,13 +130,14 @@ function SourceDoc(props) {
               setOpenArtifact={setOpenArtifact}
               file={value[1]}
               openArtifact={openArtifact}
+              selectedEL={props.data.selectedEL}
             />
           );
         }
         setSourceFiles(repoList);
-      }
+      
     } else {
-      if (SDContent !== undefined && SDContent !== null) {
+ 
         var repoList = [];
         const files = SDContent;
         for (const f of files) {
@@ -141,11 +147,12 @@ function SourceDoc(props) {
               setOpenArtifact={setOpenArtifact}
               file={f}
               openArtifact={openArtifact}
+              selectedEL={props.data.selectedEL}
             />
           );
         }
         setSourceFiles(repoList);
-      }
+        
     }
   }, [SDContent, props.data.selectedEL, openArtifact]);
 
@@ -222,14 +229,18 @@ function SourceDoc(props) {
   // separate for now as may need more logic here in future
   function pathClickHandler(curFile) {
     // if clicked path has SDContent member (root directory)
-    if (curFile.dir) {
-      setOpenArtifact(curFile);
+ 
+      if (curFile.dir) {
+        setOpenArtifact(curFile);
+
+      }
+      // else find file from state
+      else {
+        setOpenArtifact(repository[curFile.path]);
+
+      }
+
     }
-    // else find file from state
-    else {
-      setOpenArtifact(repository[curFile.path]);
-    }
-  }
 
   // re render path component and directory if path ever changes
   useEffect(() => {
@@ -288,6 +299,7 @@ function SourceDoc(props) {
   
   // search method
   useEffect(() => {
+    setOpenArtifact('')
     if (fuse && search) setSDContent(fuse.search(search));
   }, [search])
   //if(props.data.isOpenSD){
@@ -355,7 +367,7 @@ function SourceDoc(props) {
               className="repoContainer"
               style={{
                 position: "relative",
-                height: "35vh",
+                maxHeight:"50vh",
                 "overflow-y": "scroll",
               }}
             >
@@ -363,24 +375,6 @@ function SourceDoc(props) {
             </div>
           </Box>
 
-          <Typography variant="h6" textAlign="left">
-            Create Wrapper Node
-          </Typography>
-          <TextField
-            margin="dense"
-            placeholder="Name.."
-            inputProps={{ "aria-label": "search" }}
-            onChange={props.functions.handleName}
-            fullWidth
-          ></TextField>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={props.functions.addNode}
-            fullWidth
-          >
-            Create Node
-          </Button>
         </TabPanel>
         <TabPanel
           value={value}
