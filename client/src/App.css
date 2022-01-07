@@ -118,9 +118,8 @@ body {
 
 .selectedFile {
   background-color: #f58282;
-  color:white;
+  color: white;
 }
-
 
 .foldertype {
   background-color: rgb(226, 226, 226);
@@ -227,9 +226,9 @@ pre {
 
 .pathContainer p {
   display: inline;
-  margin:0;
-  color:rgba(0, 0, 0, 0.769);
-  font-size: 14px; 
+  margin: 0;
+  color: rgba(0, 0, 0, 0.769);
+  font-size: 14px;
 }
 
 .pathContainer p:hover {
@@ -256,10 +255,22 @@ pre {
 
 .maxButton:hover {
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-  cursor:pointer;
+  cursor: pointer;
+}
 
-} 
-
-::placeholder{
+::placeholder {
   color: rgb(189, 189, 189);
+}
+
+.SourceDocButtonWrapper {
+  position: fixed;
+  top: 43vh;
+  right: -1vw;
+  height: 7vw;
+  width: 7vw;
+  cursor: pointer;
+}
+
+.SourceDocButtonWrapper:hover .SDBC {
+  fill: #dba5a5;
 }

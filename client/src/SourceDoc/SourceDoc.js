@@ -1,5 +1,5 @@
 import "../App.css";
-import "./SourceDoc.css"
+import "./SourceDoc.css";
 // mui components
 import {
   Box,
@@ -13,8 +13,8 @@ import {
 
 // third party dependecnies
 import PropTypes from "prop-types";
-import { useStoreActions } from 'react-flow-renderer';
-import Fuse from 'fuse.js'
+import { useStoreActions } from "react-flow-renderer";
+import Fuse from "fuse.js";
 
 // react
 import { useState, useEffect } from "react";
@@ -28,6 +28,7 @@ import { connect } from "react-redux";
 import SourceDocFile from "./SourceDocFile";
 import axios from "axios";
 import { fontWeight } from "@mui/system";
+import { Resizable } from "re-resizable";
 
 const options = {
   // isCaseSensitive: false,
@@ -43,11 +44,8 @@ const options = {
   // ignoreLocation: false,
   // ignoreFieldNorm: false,
   // fieldNormWeight: 1,
-  keys: [
-    "name"
-  ]
+  keys: ["name"],
 };
-
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -81,11 +79,9 @@ function a11yProps(index) {
   };
 }
 
-
-
 function SourceDoc(props) {
   const state = useSelector((state) => state);
-  const repository = state.repoFiles.repoFiles[0]
+  const repository = state.repoFiles.repoFiles[0];
 
   //console.log(state)
   // Tabs: for tabs in the side menu
@@ -96,44 +92,48 @@ function SourceDoc(props) {
 
   // state for selected file
   const [openArtifact, setOpenArtifact] = useState("");
-  const [sourceFiles, setSourceFiles] = useState(null)
-  const [path, setPath] = useState([])
-  const [homePath, setHomePath] = useState(null)
-  const [pathComponent, setPathComponent] = useState(null)
-  const [fuse, setFuse] = useState(null)
-  const [SDContent, setSDContent] = useState (null)
-  const setSelectedElements = useStoreActions((actions) => actions.setSelectedElements); 
-  
+  const [sourceFiles, setSourceFiles] = useState(null);
+  const [path, setPath] = useState([]);
+  const [homePath, setHomePath] = useState(null);
+  const [pathComponent, setPathComponent] = useState(null);
+  const [fuse, setFuse] = useState(null);
+  const [SDContent, setSDContent] = useState(null);
+  const setSelectedElements = useStoreActions(
+    (actions) => actions.setSelectedElements
+  );
 
+  const [width, setWidth] = useState("40vw");
+  const [height, setHeight] = useState("85vh");
   // change open artifact to beb the file from react flow
   useEffect(() => {
     if (repository)
-      setOpenArtifact(repository[props.data.selectedEL.data.path])
-  }, [props.data.selectedEL])
+      setOpenArtifact(repository[props.data.selectedEL.data.path]);
+  }, [props.data.selectedEL]);
 
-  // highlight node on canvas if exists -> may need optimizing 
+  // highlight node on canvas if exists -> may need optimizing
   useEffect(() => {
-    if (openArtifact){
-      var el = state.nodes.nodesArr.find(node => node.data.path == openArtifact.path)
-      if (el){
-        setSelectedElements(el)
-        props.functions.setSelectedEL(el)
+    if (openArtifact) {
+      var el = state.nodes.nodesArr.find(
+        (node) => node.data.path == openArtifact.path
+      );
+      if (el) {
+        setSelectedElements(el);
+        props.functions.setSelectedEL(el);
       } else {
-        setSelectedElements([])
+        setSelectedElements([]);
       }
     }
-  }, [openArtifact])
- 
-  // set content of sourceDoc 
+  }, [openArtifact]);
+
+  // set content of sourceDoc
   useEffect(() => {
-    if (SDContent === null || SDContent === undefined){
-      return
-    }
-    else if (SDContent[0] && SDContent[0].length > 1) { 
+    if (SDContent === null || SDContent === undefined) {
+      return;
+    } else if (SDContent[0] && SDContent[0].length > 1) {
       if (SDContent !== undefined && SDContent !== null) {
         var repoList = [];
         const files = SDContent;
-        for (const [key,value] of Object.entries(files)){
+        for (const [key, value] of Object.entries(files)) {
           repoList.push(
             <SourceDocFile
               addNode={props.functions.addNode}
@@ -145,12 +145,11 @@ function SourceDoc(props) {
         }
         setSourceFiles(repoList);
       }
-    }
-    else {
+    } else {
       if (SDContent !== undefined && SDContent !== null) {
         var repoList = [];
         const files = SDContent;
-        for (const f of files){
+        for (const f of files) {
           repoList.push(
             <SourceDocFile
               addNode={props.functions.addNode}
@@ -162,133 +161,129 @@ function SourceDoc(props) {
         }
         setSourceFiles(repoList);
       }
-    } 
-  }, [SDContent, props.data.selectedEL, openArtifact])
-  
+    }
+  }, [SDContent, props.data.selectedEL, openArtifact]);
+
   useEffect(() => {
-    if (props.data.repo && repository ) {
-      var homeDir = []
-      // push home directory files into home path 
-      for (const [key,val] of Object.entries(repository)){
-        key.split('/').length === 1 && homeDir.push(val)
+    if (props.data.repo && repository) {
+      var homeDir = [];
+      // push home directory files into home path
+      for (const [key, val] of Object.entries(repository)) {
+        key.split("/").length === 1 && homeDir.push(val);
       }
 
       var hPath = {
         name: props.data.repo,
         dir: homeDir,
         path: props.data.repo,
-      }
-      // IMPORTANT: Fuse search object currently created here 
-      // May be good to move to state so it can be a shared function to 
+      };
+      // IMPORTANT: Fuse search object currently created here
+      // May be good to move to state so it can be a shared function to
       // search through the react flow nodes array or the repo files array
       const myFuse = new Fuse(Object.values(repository), options);
-      setHomePath(hPath)
-      setPath([hPath])
-      setOpenArtifact(hPath)
-      setFuse(myFuse)
+      setHomePath(hPath);
+      setPath([hPath]);
+      setOpenArtifact(hPath);
+      setFuse(myFuse);
     }
   }, [props.data.repo, state.repoFiles.repoFiles]);
 
   // logic for updating our path variable whenever the selected File changes
   useEffect(() => {
     if (openArtifact && repository) {
-      // if new openArtifact iis on the path already 
+      // if new openArtifact iis on the path already
       if (path.includes(openArtifact)) {
-        let curPath = [...path]
-        curPath.length = path.indexOf(openArtifact) + 1
-        setPath(curPath)
+        let curPath = [...path];
+        curPath.length = path.indexOf(openArtifact) + 1;
+        setPath(curPath);
       }
-      //location exists and is a directory (has contents member) 
-       else if (repository[openArtifact.path] && repository[openArtifact.path].contents) {
-          setPath(pathCreator(openArtifact.path.split("/")))
-      } 
+      //location exists and is a directory (has contents member)
+      else if (
+        repository[openArtifact.path] &&
+        repository[openArtifact.path].contents
+      ) {
+        setPath(pathCreator(openArtifact.path.split("/")));
+      }
       // else set path to parent directory of a openArtifact
       else {
-        let curPath = openArtifact.path.split("/")
-        var pathArr = curPath.slice(0,curPath.length)
-        pathArr.length -= 1 
-        setPath(pathCreator(pathArr))
+        let curPath = openArtifact.path.split("/");
+        var pathArr = curPath.slice(0, curPath.length);
+        pathArr.length -= 1;
+        setPath(pathCreator(pathArr));
       }
     }
   }, [state, openArtifact]);
 
   // create path state which is a list of path subsection name and the subpath
-  function pathCreator(path){
-    var newPath = path
-    var toBePath = [homePath] 
-    for (var i = 0; i < newPath.length; i++){
-      toBePath.push( 
-        {
-          name: newPath[i], 
-          path: newPath.slice(0, i+1).join("/")
-        }
-      )
+  function pathCreator(path) {
+    var newPath = path;
+    var toBePath = [homePath];
+    for (var i = 0; i < newPath.length; i++) {
+      toBePath.push({
+        name: newPath[i],
+        path: newPath.slice(0, i + 1).join("/"),
+      });
     }
-    return toBePath
+    return toBePath;
   }
 
   // render method to loop through path and create elements
   function renderPath(curPath) {
     var renderedPath = [];
     for (var i = 0; i < curPath.length; i++) {
-      var curFile = curPath[i]
-      renderedPath.push(
-        <PathPart 
-          key={i}
-          pathPart={curFile}
-        />
-      );
+      var curFile = curPath[i];
+      renderedPath.push(<PathPart key={i} pathPart={curFile} />);
     }
     return renderedPath;
   }
 
-  // path component which is clickable 
+  // path component which is clickable
   function PathPart(props) {
     const { pathPart } = props;
     return (
-      <p onClick={() => {
-        pathClickHandler(pathPart)
-      }}
+      <p
+        onClick={() => {
+          pathClickHandler(pathPart);
+        }}
       >
         {` > ${pathPart.name}`}
       </p>
-    )
+    );
   }
 
   // separate for now as may need more logic here in future
   function pathClickHandler(curFile) {
     // if clicked path has SDContent member (root directory)
-    if (curFile.dir){
-      setOpenArtifact(curFile)
+    if (curFile.dir) {
+      setOpenArtifact(curFile);
     }
-    // else find file from state 
+    // else find file from state
     else {
-      setOpenArtifact(repository[curFile.path])
+      setOpenArtifact(repository[curFile.path]);
     }
   }
 
   // re render path component and directory if path ever changes
   useEffect(() => {
-    // guard the use effect 
-    if (path.length && repository){
-      // create new path component 
-      setPathComponent(renderPath(path))
-      // render home root 
+    // guard the use effect
+    if (path.length && repository) {
+      // create new path component
+      setPathComponent(renderPath(path));
+      // render home root
       if (
-        (openArtifact.dir || path.length === 1) 
-          && 
-        !openArtifact.path.includes("/")) 
-      {
-        setSDContent(homePath.dir)
+        (openArtifact.dir || path.length === 1) &&
+        !openArtifact.path.includes("/")
+      ) {
+        setSDContent(homePath.dir);
       }
       // all other files and directories
-      else { 
-        setSDContent(repository[path[path.length-1].path].contents)
+      else {
+        setSDContent(repository[path[path.length - 1].path].contents);
       }
     }
-  }, [path])
+  }, [path]);
 
-  // 
+  //
   function renderFiles() {
     var files = [];
     if (props.data.selectedEL.data.parentNodes) {
@@ -306,7 +301,7 @@ function SourceDoc(props) {
 
   const handleSearch = (event, newValue) => {
     // set null during search so any clicks after a serach still trigger rerender
-    setOpenArtifact(null)
+    setOpenArtifact(null);
     setSearch(event.target.value);
   };
 
@@ -326,173 +321,194 @@ function SourceDoc(props) {
     }
   }, [props.data.selectedEL]);
 
-// search method
-function searchCodeBase() {
-  if (fuse && search)
-    setSDContent(fuse.search(search))
-}
+  // search method
+  function searchCodeBase() {
+    if (fuse && search) setSDContent(fuse.search(search));
+  }
   //if(props.data.isOpenSD){
   return (
-    <div className={props.data.isOpenSD ? "openSD" : "hiddenSD" }> 
-      
+    <div className={props.data.isOpenSD ? "openSD" : "hiddenSD"}>
       {/* TODO: extract this compontnt to dashboard if team wants to do "terminal/key
-      board command idea on one side of screen */}  
+      board command idea on one side of screen */}
       <div
-        style ={{
-          display:"flex",
-          flexDirection:"row",
+        style={{
+          display: "flex",
+          flexDirection: "row",
           position: "fixed",
           top: "8vh",
           right: "2vw",
           width: "40vw",
         }}
       >
+        <div className="SourceDocMinimize" />
 
-      <Typography
-        fontSize={'2vh'}
-        color={"#f58282"}
-        fontWeight={"bold"}
-        mx={1}
-        my={0}
+        <Typography
+          fontSize={"2vh"}
+          color={"#f58282"}
+          fontWeight={"bold"}
+          mx={1}
+          my={0}
         >
-        codeGram =>: 
-      </Typography>
+          codeGram =>:
+        </Typography>
 
-      <input
-        placeholder=" Start typing to search!" 
-        onChange={handleSearch}
-        onKeyPress={searchCodeBase}
-        style={{         
-          "z-index": 0,
-          border:'none',
-          backgroundColor: "rgb(247, 247, 247)",
-          boxShadow: 6,
-          fontSize:"2vh",
-          outline:"none",
-          width:"65%"
-          
-        }} 
-      />    
-    </div>
-
-    <Container
-      className="sourceDocContainer"
-      variant="absolute"
-      sx={{ pt: 2 }}
-      style={{
-        position: "fixed",
-        top: "16vh",
-        right: "2vw",
-        width: "40vw",
-        height: "80vh",
-        "z-index": 0,
-        borderRadius: "10px",
-      }}
-    >
-      <Box m={0}>
-        <Tabs
-          TabIndicatorProps={{
-            style: {
-              backgroundColor: "#FFAEA6",
-            },
+        <input
+          placeholder=" Start typing to search!"
+          onChange={handleSearch}
+          onKeyPress={searchCodeBase}
+          style={{
+            "z-index": 0,
+            border: "none",
+            backgroundColor: "rgb(247, 247, 247)",
+            boxShadow: 6,
+            fontSize: "2vh",
+            outline: "none",
+            width: "65%",
           }}
-          textColor="primary"
-          indicatorColor="primary"
-          value={value}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-          centered
-        >
-          <Tab label="Tools" {...a11yProps(0)} />
-          <Tab label="Code" {...a11yProps(1)} />
-          <Tab label="Documentation" {...a11yProps(2)} />
-        </Tabs>
-      </Box>
-      <TabPanel
-        value={value}
-        index={0}
-        sx={{ display: "flex", flexDirection: "column"}}
+        />
+      </div>
+      <Resizable
+        size={{ width, height }}
+        className="sourceDocContainer"
+        style={{
+          position: "fixed",
+          top: "13vh",
+          right: "1vw",
+          width: "40vw",
+          height: "90vh",
+          "z-index": 0,
+          borderRadius: "20px",
+        }}
+        onResizeStop={(e, direction, ref, d) => {
+          setWidth(width + d.width);
+          setHeight(height + d.height);
+        }}
       >
+        <div
+          className="SDMinimizeWrapper"
+          onClick={() =>
+            props.functions.setIsOpenSD((prevIsOpenSD) => !prevIsOpenSD)
+          }
+        >
+          <div className="SDMinimize" />
+        </div>
+        <Box m={0}>
+          <Tabs
+            TabIndicatorProps={{
+              style: {
+                backgroundColor: "#FFAEA6",
+              },
+            }}
+            textColor="primary"
+            indicatorColor="primary"
+            value={value}
+            onChange={handleChange}
+            aria-label="basic tabs example"
+            centered
+          >
+            <Tab label="Tools" {...a11yProps(0)} />
+            <Tab label="Code" {...a11yProps(1)} />
+            <Tab label="Documentation" {...a11yProps(2)} />
+          </Tabs>
+        </Box>
+        <TabPanel
+          value={value}
+          index={0}
+          sx={{ display: "flex", flexDirection: "column" }}
+        >
+          <Box>
+            <div className="pathContainer">
+              {path.length ? pathComponent : "Root"}
+            </div>
+            <div
+              className="repoContainer"
+              style={{
+                position: "relative",
+                height: "35vh",
+                "overflow-y": "scroll",
+              }}
+            >
+              {sourceFiles}
+            </div>
+          </Box>
 
-        <Box>
-          <div className="pathContainer">
-            {path.length ? pathComponent : "Root"}
-          </div>
-          <div
-            className="repoContainer"
+          <Typography variant="h6" textAlign="left">
+            Create Wrapper Node
+          </Typography>
+          <TextField
+            margin="dense"
+            placeholder="Name.."
+            inputProps={{ "aria-label": "search" }}
+            onChange={props.functions.handleName}
+            fullWidth
+          ></TextField>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={props.functions.addNode}
+            fullWidth
+          >
+            Create Node
+          </Button>
+        </TabPanel>
+        <TabPanel
+          value={value}
+          index={1}
+          style={{ height: "90%", overflow: "scroll" }}
+        >
+          <Typography
+            variant="h4"
+            fontWeight="bold"
             style={{
-              position: "relative",
-              height: "35vh",
-              "overflow-y": "scroll",
+              position: "sticky",
+              zIndex: 1,
             }}
           >
-            {sourceFiles}
-          </div>
-        </Box>
-        
-        <Typography variant="h6" textAlign="left">
-          Create Wrapper Node
-        </Typography>
-        <TextField
-          margin="dense"
-          placeholder="Name.."
-          inputProps={{ "aria-label": "search" }}
-          onChange={props.functions.handleName}
-          fullWidth
-        ></TextField>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={props.functions.addNode}
-          fullWidth
-        >
-          Create Node
-        </Button>
-      </TabPanel>
-      <TabPanel
-        value={value}
-        index={1}
-        style={{ height: "90%", overflow: "scroll" }}
-      >
-          <Typography variant="h4" fontWeight="bold"      
-          style={{
-              position: "sticky", zIndex:1}}>
             {props.data.selectedEL.data.label}
           </Typography>
-        <pre> {`${curCode}`} </pre>
-      </TabPanel>
-      <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
-        <Box sx={{ disaply: "flex", flexDirection: "column" }}>
-          <Typography variant="h4" fontWeight="bold">
-            {props.data.selectedEL.data.label}
-          </Typography>
-          <Typography variant="h5">
-            <a href={props.data.selectedEL.data.url}> source code link </a>
-          </Typography>
-          <Typography variant="h5" mt={2}>
-            Parent Nodes <br />
-            <Typography> {props.data.selectedEL.data.parentNodes} </Typography>
-          </Typography>
-          <Typography variant="h5" mt={2}>
-            Child Nodes <br />
-            <Typography> {props.data.selectedEL.data.childNodes} </Typography>
-          </Typography>
-          <Typography variant="h5" mt={2}>
-            Configuration Files <br />
-            <Typography> {props.data.selectedEL.data.parentNodes} </Typography>
-          </Typography>
-          <Typography variant="h5" mt={2}>
-            Reference Docs <br />
-            {renderFiles()}
-            <Typography> {props.data.selectedEL.data.documentation}</Typography>
-          </Typography>
-        </Box>
-      </TabPanel>
-    </Container>
-  </div>
+          <pre> {`${curCode}`} </pre>
+        </TabPanel>
+        <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
+          <Box sx={{ disaply: "flex", flexDirection: "column" }}>
+            <Typography variant="h4" fontWeight="bold">
+              {props.data.selectedEL.data.label}
+            </Typography>
+            <Typography variant="h5">
+              <a href={props.data.selectedEL.data.url}> source code link </a>
+            </Typography>
+            <Typography variant="h5" mt={2}>
+              Parent Nodes <br />
+              <Typography>
+                {" "}
+                {props.data.selectedEL.data.parentNodes}{" "}
+              </Typography>
+            </Typography>
+            <Typography variant="h5" mt={2}>
+              Child Nodes <br />
+              <Typography> {props.data.selectedEL.data.childNodes} </Typography>
+            </Typography>
+            <Typography variant="h5" mt={2}>
+              Configuration Files <br />
+              <Typography>
+                {" "}
+                {props.data.selectedEL.data.parentNodes}{" "}
+              </Typography>
+            </Typography>
+            <Typography variant="h5" mt={2}>
+              Reference Docs <br />
+              {renderFiles()}
+              <Typography>
+                {" "}
+                {props.data.selectedEL.data.documentation}
+              </Typography>
+            </Typography>
+          </Box>
+        </TabPanel>
+      </Resizable>
+    </div>
   );
   // } else {
-  //   return null 
+  //   return null
   // }
 }
 

@@ -31,11 +31,15 @@ import { theme } from "./Themes";
 import { loadDiagram } from "./Redux/actions/loadDiagram";
 import SourceDoc from "./SourceDoc/SourceDoc";
 import { ReactFlowProvider } from "react-flow-renderer";
-import { CustomNodeComponent, WrapperNodeComponent } from "./canvas/custom_node";
+import {
+  CustomNodeComponent,
+  WrapperNodeComponent,
+} from "./canvas/custom_node";
 
 // pages
 import { LandingPage } from "./Landing/LandingPage";
 import ToolBar from "./components/ToolBar.js";
+import SourceDocButton from "./Media/SourceDocButton";
 
 const LogoTopNav = styled.div`
   position: relative;
@@ -82,7 +86,7 @@ function App() {
     initialElements,
     selectedEL,
     rfInstance,
-    setSelectedEL
+    setSelectedEL,
   } = useReactFlowWrapper({ dispatch });
 
   // get all repos in users account
@@ -186,125 +190,128 @@ function App() {
   if (loggedIn) {
     return (
       <ThemeProvider theme={theme}>
-        <ReactFlowProvider> 
-
-        <div className="App">
-          {/* move app bar to its own navigation component  */}
-          <AppBar
-            elevation={0}
-            position="sticky"
-            sx={{ backgroundColor: "#f7f7f7", borderColor: "black", borderWidth:"1", height:"8vh"}}
+        <ReactFlowProvider>
+          <div className="App">
+            {!isOpenSD && (
+              <div
+                className="SourceDocButtonWrapper"
+                onClick={() => setIsOpenSD((prevIsOpenSD) => !prevIsOpenSD)}
+              >
+                <SourceDocButton />
+              </div>
+            )}
+            {/* move app bar to its own navigation component  */}
+            <AppBar
+              elevation={0}
+              position="sticky"
+              sx={{
+                backgroundColor: "#f7f7f7",
+                borderColor: "black",
+                borderWidth: "1",
+                height: "8vh",
+              }}
             >
-            <Toolbar>
-              <MenuItem
-                sx={{ flexGrow: 3 }}
-                style={{ backgroundColor: "transparent" }}
-                >
-                <div className="LogoWrapper">
-                  <LogoTopNav className="LogoTopNav" />
-                  <h2
-                    style={{
-                      fontFamily: "Poppins-Thin",
-                      color: "#FFAEA6",
-                    }}
-                    >
-                    CodeGram
-                  </h2>
-                </div>
-              </MenuItem>
-              <Box sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}>
-                <FormControl fullWidth variant="outlined">
-                  <Select
-        
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={repo}
-                    label="Repository"
-                    onChange={handleRepoChange}
-                    size="small"
-                    displayEmpty
-                    >
-                    {renderRepos()}
-                  </Select>
-
-                  
-                </FormControl>
-              </Box>
-
-              <Box mx={1} sx={{ "box-shadow": 0 }}>
-                <div
-                  className="navbar-button github"
+              <Toolbar>
+                <MenuItem
+                  sx={{ flexGrow: 3 }}
                   style={{ backgroundColor: "transparent" }}
-                  onClick={() => onSave()}
                 >
-                  <Box className="SaveButtonWrapper">
-                    <Typography
-                      mx={1}
-                      my={0.8}
-                      fontSize=".8vw"
-                      fontWeight="Thin"
-                      color="primary"
+                  <div className="LogoWrapper">
+                    <LogoTopNav className="LogoTopNav" />
+                    <h2
+                      style={{
+                        fontFamily: "Poppins-Thin",
+                        color: "#FFAEA6",
+                      }}
                     >
-                      Save
-                    </Typography>
-                  </Box>
-                </div>
-              </Box>
-
-              <Box sx={{ "box-shadow": 0 }}>
-                <div className="navbar-button github" onClick={() => setIsOpenSD(prevIsOpenSD => !prevIsOpenSD)}>
-                <Box className="SaveButtonWrapper">
-                    <Typography
-                      mx={1}
-                      my={0.8}
-                      fontSize=".8vw"
-                      fontWeight="Thin"
-                      color="primary"
+                      CodeGram
+                    </h2>
+                  </div>
+                </MenuItem>
+                <Box
+                  sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}
+                >
+                  <FormControl fullWidth variant="outlined">
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={repo}
+                      label="Repository"
+                      onChange={handleRepoChange}
+                      size="small"
+                      displayEmpty
+                      style={{
+                        "border-radius": "30px",
+                        "padding-left": "20px",
+                      }}
                     >
-                      SourceDoc
-                    </Typography>
-                  </Box></div>
-              </Box>
+                      {renderRepos()}
+                    </Select>
+                  </FormControl>
+                </Box>
 
-              <Box sx={{ "box-shadow": 0 }}>
-                <div className="navbar-button github" onClick={() => logout()}>
-                  <LogoutIcon color="primary"> </LogoutIcon>
-                </div>
-              </Box>
-            </Toolbar>
-          </AppBar>
-          {/* everything from here down can be in a cashboard component */}
+                <Box mx={1} sx={{ "box-shadow": 0 }}>
+                  <div
+                    className="navbar-button github"
+                    style={{ backgroundColor: "transparent" }}
+                    onClick={() => onSave()}
+                  >
+                    <Box className="SaveButtonWrapper">
+                      <Typography
+                        mx={1}
+                        my={0.8}
+                        fontSize=".8vw"
+                        fontWeight="Thin"
+                        color="primary"
+                      >
+                        Save
+                      </Typography>
+                    </Box>
+                  </div>
+                </Box>
 
-          <Typography
-            className="welcomeMessage"
-            fontWeight="light"
-            color="primary.grey"
-            fontWeight={"2vh"}
+                <Box sx={{ "box-shadow": 0 }}>
+                  <div
+                    className="navbar-button github"
+                    onClick={() => logout()}
+                  >
+                    <LogoutIcon color="primary"> </LogoutIcon>
+                  </div>
+                </Box>
+              </Toolbar>
+            </AppBar>
+            {/* everything from here down can be in a cashboard component */}
+
+            <Typography
+              className="welcomeMessage"
+              fontWeight="light"
+              color="primary.grey"
+              fontWeight={"2vh"}
             >
-            Welcome to CodeGram demo {user.username}!
-          </Typography>
+              Welcome to CodeGram demo {user.username}!
+            </Typography>
 
-          <ToolBar />
-          <Container className="canvasContainer">{render}</Container>
-          <SourceDoc
-            functions={{
-              addNode: addNode,
-              deleteNode: onElementsRemove, //TODO: Add deleteNode function to DELETE NODE button(?)
-              printNodesArr: printNodesArr,
-              getPRContent: getPRContent,
-              handleName: handleName,
-              setSelectedEL: setSelectedEL,
-              setIsOpenSD:setIsOpenSD
-            }}
-            data={{
-              repo: repo,
-              repoData: repoData,
-              selectedEL: selectedEL,
-              isOpenSD: isOpenSD
-            }}
+            <ToolBar />
+            <Container className="canvasContainer">{render}</Container>
+            <SourceDoc
+              functions={{
+                addNode: addNode,
+                deleteNode: onElementsRemove, //TODO: Add deleteNode function to DELETE NODE button(?)
+                printNodesArr: printNodesArr,
+                getPRContent: getPRContent,
+                handleName: handleName,
+                setSelectedEL: setSelectedEL,
+                setIsOpenSD: setIsOpenSD,
+              }}
+              data={{
+                repo: repo,
+                repoData: repoData,
+                selectedEL: selectedEL,
+                isOpenSD: isOpenSD,
+              }}
             />
-        </div>
-      </ReactFlowProvider>
+          </div>
+        </ReactFlowProvider>
       </ThemeProvider>
     );
   } else {

@@ -15,12 +15,45 @@
 }
 
 .openSD {
-  opacity:1; 
+  opacity: 1;
   transition-duration: 0.2s;
 }
 
-.hiddenSD { 
-  opacity:0;
+.hiddenSD {
+  opacity: 0;
   transition-duration: 0.2s;
   pointer-events: none;
+}
+
+.SDMinimizeWrapper {
+  position: relative;
+  top: 1.5%;
+  left: 2%;
+  height: 20px;
+  width: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  cursor: pointer;
+  border: 1px solid #ffaea6;
+  border-radius: 25px;
+}
+
+.SDMinimize {
+  position: relative;
+  height: 1px;
+  width: 40%;
+  background-color: #ffaea6;
+  border-radius: 6px;
+  z-index: 9999;
+}
+.SDMinimizeWrapper:hover .SDMinimize {
+  background-color: white;
+  height: 3px;
+}
+
+.SDMinimizeWrapper:hover {
+  background-color: #ffaea6;
 }
