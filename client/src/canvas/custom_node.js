@@ -63,7 +63,6 @@ const CustomNodeComponent = (props) => {
         <div className="node-label corner">
 
           {props.data.type === "cylinder" &&
-            props.data.label &&
             <input
               placeholder="container"
               // onChange={handleSearch}
