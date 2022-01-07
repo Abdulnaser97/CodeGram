@@ -40,8 +40,10 @@ import Fuse from "fuse.js";
 
 // pages
 import { LandingPage } from "./Landing/LandingPage";
-import ToolBar from "./components/ToolBar.js";
+
 import SourceDocButton from "./Media/SourceDocButton";
+import useToolBar from "./components/ToolBar.js";
+
 
 const LogoTopNav = styled.div`
   position: relative;
@@ -87,6 +89,8 @@ function App() {
   const options = {
     keys: ["name"],
   };
+  //Dereference ToolBar function to access render
+  const { toolBarRender, selectedShapeName } = useToolBar();
 
   const {
     render,
@@ -98,7 +102,7 @@ function App() {
     selectedEL,
     rfInstance,
     setSelectedEL,
-  } = useReactFlowWrapper({ dispatch });
+  }  = useReactFlowWrapper({ dispatch, selectedShapeName });
 
   useEffect(() => {
     if (repo && repository) {
@@ -368,7 +372,7 @@ function App() {
                 }}
               />
             </div>
-            <ToolBar />
+              { toolBarRender }
             <Container className="canvasContainer">{render}</Container>
             <SourceDoc
               functions={{

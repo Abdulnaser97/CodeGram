@@ -3,9 +3,10 @@ import {
   CustomNodeComponent,
   WrapperNodeComponent,
 } from "../canvas/custom_node";
-import ReactFlow, { addEdge, useZoomPanHelper } from "react-flow-renderer";
+import ReactFlow, { addEdge, SmoothStepEdge, useZoomPanHelper, StraightEdge, StepEdge } from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import { addNodeToArray, deleteNodeFromArray } from "../Redux/actions/nodes";
+import {useToolBar} from "../components/ToolBar.js";
 
 var initialElements = [
   {
@@ -26,6 +27,13 @@ var initialElements = [
   },
 ];
 
+const edgeTypes = {
+    default: SmoothStepEdge,
+    straight: StraightEdge,
+    step: StepEdge,
+    smoothstep: SmoothStepEdge
+};
+
 const getNodeId = () => `randomnode_${+new Date()}`;
 
 /**
@@ -33,7 +41,7 @@ const getNodeId = () => `randomnode_${+new Date()}`;
  * Component Starts Here
  *
  **/
-export function useReactFlowWrapper({ dispatch }) {
+export function useReactFlowWrapper({ dispatch, selectedShapeName }) {
   const { RFState } = useSelector((state) => {
     return { RFState: state.RFState };
   });
@@ -41,9 +49,12 @@ export function useReactFlowWrapper({ dispatch }) {
   const [nodeName, setNodeName] = useState("");
 
   // Selected node
-  const [selectedEL, setSelectedEL] = useState(initialElements[0]);
+  const [selectedEL, setSelectedEL] = useState(initialElements[0]); ///////////////////////////////////////////////
   const yPos = useRef(0);
   const [rfInstance, setRfInstance] = useState(null);
+
+  // get stat
+  const [useShape, setUseShape] = useState(selectedShapeName)
 
   const onElementClick = (event, element) => {
     //console.log("click", element);
@@ -62,10 +73,11 @@ export function useReactFlowWrapper({ dispatch }) {
     dispatch(deleteNodeFromArray(elementsToRemove[0]));
   };
 
-  // add node function
+  // Add node function
   const addNode = useCallback(
     (file) => {
       var label = nodeName;
+      //const [selectedNodeType, selectedNodeTypeName] = SendNodeType();
       const newNode = {
         id: getNodeId(),
         // this data will get filled with the array of JSON objects that will come
@@ -118,6 +130,8 @@ export function useReactFlowWrapper({ dispatch }) {
           onLoad={setRfInstance}
           onElementClick={onElementClick}
           connectionMode={"loose"}
+          edgeTypes={edgeTypes}
+          key="edges"
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>

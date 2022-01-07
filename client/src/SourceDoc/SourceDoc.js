@@ -268,7 +268,7 @@ function SourceDoc(props) {
   };
 
 
-  useEffect(() => {
+  useEffect(() => { ////////////////////////////////////////////////////////////////////////////////////////
     if (props.data.selectedEL.data.url !== undefined) {
       // calls node url to get file content
       axios
