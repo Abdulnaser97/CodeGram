@@ -380,7 +380,7 @@ function App() {
                   border: "none",
                   backgroundColor: "rgb(247, 247, 247)",
                   boxShadow: 6,
-                  fontSize: "2vh",
+                  fontSize:".8vw",
                   outline: "none",
                   width: "65%",
                 }}
