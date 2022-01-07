@@ -50,7 +50,7 @@ export function useReactFlowWrapper({ dispatch }) {
     setSelectedEL(element);
   };
 
-  console.log(selectedEL)
+  //console.log(selectedEL)
   const onConnect = (params) => setElements((els) => addEdge(params, els));
 
   // Delete Node

@@ -32,16 +32,6 @@ export const getRepoFiles = (repoName) => async (dispatch) => {
   const files = newRepo.data;
   var processedRepo = {}
   var processedFiles = await recursiveRepoBuilder(repoName, files, processedRepo);
-  //console.log(processedFiles)
-  // processedFiles.repoName = {}
-  // processedFiles.repoName.contents = {}
-  // for (const [key,value] of Object.entries(processedFiles)){
-  //   console.log(key)
-  //   console.log(value)
-  //   var count = (value.path.match(/\//g) || []).length;
-  //   if (!count)
-  //     processedFiles.repoName.contents[value.path] = value
-  // }
   dispatch(storeRepoFiles(processedFiles));
 };
 

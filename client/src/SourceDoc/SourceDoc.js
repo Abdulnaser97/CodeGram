@@ -9,6 +9,7 @@ import {
   Tab,
   TextField,
   Button,
+  responsiveFontSizes,
 } from "@mui/material";
 
 // third party dependecnies
@@ -30,22 +31,7 @@ import axios from "axios";
 import { fontWeight } from "@mui/system";
 import { Resizable } from "re-resizable";
 
-const options = {
-  // isCaseSensitive: false,
-  // includeScore: false,
-  // shouldSort: true,
-  // includeMatches: false,
-  // findAllMatches: false,
-  // minMatchCharLength: 1,
-  // location: 0,
-  // threshold: 0.6,
-  // distance: 100,
-  // useExtendedSearch: false,
-  // ignoreLocation: false,
-  // ignoreFieldNorm: false,
-  // fieldNormWeight: 1,
-  keys: ["name"],
-};
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -81,22 +67,19 @@ function a11yProps(index) {
 
 function SourceDoc(props) {
   const state = useSelector((state) => state);
-  const repository = state.repoFiles.repoFiles[0];
 
   //console.log(state)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
   // state for search
-  const [search, setSearch] = useState("search");
+  
   const [curCode, setCurCode] = useState("Select a nnode to view file");
 
   // state for selected file
   const [openArtifact, setOpenArtifact] = useState("");
   const [sourceFiles, setSourceFiles] = useState(null);
   const [path, setPath] = useState([]);
-  const [homePath, setHomePath] = useState(null);
   const [pathComponent, setPathComponent] = useState(null);
-  const [fuse, setFuse] = useState(null);
   const [SDContent, setSDContent] = useState(null);
   const setSelectedElements = useStoreActions(
     (actions) => actions.setSelectedElements
@@ -104,6 +87,8 @@ function SourceDoc(props) {
 
   const [width, setWidth] = useState("40vw");
   const [height, setHeight] = useState("85vh");
+
+  const { search, repository, fuse, homePath} = props.data 
   // change open artifact to beb the file from react flow
   useEffect(() => {
     if (repository)
@@ -165,28 +150,11 @@ function SourceDoc(props) {
   }, [SDContent, props.data.selectedEL, openArtifact]);
 
   useEffect(() => {
-    if (props.data.repo && repository) {
-      var homeDir = [];
-      // push home directory files into home path
-      for (const [key, val] of Object.entries(repository)) {
-        key.split("/").length === 1 && homeDir.push(val);
-      }
-
-      var hPath = {
-        name: props.data.repo,
-        dir: homeDir,
-        path: props.data.repo,
-      };
-      // IMPORTANT: Fuse search object currently created here
-      // May be good to move to state so it can be a shared function to
-      // search through the react flow nodes array or the repo files array
-      const myFuse = new Fuse(Object.values(repository), options);
-      setHomePath(hPath);
-      setPath([hPath]);
-      setOpenArtifact(hPath);
-      setFuse(myFuse);
+    if (repository && homePath) {
+      setOpenArtifact(homePath);  
+      setPath([homePath]);
     }
-  }, [props.data.repo, state.repoFiles.repoFiles]);
+  }, [repository, homePath]);
 
   // logic for updating our path variable whenever the selected File changes
   useEffect(() => {
@@ -299,11 +267,6 @@ function SourceDoc(props) {
     setValue(newValue);
   };
 
-  const handleSearch = (event, newValue) => {
-    // set null during search so any clicks after a serach still trigger rerender
-    setOpenArtifact(null);
-    setSearch(event.target.value);
-  };
 
   useEffect(() => {
     if (props.data.selectedEL.data.url !== undefined) {
@@ -321,59 +284,27 @@ function SourceDoc(props) {
     }
   }, [props.data.selectedEL]);
 
+
+  
   // search method
-  function searchCodeBase() {
+  useEffect(() => {
     if (fuse && search) setSDContent(fuse.search(search));
-  }
+  }, [search])
   //if(props.data.isOpenSD){
   return (
     <div className={props.data.isOpenSD ? "openSD" : "hiddenSD"}>
       {/* TODO: extract this compontnt to dashboard if team wants to do "terminal/key
       board command idea on one side of screen */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          position: "fixed",
-          top: "8vh",
-          right: "2vw",
-          width: "40vw",
-        }}
-      >
-        <div className="SourceDocMinimize" />
 
-        <Typography
-          fontSize={"2vh"}
-          color={"#f58282"}
-          fontWeight={"bold"}
-          mx={1}
-          my={0}
-        >
-          codeGram =>:
-        </Typography>
 
-        <input
-          placeholder=" Start typing to search!"
-          onChange={handleSearch}
-          onKeyPress={searchCodeBase}
-          style={{
-            "z-index": 0,
-            border: "none",
-            backgroundColor: "rgb(247, 247, 247)",
-            boxShadow: 6,
-            fontSize: "2vh",
-            outline: "none",
-            width: "65%",
-          }}
-        />
-      </div>
+
       <Resizable
         size={{ width, height }}
         className="sourceDocContainer"
         style={{
           position: "fixed",
           top: "13vh",
-          right: "1vw",
+          right: "1.5vw",
           width: "40vw",
           height: "90vh",
           "z-index": 0,

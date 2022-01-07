@@ -15,7 +15,7 @@ import "./ToolBar.css";
 const ToolBarBox = styled.div`
   position: fixed;
   top: 30vh;
-  left: 1.75vw;
+  left: 1.5vw;
   width: 3vw;
   height: 17vw;
   display: flex;

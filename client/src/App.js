@@ -36,6 +36,8 @@ import {
   WrapperNodeComponent,
 } from "./canvas/custom_node";
 
+import Fuse from "fuse.js";
+
 // pages
 import { LandingPage } from "./Landing/LandingPage";
 import ToolBar from "./components/ToolBar.js";
@@ -63,8 +65,8 @@ const LogoTopNav = styled.div`
  *
  */
 function App() {
-  const { nodesArr, repoFiles } = useSelector((state) => {
-    return { nodesArr: state.nodes.nodesArr, repoFiles: state.repoFiles };
+  const { nodesArr, repoFiles, repository } = useSelector((state) => {
+    return { nodesArr: state.nodes.nodesArr, repoFiles: state.repoFiles, repository: state.repoFiles.repoFiles[0] };
   });
 
   const [user, setUser] = useState([]);
@@ -74,8 +76,17 @@ function App() {
   const [repoData, setRepoData] = useState(0);
   const [loggedIn, setLoggedIn] = useState(false);
   const [isOpenSD, setIsOpenSD] = useState(true);
+  const [fuse, setFuse] = useState(null);
+  const [homePath, setHomePath] = useState(null);
+  const [openArtifact, setOpenArtifact] = useState("");
+  const [search, setSearch] = useState("search");
+
   // redux
   const dispatch = useDispatch();
+
+  const options = {
+    keys: ["name"],
+  };
 
   const {
     render,
@@ -88,6 +99,29 @@ function App() {
     rfInstance,
     setSelectedEL,
   } = useReactFlowWrapper({ dispatch });
+
+  useEffect(() => {
+    if (repo && repository) {
+      var homeDir = [];
+      // push home directory files into home path
+      for (const [key, val] of Object.entries(repository)) {
+        key.split("/").length === 1 && homeDir.push(val);
+      }
+
+      var hPath = {
+        name: repo,
+        dir: homeDir,
+        path: repo,
+      };
+      console.log(hPath)
+      // IMPORTANT: Fuse search object currently created here
+      // May be good to move to state so it can be a shared function to
+      // search through the react flow nodes array or the repo files array
+      const myFuse = new Fuse(Object.values(repository), options);
+      setHomePath(hPath);
+      setFuse(myFuse);
+    }
+  }, [repo, repository]);
 
   // get all repos in users account
   const getRepoList = async () => {
@@ -186,6 +220,13 @@ function App() {
       getRepoList();
     }
   }, [user]);
+
+  const handleSearch = (event, newValue) => {
+    // set null during search so any clicks after a serach still trigger rerender
+    setOpenArtifact(null);
+    setSearch(event.target.value);
+  };
+
 
   if (loggedIn) {
     return (
@@ -286,11 +327,47 @@ function App() {
               className="welcomeMessage"
               fontWeight="light"
               color="primary.grey"
-              fontWeight={"2vh"}
+              fontWeight={"2vh"}ß
             >
               Welcome to CodeGram demo {user.username}!
             </Typography>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                position: "fixed",
+                top: "8vh",
+                right: "2vw",
+                width: "40vw",
+              }}
+            >
+              <div className="SourceDocMinimize" />
 
+              <Typography
+                fontSize={"2vh"}
+                color={"#f58282"}
+                fontWeight={"bold"}
+                mx={1}
+                my={0}
+              >
+                codeGram =>:
+              </Typography>
+
+              <input
+                placeholder=" Start typing to search!"
+                onChange={handleSearch}
+                onKeyPress={handleSearch}
+                style={{
+                  "z-index": 0,
+                  border: "none",
+                  backgroundColor: "rgb(247, 247, 247)",
+                  boxShadow: 6,
+                  fontSize: "2vh",
+                  outline: "none",
+                  width: "65%",
+                }}
+              />
+            </div>
             <ToolBar />
             <Container className="canvasContainer">{render}</Container>
             <SourceDoc
@@ -302,12 +379,17 @@ function App() {
                 handleName: handleName,
                 setSelectedEL: setSelectedEL,
                 setIsOpenSD: setIsOpenSD,
+
               }}
               data={{
                 repo: repo,
                 repoData: repoData,
                 selectedEL: selectedEL,
                 isOpenSD: isOpenSD,
+                fuse:fuse, 
+                repository:repository,
+                search:search, 
+                homePath:homePath
               }}
             />
           </div>
