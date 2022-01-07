@@ -41,7 +41,7 @@ const getNodeId = () => `randomnode_${+new Date()}`;
  * Component Starts Here
  *
  **/
-export function useReactFlowWrapper({ dispatch }) {
+export function useReactFlowWrapper({ dispatch, selectedShapeName }) {
   const { RFState } = useSelector((state) => {
     return { RFState: state.RFState };
   });
@@ -53,8 +53,8 @@ export function useReactFlowWrapper({ dispatch }) {
   const yPos = useRef(0);
   const [rfInstance, setRfInstance] = useState(null);
 
-  //Selected node style
-  const {toolBarRender, selectedNodeStyle, selectedNodeStyleName} = useToolBar();
+  // get stat
+  const [useShape, setUseShape] = useState(selectedShapeName)
 
   const onElementClick = (event, element) => {
     console.log("click", element);
@@ -95,12 +95,12 @@ export function useReactFlowWrapper({ dispatch }) {
           // but the type will probably be set from a few different places
 
           //Change type to reflect user's selection with some default if not already defined
-          type: selectedNodeStyleName !== undefined ? selectedNodeStyleName : "fileNode",
+          type: selectedShapeName !== undefined ? selectedShapeName : "fileNode",
           width: 200,
           height: 200,
           
         },
-        type: selectedNodeStyleName !== undefined ? selectedNodeStyleName : "fileNode", //not sure why this is repeated but ok. 
+        type: selectedShapeName !== undefined ? selectedShapeName : "fileNode", //not sure why this is repeated but ok. 
         width: 200,
         height: 200,
         position: { x: 500, y: 400 },

@@ -194,8 +194,8 @@ export function useToolBar(props) {
         </ToolBarButton>
       </ToolBarBox>
     ), 
-    selectedShape, 
-    selectedShapeName
+    selectedShape:selectedShape, 
+    selectedShapeName:selectedShapeName
   }
 }
 

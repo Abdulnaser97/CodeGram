@@ -78,7 +78,7 @@ function App() {
   const dispatch = useDispatch();
 
   //Dereference ToolBar function to access render
-  const { toolBarRender, NodeStyle, NodeStyleName} = useToolBar();
+  const { toolBarRender, selectedShapeName } = useToolBar();
 
   const {
     render,
@@ -89,7 +89,7 @@ function App() {
     initialElements,
     selectedEL,
     rfInstance,
-  } = useReactFlowWrapper({ dispatch });
+  } = useReactFlowWrapper({ dispatch, selectedShapeName });
 
   // get all repos in users account
   const getRepoList = async () => {
