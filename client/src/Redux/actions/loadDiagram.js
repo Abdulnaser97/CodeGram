@@ -2,10 +2,17 @@ import axios from "axios";
 import { LOAD_DIAGRAM_TO_STORE } from "../constants";
 
 export const loadDiagram = (repoFiles) => async (dispatch) => {
-  const diagramFile = repoFiles.find((file) =>
-    file.fileName.includes(".CodeGram")
-  );
+  // const diagramFile = repoFiles.find((file) =>
+  //   file.fileName.includes(".CodeGram")
+  // );
 
+  var diagramFile = null 
+  for (const [key, value] of Object.entries(repoFiles)){
+    if (key.includes(".CodeGram")){
+        diagramFile = value
+    }
+  }
+  
   if (diagramFile && diagramFile.url !== undefined) {
     // calls node url to get file content
     axios

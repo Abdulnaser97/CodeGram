@@ -37,15 +37,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid #adadad;
+  border: 2px solid #adadad;
   border-radius: 20px;
   background-color: #ffffff;
+  transition: ease-in-out 0.2s;
 }
 
 .square-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  /* display: flex;
+  justify-content: center; */
+  /* align-items: center; */
   border: 1px dashed #ff6666;
   border-radius: 5px;
   background-color: none;
@@ -61,20 +62,42 @@
   position: relative;
   margin: 0 auto;
   border-radius: 5%;
-  background-color: rgba(160, 160, 160, 0.5);
+  background-color: rgba(255, 255, 255, 0.906);
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: -2px 4px 5px #dadadacd;
+}
+
+.highlightedContainer {
+  box-shadow: -2px 4px 5px #505050cd;
 }
 
 .cylinder .node-label {
   text-align: center;
 }
 
-.react-flow__node.selected {
-  box-shadow: none;
+.react-flow__node {
+	border-width: 2px;
 }
 
-.react-flow__node:hover {
-  filter: brightness(0.9);
+.react-flow__node.selected {
+	box-shadow: none;
+	border-color: lightcoral;
+	border-width: 2px;
 }
+
+.highlightedNode{
+  transition: ease-in-out 0.1s;
+  color:white;
+  font-weight: bold;
+  background-color: #FF8B8B;
+  border:#FF8B8B; 
+  box-shadow: -5px 8px 10px #A36363;
+}
+
+.highlightedWrapper {
+  transition: ease-in-out 0.1s;
+  border: 3px dashed #ff6666;
+}
+

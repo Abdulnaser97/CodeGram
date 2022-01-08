@@ -103,7 +103,7 @@ body {
   position: relative;
   height: 5%;
   width: 85%;
-  border-radius: 1vw;
+  border-radius: 1vh;
   margin: 1%;
   padding: 2% 5%;
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
@@ -112,16 +112,13 @@ body {
 }
 
 .SourceDocFile:hover {
-  cursor: pointer;
   box-shadow: rgba(0, 0, 0, 0.623) 1.95px 1.95px 2.6px;
+  cursor: default;
 }
 
-.selected {
-  box-shadow: rgba(0, 0, 0, 0.603) 0px 3px 8px;
-}
-
-.selected:hover {
-  box-shadow: rgba(0, 0, 0, 0.603) 0px 3px 8px;
+.selectedFile {
+  background-color: #f58282;
+  color: white;
 }
 
 .foldertype {
@@ -211,7 +208,7 @@ a:hover {
 }
 
 pre {
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .repoContainer {
@@ -221,7 +218,7 @@ pre {
 }
 
 .pathContainer {
-  margin: 2% 0;
+  margin-bottom: 2%;
   padding: 1% 5%;
   background-color: rgb(241, 241, 241);
   border-radius: 1vw;
@@ -231,13 +228,12 @@ pre {
   display: inline;
   margin: 0;
   color: rgba(0, 0, 0, 0.769);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .pathContainer p:hover {
   cursor: pointer;
   color: #f58282;
-  text-decoration: underline;
 }
 
 .SaveButtonWrapper {
@@ -255,4 +251,26 @@ pre {
 .navbar-button:hover p {
   color: white;
   font-weight: 500;
+}
+
+.maxButton:hover {
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  cursor: pointer;
+}
+
+::placeholder {
+  color: rgb(189, 189, 189);
+}
+
+.SourceDocButtonWrapper {
+  position: fixed;
+  top: 43vh;
+  right: -1vw;
+  height: 7vw;
+  width: 7vw;
+  cursor: pointer;
+}
+
+.SourceDocButtonWrapper:hover .SDBC {
+  fill: #dba5a5;
 }
