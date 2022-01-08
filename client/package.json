@@ -4,6 +4,8 @@
   "private": true,
   "proxy": "http://localhost:8080",
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^31.1.0",
+    "@ckeditor/ckeditor5-react": "^3.0.3",
     "@emotion/react": "^11.5.0",
     "@emotion/styled": "^11.3.0",
     "@mui/icons-material": "^5.0.4",
@@ -17,8 +19,8 @@
     "axios": "^0.24.0",
     "axois": "^0.0.1-security",
     "browserify-fs": "^1.0.0",
-    "re-resizable": "^6.9.1",
     "fuse.js": "^6.5.3",
+    "re-resizable": "^6.9.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-flow-renderer": "^9.6.11",

@@ -154,7 +154,7 @@ export function useReactFlowWrapper({ dispatch, selectedShapeName, activeShape }
           width: 200,
           height: 200,
           // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
-          file: file
+          //file: file
         },
         type: 'fileNode',
         width: 200,
@@ -248,6 +248,7 @@ export function useReactFlowWrapper({ dispatch, selectedShapeName, activeShape }
         </ReactFlow>
       </div>
     ),
+    elements:elements, 
     addNode: addNode,
     setElements: setElements,
     setNodeName: setNodeName,
