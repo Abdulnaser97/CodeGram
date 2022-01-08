@@ -15,7 +15,7 @@ import {
 // third party dependecnies
 import PropTypes from "prop-types";
 import { useStoreActions } from "react-flow-renderer";
-import Fuse from "fuse.js";
+
 
 // react
 import { useState, useEffect } from "react";
@@ -27,6 +27,8 @@ import { connect } from "react-redux";
 
 // components
 import SourceDocFile from "./SourceDocFile";
+import TextEditor from "../components/TextEditor.js";
+
 import axios from "axios";
 import { fontWeight } from "@mui/system";
 import { Resizable } from "re-resizable";
@@ -395,31 +397,36 @@ function SourceDoc(props) {
         </TabPanel>
         <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
           <Box sx={{ disaply: "flex", flexDirection: "column" }}>
-            <Typography variant="h4" fontWeight="bold">
+            <Typography variant="h5" fontWeight="bold">
               {props.data.selectedEL.data.label}
             </Typography>
-            <Typography variant="h5">
+
+            <Typography variant="h6">
               <a href={props.data.selectedEL.data.url}> source code link </a>
             </Typography>
-            <Typography variant="h5" mt={2}>
+            <Typography variant="h6">
+              {'Write Notes'}
+            </Typography> 
+            <TextEditor/> 
+            <Typography variant="h6" mt={2}>
               Parent Nodes <br />
               <Typography>
                 {" "}
                 {props.data.selectedEL.data.parentNodes}{" "}
               </Typography>
             </Typography>
-            <Typography variant="h5" mt={2}>
+            <Typography variant="h6" mt={2}>
               Child Nodes <br />
               <Typography> {props.data.selectedEL.data.childNodes} </Typography>
             </Typography>
-            <Typography variant="h5" mt={2}>
+            <Typography variant="h6" mt={2}>
               Configuration Files <br />
               <Typography>
                 {" "}
                 {props.data.selectedEL.data.parentNodes}{" "}
               </Typography>
             </Typography>
-            <Typography variant="h5" mt={2}>
+            <Typography variant="h6" mt={2}>
               Reference Docs <br />
               {renderFiles()}
               <Typography>
