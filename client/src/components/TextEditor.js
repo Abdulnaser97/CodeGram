@@ -15,12 +15,12 @@ class TextEditor extends React.Component {
       <div className="text-editor" onClick={this.focusEditor}>
         <CKEditor
           editor={ClassicEditor}
+          data={this.props.content}
           onReady={(editor) => {
             //console.log("Editor is ready to use!", editor);
           }}
           onChange={(event, editor) => {
-            const data = editor.getData();
-            console.log( { event, editor, data } );
+            this.props.onChange(editor.getData());
           }}
           onBlur={(event, editor) => {
             //console.log("Blur.", editor);

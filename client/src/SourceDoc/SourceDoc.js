@@ -67,14 +67,10 @@ function a11yProps(index) {
   };
 }
 
-
-//// TODO: fix exiting out of search results by clicking on path.
-//// Set SDContent back to previouus
-
 function SourceDoc(props) {
   const state = useSelector((state) => state);
-
-  //console.log(state)
+  console.log(state)
+  console.log(props.data.selectedEL)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
   // state for search
@@ -87,14 +83,21 @@ function SourceDoc(props) {
   const [path, setPath] = useState([]);
   const [pathComponent, setPathComponent] = useState(null);
   const [SDContent, setSDContent] = useState(null);
+  const [wiki, setWiki] = useState('');
+  const [isEditing, setIsEditing] = useState('');    
+
+
+  // react flow functions 
   const setSelectedElements = useStoreActions(
     (actions) => actions.setSelectedElements
   );
 
+  // resizeable state varaiables 
   const [width, setWidth] = useState("40vw");
   const [height, setHeight] = useState("85vh");
 
-  const { search, repository, fuse, homePath} = props.data 
+  const { search, repository, fuse, homePath } = props.data 
+
   // change open artifact to beb the file from react flow
   useEffect(() => {
     if (repository)
@@ -112,7 +115,6 @@ function SourceDoc(props) {
         props.functions.setSelectedEL(el);
       } else {
         setSelectedElements([]);
-        
       }
     }
   }, [openArtifact]);
@@ -122,7 +124,6 @@ function SourceDoc(props) {
     if (SDContent === null || SDContent === undefined) {
       return;
     } else if (SDContent[0] && SDContent[0].length > 1) {
-      
         var repoList = [];
         const files = SDContent;
         for (const [key, value] of Object.entries(files)) {
@@ -231,17 +232,13 @@ function SourceDoc(props) {
   // separate for now as may need more logic here in future
   function pathClickHandler(curFile) {
     // if clicked path has SDContent member (root directory)
- 
       if (curFile.dir) {
         setOpenArtifact(curFile);
-
       }
       // else find file from state
       else {
         setOpenArtifact(repository[curFile.path]);
-
       }
-
     }
 
   // re render path component and directory if path ever changes
@@ -297,21 +294,40 @@ function SourceDoc(props) {
     }
   }, [props.data.selectedEL]);
 
-
   
-  // search method
+  
+  const handleWikiChange = (data) => {
+    setWiki(data)
+  }
+
+  const saveWikiToNode = () => {
+    props.functions.setElements((els) =>
+      els.map((el) => {
+        if (el.id === props.data.selectedEL.id) {
+          // it's important that you create a new object here
+          // in order to notify react flow about the change
+          el.data = {
+            ...el.data,
+            wiki: wiki,
+          };
+        }
+        return el;
+      })
+    );
+  }
+  
+  // search method called whenevr search var changes 
   useEffect(() => {
     setOpenArtifact('')
     if (fuse && search) setSDContent(fuse.search(search));
   }, [search])
+
+
   //if(props.data.isOpenSD){
   return (
     <div className={props.data.isOpenSD ? "openSD" : "hiddenSD"}>
       {/* TODO: extract this compontnt to dashboard if team wants to do "terminal/key
       board command idea on one side of screen */}
-
-
-
       <Resizable
         size={{ width, height }}
         className="sourceDocContainer"
@@ -384,7 +400,7 @@ function SourceDoc(props) {
           style={{ height: "90%", overflow: "scroll" }}
         >
           <Typography
-            variant="h4"
+            variant="h5"
             fontWeight="bold"
             style={{
               position: "sticky",
@@ -397,6 +413,43 @@ function SourceDoc(props) {
         </TabPanel>
         <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
           <Box sx={{ disaply: "flex", flexDirection: "column" }}>
+            <div
+              className="navbar-button github"
+              style={{position:"fixed", right:'1.5vw' }}
+              onClick={() => setIsEditing(!isEditing)}
+            >
+              <Box 
+                className="EditWikiButtonWrapper">
+                <Typography
+                  mx={1}
+                  my={0.8}
+                  fontSize=".8vw"
+                  fontWeight="Thin"
+                >
+                  {isEditing ? "Done" : "Edit" } 
+                </Typography>
+              </Box>
+            </div>
+            {isEditing && <div
+              className="navbar-button github"
+              style={{position:"fixed", right:'6vw' }}
+              onClick={() => {
+                saveWikiToNode() 
+                setIsEditing(!isEditing)
+              }}
+            >
+              <Box 
+                className="EditWikiButtonWrapper">
+                <Typography
+                  mx={1}
+                  my={0.8}
+                  fontSize=".8vw"
+                  fontWeight="Thin"
+                >
+                  Save
+                </Typography>
+              </Box>
+            </div>} 
             <Typography variant="h5" fontWeight="bold">
               {props.data.selectedEL.data.label}
             </Typography>
@@ -404,29 +457,33 @@ function SourceDoc(props) {
             <Typography variant="h6">
               <a href={props.data.selectedEL.data.url}> source code link </a>
             </Typography>
-            <Typography variant="h6">
-              {'Write Notes'}
+            <Typography my={1} variant="h6">
+              Wiki
             </Typography> 
-            <TextEditor/> 
-            <Typography variant="h6" mt={2}>
+            {isEditing ? 
+              <TextEditor content={props.data.selectedEL.data.wiki} onChange={handleWikiChange}/>
+              : 
+              <div dangerouslySetInnerHTML={{__html: props.data.selectedEL.data.wiki }} />
+            }
+            <Typography variant="h7" mt={2}>
               Parent Nodes <br />
               <Typography>
                 {" "}
                 {props.data.selectedEL.data.parentNodes}{" "}
               </Typography>
             </Typography>
-            <Typography variant="h6" mt={2}>
+            <Typography variant="h7" mt={2}>
               Child Nodes <br />
               <Typography> {props.data.selectedEL.data.childNodes} </Typography>
             </Typography>
-            <Typography variant="h6" mt={2}>
+            <Typography variant="h7" mt={2}>
               Configuration Files <br />
               <Typography>
                 {" "}
                 {props.data.selectedEL.data.parentNodes}{" "}
               </Typography>
             </Typography>
-            <Typography variant="h6" mt={2}>
+            <Typography variant="h7" mt={2}>
               Reference Docs <br />
               {renderFiles()}
               <Typography>

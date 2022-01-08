@@ -22,7 +22,7 @@ export default function SourceDocFile(props) {
 
 
   // openArtifact must exist to match names 
-  var selected = openArtifact.name === file.name ? "selectedFile" : "";
+  var selected = openArtifact && openArtifact.name === file.name ? "selectedFile" : "";
 
   displayClass = selected ? "" : displayClass 
   
