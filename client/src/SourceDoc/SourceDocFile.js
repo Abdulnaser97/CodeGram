@@ -20,6 +20,7 @@ export default function SourceDocFile(props) {
     displayClass = "foldertype";
   }
 
+
   // openArtifact must exist to match names 
   var selected = openArtifact && (openArtifact.name === file.name) ? "selectedFile" : "";
 

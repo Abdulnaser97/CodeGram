@@ -23,6 +23,9 @@ import {
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import GitHubIcon from "@mui/icons-material/GitHub";
+import { Alert } from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
+
 import { useDispatch } from "react-redux";
 import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
 import { getRepoFiles } from "./Redux/actions/repoFiles";
@@ -83,6 +86,7 @@ function App() {
   const [openArtifact, setOpenArtifact] = useState("");
   const [search, setSearch] = useState("search");
   const [cursor, setCursor] = useState('default');
+  const [notifs, setNotifs] = useState(null)
 
   // redux
   const dispatch = useDispatch();
@@ -90,8 +94,6 @@ function App() {
   const options = {
     keys: ["name"],
   };
-
-
 
   //Dereference ToolBar function to access render
   const { toolBarRender, selectedShapeName, activeShape} = useToolBar();
@@ -133,6 +135,7 @@ function App() {
       const myFuse = new Fuse(Object.values(repository), options);
       setHomePath(hPath);
       setFuse(myFuse);
+      setNotifs(repo+ " has been loaded!")
     }
   }, [repo, repository]);
 
@@ -240,6 +243,10 @@ function App() {
   };
 
 
+  const handleAlertClose = () => {
+    setNotifs(null);
+  };
+
   if (loggedIn) {
     return (
       <ThemeProvider theme={theme}>
@@ -309,7 +316,7 @@ function App() {
                   </FormControl>
                 </Box>
 
-                <Box mx={1} sx={{ "box-shadow": 0 }}>
+                <Box mx={2} sx={{ "box-shadow": 0 }}>
                   <div
                     className="navbar-button github"
                     style={{ backgroundColor: "transparent" }}
@@ -399,7 +406,7 @@ function App() {
                 handleName: handleName,
                 setSelectedEL: setSelectedEL,
                 setIsOpenSD: setIsOpenSD,
-
+                setElements:setElements
               }}
               data={{
                 repo: repo,
@@ -412,6 +419,10 @@ function App() {
                 homePath:homePath
               }}
             />
+
+            <Snackbar open={notifs} autoHideDuration={4000} onClose={handleAlertClose}>
+                <Alert onClose={handleAlertClose}>{notifs}</Alert>
+            </Snackbar>
           </div>
         </ReactFlowProvider>
       </ThemeProvider>
