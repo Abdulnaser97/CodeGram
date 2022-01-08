@@ -21,7 +21,7 @@ export default function SourceDocFile(props) {
   }
 
   // openArtifact must exist to match names 
-  var selected = openArtifact === file ? "selectedFile" : "";
+  var selected = openArtifact && (openArtifact.name === file.name) ? "selectedFile" : "";
 
   displayClass = selected ? "" : displayClass 
   
