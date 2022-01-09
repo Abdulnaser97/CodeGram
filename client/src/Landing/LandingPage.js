@@ -1,7 +1,7 @@
 import "../App.css";
 
 // asset imports
-import { ThemeProvider } from "@material-ui/core";
+import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../Themes";
 import GitHub from "./GitHub";
 import Background from "./Background";

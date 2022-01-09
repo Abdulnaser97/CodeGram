@@ -29,7 +29,7 @@ import Snackbar from "@mui/material/Snackbar";
 import { useDispatch } from "react-redux";
 import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
 import { getRepoFiles } from "./Redux/actions/repoFiles";
-import { ThemeProvider } from "@material-ui/core";
+import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./Themes";
 import { loadDiagram } from "./Redux/actions/loadDiagram";
 import SourceDoc from "./SourceDoc/SourceDoc";
