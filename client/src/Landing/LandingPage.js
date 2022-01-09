@@ -7,9 +7,10 @@ import GitHub from "./GitHub";
 import Background from "./Background";
 import Logo from "./Logo";
 
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 // api call import
 function login() {
-  window.open("http://localhost:8080/auth/github", "_self");
+  window.open(`${REACT_APP_BACKEND_URL}/auth/github`, "_self");
 }
 
 export function LandingPage() {
