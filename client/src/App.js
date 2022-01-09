@@ -357,7 +357,6 @@ function App() {
               fontWeight="light"
               color="primary.grey"
               fontWeight={"2vh"}
-              ß
             >
               Welcome to CodeGram demo {user.username}!
             </Typography>
