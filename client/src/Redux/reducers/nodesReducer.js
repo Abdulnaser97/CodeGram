@@ -19,7 +19,7 @@ export const nodesReducer = (state = initialState, action) => {
     case DELETE_NODES_FROM_ARRAY:
       return {
         ...state,
-        nodesArr: state.nodesArr.filter((node) => action.nodeId !== node.id),
+        nodesArr: action.nodes,
       };
     case LOAD_DIAGRAM_TO_STORE:
       return {

@@ -5,6 +5,7 @@ import {
 } from "../canvas/custom_node";
 import ReactFlow, {
   addEdge,
+  removeElements,
   useZoomPanHelper,
   ArrowHeadType,
   useStoreState,
@@ -126,7 +127,8 @@ export function useReactFlowWrapper({ dispatch, selectedShapeName, activeShape }
       console.log("nothing selected");
       return;
     }
-    dispatch(deleteNodeFromArray(elementsToRemove[0]));
+    dispatch(deleteNodeFromArray(elementsToRemove));
+    setElements((els) => removeElements(elementsToRemove, els));
   };
 
   // Add node function
