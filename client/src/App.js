@@ -120,7 +120,7 @@ function App() {
   }, [activeShape]);
 
   // TODO: think about when to release selecttion on create node
-  // useEffect(() => setCursor('default'), [selectedEL])
+  // useEffect(() => setCursor('default'), [selectedEL]).
 
   // create home path, and search engine from new repo
   useEffect(() => {
