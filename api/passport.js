@@ -20,8 +20,13 @@ passport.use(
   )
 );
 
-passport.serializeUser((user, done) => {
-  done(null, user);
+passport.serializeUser(function (user, done) {
+  done(null, {
+    id: user.id,
+    access_token: user.access_token,
+    login: user.login,
+    username: user.username,
+  });
 });
 
 passport.deserializeUser((user, done) => {

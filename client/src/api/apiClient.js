@@ -7,7 +7,7 @@ export async function perform(method, resource, data) {
       reqParams = {
         method: method,
         credentials: "include",
-        mode: "cors",
+        // mode: "cors",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -20,7 +20,7 @@ export async function perform(method, resource, data) {
       reqParams = {
         method: method,
         credentials: "include",
-        mode: "cors",
+        // mode: "cors",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
