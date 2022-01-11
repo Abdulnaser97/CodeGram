@@ -41,8 +41,6 @@ const CustomNodeComponent = (props) => {
     `${Math.min(width, height) / 12}px`
   );
 
-  const [renderHandles, setRenderHandles] = useState(props.data.renderHandles);
-
   var selected = ''
   if (props.selected) {
     if (props.data.type === 'square-container')
