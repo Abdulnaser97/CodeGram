@@ -10,8 +10,7 @@ import Logo from "./Logo";
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 // api call import
 function login() {
-  document.domain = "code-gram.com";
-  window.open(`${REACT_APP_BACKEND_URL}/auth/github`, "_self");
+  window.location.assign(`${REACT_APP_BACKEND_URL}/auth/github`);
 }
 
 export function LandingPage() {
