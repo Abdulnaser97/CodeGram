@@ -24,9 +24,9 @@ export default function SourceDocFile(props) {
   
   // cstyle lass rendering 
   if (!file.linked) {
-    displayClass = "foldertype";
+    displayClass = "unlinked";
   } else {
-    displayClass = "filetype";
+    displayClass = "linked";
   }
 
   // openArtifact must exist to match names 
@@ -45,12 +45,12 @@ export default function SourceDocFile(props) {
       <div 
       onClick={() => fileClickHandler(file)}
       style = {{width:"100%", height:"100%", padding:0}}> 
-
       <div
         style={{
           position: "relative",
           display: "flex",
           alignItems: "center",
+          margin:'2%'
         }}
         >
         <div className="iconWrapper" style={{marginRight:'10px'}}>
@@ -69,7 +69,7 @@ export default function SourceDocFile(props) {
           
       </div>
       </div>
-      <div className="iconWrapper">
+      <div className="iconWrapper" style={{marginRight:'10px'}}>
         <AddBoxIcon
           fontSize="small"
           onClick={() => {

@@ -101,11 +101,9 @@ body {
 
 .SourceDocFile {
   position: relative;
-  height: 5%;
-  width: 85%;
+  width: 90%;
   border-radius: 1vh;
-  margin: 1%;
-  padding: 2% 5%;
+  margin: 1% 0; 
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
   display: flex;
   justify-content: space-between;
@@ -121,12 +119,14 @@ body {
   color: white;
 }
 
-.foldertype {
+.unlinked {
   background-color: rgb(226, 226, 226);
+  color: grey;
 }
 
-.filetype {
+.linked {
   background-color: rgb(241, 241, 241);
+  color: black; 
 }
 
 .dashboard {

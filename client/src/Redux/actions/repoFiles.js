@@ -1,6 +1,7 @@
 import { getRepo } from "../../api/apiClient";
-import { FETCH_REPO_FILES, STORE_REPO_FILES } from "../constants";
+import { FETCH_REPO_FILES, STORE_REPO_FILES, UPDATE_REPO_FILE } from "../constants";
 import { connect, useSelector } from "react-redux";
+import { Pattern } from "@mui/icons-material";
 
 async function recursiveRepoBuilder(repoName, subRepo, subProcessedFiles){
   //var subProcessedFiles = {}
@@ -49,4 +50,11 @@ export function storeRepoFiles(repoFiles) {
     type: STORE_REPO_FILES,
     payload: repoFiles,
   };
+}
+export function updateRepoFile(path){ 
+  return { 
+    type: UPDATE_REPO_FILE,
+    id: path,  
+    payload: { data: {linked: true }}
+  }
 }

@@ -71,11 +71,12 @@ const LogoTopNav = styled.div`
  *
  */
 function App() {
-  const { nodesArr, repoFiles, repository } = useSelector((state) => {
+  const { nodesArr, repoFiles, repository, isLoadingDiagram } = useSelector((state) => {
     return {
       nodesArr: state.nodes.nodesArr,
+      isLoadingDiagram:state.nodes.isLoadingDiagram, 
       repoFiles: state.repoFiles,
-      repository: state.repoFiles.repoFiles[0],
+      repository: state.repoFiles.repoFiles,
     };
   });
 
@@ -158,7 +159,8 @@ function App() {
       setNotifs(repo + " has been loaded!");
 
     }
-  }, [repo, repository, nodesArr]);
+  }, [repoFiles.isFetchingFiles, isLoadingDiagram]);
+  
 
   // get all repos in users account
   const getRepoList = async () => {
@@ -237,10 +239,10 @@ function App() {
 
   // Load saved diagram when new repo is selected
   useEffect(() => {
-    if (repo && !repoFiles.isFetchingFiles && repoFiles.repoFiles[0] && !nodesArr.length) {
-      dispatch(loadDiagram(repoFiles.repoFiles[0]));
+    if (repo && !repoFiles.isFetchingFiles && repoFiles.repoFiles) {
+      dispatch(loadDiagram(repoFiles.repoFiles));
     }
-  }, [repo, dispatch, repoFiles]);
+  }, [repo, dispatch, repoFiles.isFetchingFiles]);
 
   // Retrieves user details once authenticated
   useEffect(() => {
