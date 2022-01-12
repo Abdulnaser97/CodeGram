@@ -1,5 +1,6 @@
 import { getRepo } from "../../api/apiClient";
 import { FETCH_REPO_FILES, STORE_REPO_FILES } from "../constants";
+import { connect, useSelector } from "react-redux";
 
 async function recursiveRepoBuilder(repoName, subRepo, subProcessedFiles){
   //var subProcessedFiles = {}
@@ -12,14 +13,16 @@ async function recursiveRepoBuilder(repoName, subRepo, subProcessedFiles){
         contents: contents.data,
         type: file.type,
         path: file.path,   
-        url: file.download_url 
+        url: file.download_url,
+        linked: false 
       }
     } else {
       subProcessedFiles[file.path] = { 
         name: file.name,  
         type: file.type, 
         path: file.path, 
-        url: file.download_url 
+        url: file.download_url, 
+        linked: false 
       }
     }
   }

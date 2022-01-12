@@ -20,6 +20,7 @@ import {
   MenuItem,
   FormControl,
   Select,
+  circularProgressClasses,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import GitHubIcon from "@mui/icons-material/GitHub";
@@ -32,6 +33,7 @@ import { getRepoFiles } from "./Redux/actions/repoFiles";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./Themes";
 import { loadDiagram } from "./Redux/actions/loadDiagram";
+import { storeRepoFiles } from "./Redux/actions/repoFiles";
 import SourceDoc from "./SourceDoc/SourceDoc";
 import { ReactFlowProvider } from "react-flow-renderer";
 import {
@@ -76,6 +78,8 @@ function App() {
       repository: state.repoFiles.repoFiles[0],
     };
   });
+
+//  console.log(nodesArr)
 
   const [user, setUser] = useState([]);
   const [content, setContent] = useState([]);
@@ -124,11 +128,21 @@ function App() {
 
   // create home path, and search engine from new repo
   useEffect(() => {
-    if (repo && repository) {
+    if (repo && repository && !repoFiles.isFetchingFiles) {
       var homeDir = [];
+      //var workingRepo = {repository}
       // push home directory files into home path
       for (const [key, val] of Object.entries(repository)) {
         key.split("/").length === 1 && homeDir.push(val);
+      }
+      console.log('in repo loading function')
+      console.log(nodesArr)
+      for (const node of nodesArr){
+        console.log(node)
+        if (repository[node.data.path]){
+          console.log(repository[node.data.path])
+          repository[node.data.path].linked = true  
+        }
       }
 
       var hPath = {
@@ -136,13 +150,15 @@ function App() {
         dir: homeDir,
         path: repo,
       };
-
+   
       const myFuse = new Fuse(Object.values(repository), options);
       setHomePath(hPath);
       setFuse(myFuse);
+      dispatch(storeRepoFiles(repository));
       setNotifs(repo + " has been loaded!");
+
     }
-  }, [repo, repository]);
+  }, [repo, repository, nodesArr]);
 
   // get all repos in users account
   const getRepoList = async () => {
@@ -221,7 +237,7 @@ function App() {
 
   // Load saved diagram when new repo is selected
   useEffect(() => {
-    if (repo && !repoFiles.isFetchingFiles && repoFiles.repoFiles[0]) {
+    if (repo && !repoFiles.isFetchingFiles && repoFiles.repoFiles[0] && !nodesArr.length) {
       dispatch(loadDiagram(repoFiles.repoFiles[0]));
     }
   }, [repo, dispatch, repoFiles]);

@@ -1,6 +1,7 @@
 import AddBoxIcon from "@mui/icons-material/AddBox";
-import { ListItem } from "@mui/material";
-import { display } from "@mui/system";
+import CodeIcon from '@mui/icons-material/Code';
+import Folder from "@mui/icons-material/Folder";
+import FolderIcon from '@mui/icons-material/Folder';
 
 export default function SourceDocFile(props) {
   const { addNode, setOpenArtifact, openArtifact } = props;
@@ -11,15 +12,22 @@ export default function SourceDocFile(props) {
 
   var fileName = file.name 
   var displayClass = "";
+  var fileIcon = null 
 
   // cstyle lass rendering 
   if (file.type !== "dir") {
-    displayClass = "filetype";
+    fileIcon = <CodeIcon fontSize="small"/> 
   } else {
     fileName = "/" + fileName;
-    displayClass = "foldertype";
+    fileIcon = <FolderIcon fontSize="small"/> 
   }
-
+  
+  // cstyle lass rendering 
+  if (!file.linked) {
+    displayClass = "foldertype";
+  } else {
+    displayClass = "filetype";
+  }
 
   // openArtifact must exist to match names 
   var selected = openArtifact && (openArtifact.name === file.name) ? "selectedFile" : "";
@@ -32,11 +40,12 @@ export default function SourceDocFile(props) {
 
   return (
     <div
-      className={`SourceDocFile ${displayClass} ${selected} `}
+      className={`SourceDocFile ${displayClass} ${selected}`}
       >
       <div 
       onClick={() => fileClickHandler(file)}
       style = {{width:"100%", height:"100%", padding:0}}> 
+
       <div
         style={{
           position: "relative",
@@ -44,6 +53,9 @@ export default function SourceDocFile(props) {
           alignItems: "center",
         }}
         >
+        <div className="iconWrapper" style={{marginRight:'10px'}}>
+          {fileIcon}
+        </div> 
         <p
           style={{
             fontFamily: "Poppins-Bold",
