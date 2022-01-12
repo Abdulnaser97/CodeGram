@@ -12,12 +12,8 @@ export function addNodeToArray(node) {
 }
 
 export function deleteNodeFromArray(elementsToRemove) {
-  return (dispatch, getState) => {
-    const { nodesArr } = getState().nodes;
-
-    return {
-      type: DELETE_NODES_FROM_ARRAY,
-      nodes: nodesArr.filter((node) => !(elementsToRemove.includes(node.id))),
-    }
-  }
+  return {
+    type: DELETE_NODES_FROM_ARRAY,
+    nodes: elementsToRemove,
+  };
 }
