@@ -32,7 +32,7 @@ const ActionCreators = Object.assign(
   deleteNodeFromArray,
   fetchRepoFiles,
   storeRepoFiles,
-  loadDiagramToStore
+  loadDiagramToStore,
 );
 export const mapStateToProps = (state) => ({
   nodes: state.nodes,

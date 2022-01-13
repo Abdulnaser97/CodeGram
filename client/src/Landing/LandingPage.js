@@ -1,15 +1,16 @@
 import "../App.css";
 
 // asset imports
-import { ThemeProvider } from "@material-ui/core";
+import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../Themes";
 import GitHub from "./GitHub";
 import Background from "./Background";
 import Logo from "./Logo";
 
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 // api call import
 function login() {
-  window.open("http://localhost:8080/auth/github", "_self");
+  window.location.assign(`${REACT_APP_BACKEND_URL}/auth/github`);
 }
 
 export function LandingPage() {

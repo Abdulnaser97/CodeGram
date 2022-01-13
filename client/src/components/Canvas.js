@@ -90,7 +90,7 @@ export function useReactFlowWrapper({ dispatch, selectedShapeName, activeShape }
     setElements((els) =>
       addEdge(
         // TODO : lookinto styling floating edges  and smoothstep 
-        { ...params, type: "floating smoothstep", arrowHeadType: ArrowHeadType.Arrow },
+        { ...params, type: "floating", arrowHeadType: ArrowHeadType.Arrow },
         els
       )
     );

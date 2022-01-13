@@ -1,8 +1,8 @@
 import { getRepo } from "../../api/apiClient";
-import { FETCH_REPO_FILES, STORE_REPO_FILES } from "../constants";
+import { FETCH_REPO_FILES, STORE_REPO_FILES, UPDATE_REPO_FILE } from "../constants";
+
 
 async function recursiveRepoBuilder(repoName, subRepo, subProcessedFiles){
-  //var subProcessedFiles = {}
   for (const file of subRepo){
     if (file.type === "dir"){
       const contents = await getRepo(repoName,file.path);
@@ -12,14 +12,16 @@ async function recursiveRepoBuilder(repoName, subRepo, subProcessedFiles){
         contents: contents.data,
         type: file.type,
         path: file.path,   
-        url: file.download_url 
+        url: file.download_url,
+        linked: false 
       }
     } else {
       subProcessedFiles[file.path] = { 
         name: file.name,  
         type: file.type, 
         path: file.path, 
-        url: file.download_url 
+        url: file.download_url, 
+        linked: false 
       }
     }
   }
@@ -46,4 +48,13 @@ export function storeRepoFiles(repoFiles) {
     type: STORE_REPO_FILES,
     payload: repoFiles,
   };
+}
+
+// unused but leaving as example for now
+export function updateRepoFile(path){ 
+  return { 
+    type: UPDATE_REPO_FILE,
+    id: path,  
+    payload: { data: {linked: true }}
+  }
 }

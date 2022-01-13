@@ -1,5 +1,6 @@
 import axios from "axios";
 import { LOAD_DIAGRAM_TO_STORE } from "../constants";
+import { storeRepoFiles } from "./repoFiles";
 
 export const loadDiagram = (repoFiles) => async (dispatch) => {
   // const diagramFile = repoFiles.find((file) =>
@@ -10,6 +11,7 @@ export const loadDiagram = (repoFiles) => async (dispatch) => {
   for (const [key, value] of Object.entries(repoFiles)){
     if (key.includes(".CodeGram")){
         diagramFile = value
+        break 
     }
   }
   
@@ -19,6 +21,13 @@ export const loadDiagram = (repoFiles) => async (dispatch) => {
       .get(diagramFile.url)
       .then(function (response) {
         // handle success
+        // var workingRepo = { repoFiles }
+        // for (const f of response.data.elements){
+        //   if (f.data && repoFiles[f.data.path]){
+        //     workingRepo[f.data.path].linked = true
+        //   }
+        // }
+        // dispatch(storeRepoFiles(workingRepo))
         dispatch(loadDiagramToStore(response.data));
       })
       .catch(function (error) {

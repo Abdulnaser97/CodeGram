@@ -69,14 +69,13 @@ function a11yProps(index) {
 
 function SourceDoc(props) {
   const state = useSelector((state) => state);
-  console.log(state)
+
   console.log(props.data.selectedEL)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
-  // state for search
   
   const [curCode, setCurCode] = useState("Select a nnode to view file");
-
+  
   // state for selected file
   const [openArtifact, setOpenArtifact] = useState("");
   const [sourceFiles, setSourceFiles] = useState(null);
@@ -85,12 +84,12 @@ function SourceDoc(props) {
   const [SDContent, setSDContent] = useState(null);
   const [wiki, setWiki] = useState('');
   const [isEditing, setIsEditing] = useState('');    
-
+  
 
   // react flow functions 
   const setSelectedElements = useStoreActions(
     (actions) => actions.setSelectedElements
-  );
+    );
 
   // resizeable state varaiables 
   const [width, setWidth] = useState("40vw");
@@ -98,10 +97,23 @@ function SourceDoc(props) {
 
   const { search, repository, fuse, homePath } = props.data 
 
+  useEffect(()=> {
+    if (!state.repoFiles.repoFiles.isFetchingFiles){
+      setOpenArtifact("")
+      setSourceFiles(null)
+      setPath([])
+      setPathComponent('...Loading')
+      setSDContent('')
+      setWiki('')
+      setIsEditing('')
+   }
+  }, [props.data.repo])
+
   // change open artifact to beb the file from react flow
   useEffect(() => {
-    if (repository)
+    if (repository && props.data.selectedEL.data.path){
       setOpenArtifact(repository[props.data.selectedEL.data.path]);
+    }
   }, [props.data.selectedEL]);
 
   // highlight node on canvas if exists -> may need optimizing
@@ -131,24 +143,22 @@ function SourceDoc(props) {
             <SourceDocFile
               addNode={props.functions.addNode}
               setOpenArtifact={setOpenArtifact}
-              file={value[1]}
+              file={repository[value[1].path]}
               openArtifact={openArtifact}
               selectedEL={props.data.selectedEL}
             />
           );
         }
         setSourceFiles(repoList);
-      
     } else {
- 
         var repoList = [];
         const files = SDContent;
-        for (const f of files) {
+        for (var f of files) {
           repoList.push(
             <SourceDocFile
               addNode={props.functions.addNode}
               setOpenArtifact={setOpenArtifact}
-              file={f}
+              file={repository[f.path]}
               openArtifact={openArtifact}
               selectedEL={props.data.selectedEL}
             />
@@ -164,11 +174,11 @@ function SourceDoc(props) {
       setOpenArtifact(homePath);  
       setPath([homePath]);
     }
-  }, [repository, homePath]);
+  }, [homePath]);
 
   // logic for updating our path variable whenever the selected File changes
   useEffect(() => {
-    if (openArtifact && repository) {
+    if (openArtifact && repository ) {
       // if new openArtifact iis on the path already
       if (path.includes(openArtifact)) {
         let curPath = [...path];
@@ -190,7 +200,7 @@ function SourceDoc(props) {
         setPath(pathCreator(pathArr));
       }
     }
-  }, [state, openArtifact]);
+  }, [openArtifact]);
 
   // create path state which is a list of path subsection name and the subpath
   function pathCreator(path) {
@@ -244,7 +254,7 @@ function SourceDoc(props) {
   // re render path component and directory if path ever changes
   useEffect(() => {
     // guard the use effect
-    if (path.length && repository) {
+    if (path.length && repository && openArtifact) {
       // create new path component
       setPathComponent(renderPath(path));
       // render home root
@@ -256,7 +266,7 @@ function SourceDoc(props) {
       }
       // all other files and directories
       else {
-        setSDContent(repository[path[path.length - 1].path].contents);
+        repository[path[path.length - 1].path] && setSDContent(repository[path[path.length - 1].path].contents);
       }
     }
   }, [path]);
@@ -319,7 +329,11 @@ function SourceDoc(props) {
   // search method called whenevr search var changes 
   useEffect(() => {
     setOpenArtifact('')
-    if (fuse && search) setSDContent(fuse.search(search));
+    if (fuse && search){
+      var results = fuse.search(search)
+      var newResults = results.map(result => result.item);
+      setSDContent(newResults);
+    } 
   }, [search])
 
 
@@ -367,9 +381,9 @@ function SourceDoc(props) {
             aria-label="basic tabs example"
             centered
           >
-            <Tab label="Tools" {...a11yProps(0)} />
+            <Tab label="Repo" {...a11yProps(0)} />
             <Tab label="Code" {...a11yProps(1)} />
-            <Tab label="Documentation" {...a11yProps(2)} />
+            <Tab label="Docs" {...a11yProps(2)} />
           </Tabs>
         </Box>
         <TabPanel

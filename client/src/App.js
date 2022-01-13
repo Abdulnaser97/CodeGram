@@ -20,18 +20,20 @@ import {
   MenuItem,
   FormControl,
   Select,
+  circularProgressClasses,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import { Alert } from '@mui/material';
-import Snackbar from '@mui/material/Snackbar';
+import { Alert } from "@mui/material";
+import Snackbar from "@mui/material/Snackbar";
 
 import { useDispatch } from "react-redux";
 import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
 import { getRepoFiles } from "./Redux/actions/repoFiles";
-import { ThemeProvider } from "@material-ui/core";
+import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./Themes";
 import { loadDiagram } from "./Redux/actions/loadDiagram";
+import { storeRepoFiles } from "./Redux/actions/repoFiles";
 import SourceDoc from "./SourceDoc/SourceDoc";
 import { ReactFlowProvider } from "react-flow-renderer";
 import {
@@ -46,7 +48,6 @@ import { LandingPage } from "./Landing/LandingPage";
 
 import SourceDocButton from "./Media/SourceDocButton";
 import useToolBar from "./components/ToolBar.js";
-
 
 const LogoTopNav = styled.div`
   position: relative;
@@ -70,9 +71,16 @@ const LogoTopNav = styled.div`
  *
  */
 function App() {
-  const { nodesArr, repoFiles, repository } = useSelector((state) => {
-    return { nodesArr: state.nodes.nodesArr, repoFiles: state.repoFiles, repository: state.repoFiles.repoFiles[0] };
+  const { nodesArr, repoFiles, repository, isLoadingDiagram } = useSelector((state) => {
+    return {
+      nodesArr: state.nodes.nodesArr,
+      isLoadingDiagram:state.nodes.isLoadingDiagram, 
+      repoFiles: state.repoFiles,
+      repository: state.repoFiles.repoFiles,
+    };
   });
+
+//  console.log(nodesArr)
 
   const [user, setUser] = useState([]);
   const [content, setContent] = useState([]);
@@ -85,8 +93,8 @@ function App() {
   const [homePath, setHomePath] = useState(null);
   const [openArtifact, setOpenArtifact] = useState("");
   const [search, setSearch] = useState("search");
-  const [cursor, setCursor] = useState('default');
-  const [notifs, setNotifs] = useState(null)
+  const [cursor, setCursor] = useState("default");
+  const [notifs, setNotifs] = useState(null);
 
   // redux
   const dispatch = useDispatch();
@@ -96,7 +104,7 @@ function App() {
   };
 
   //Dereference ToolBar function to access render
-  const { toolBarRender, selectedShapeName, activeShape} = useToolBar();
+  const { toolBarRender, selectedShapeName, activeShape } = useToolBar();
   const {
     render,
     addNode,
@@ -107,37 +115,20 @@ function App() {
     selectedEL,
     rfInstance,
     setSelectedEL,
-  }  = useReactFlowWrapper({ dispatch, selectedShapeName, activeShape });
+  } = useReactFlowWrapper({ dispatch, selectedShapeName, activeShape });
 
   // change cursor to be opposite as previous
   useEffect(() => {
-    activeShape === 'selectShape' ? setCursor('crosshair') : setCursor('default')
-  }, [activeShape]); 
+    activeShape === "selectShape"
+      ? setCursor("crosshair")
+      : setCursor("default");
+  }, [activeShape]);
 
-  // TODO: think about when to release selecttion on create node 
-  // useEffect(() => setCursor('default'), [selectedEL])
+  // TODO: think about when to release selecttion on create node
+  // useEffect(() => setCursor('default'), [selectedEL]).
 
-  // create home path, and search engine from new repo
-  useEffect(() => {
-    if (repo && repository) {
-      var homeDir = [];
-      // push home directory files into home path
-      for (const [key, val] of Object.entries(repository)) {
-        key.split("/").length === 1 && homeDir.push(val);
-      }
-
-      var hPath = {
-        name: repo,
-        dir: homeDir,
-        path: repo,
-      };
-
-      const myFuse = new Fuse(Object.values(repository), options);
-      setHomePath(hPath);
-      setFuse(myFuse);
-      setNotifs(repo+ " has been loaded!")
-    }
-  }, [repo, repository]);
+ 
+  
 
   // get all repos in users account
   const getRepoList = async () => {
@@ -212,14 +203,47 @@ function App() {
     }
   }, [repo, rfInstance]);
 
-  /** useEffect Hools ************************************************* useEffect Hools *****************************************************************/
+  /** useEffect Hools ************************************************* useEffect Hooks *****************************************************************/
 
   // Load saved diagram when new repo is selected
   useEffect(() => {
-    if (repo && !repoFiles.isFetchingFiles && repoFiles.repoFiles[0]) {
-      dispatch(loadDiagram(repoFiles.repoFiles[0]));
+    if (repo && !repoFiles.isFetchingFiles && repoFiles.repoFiles) {
+      dispatch(loadDiagram(repoFiles.repoFiles));
     }
-  }, [repo, dispatch, repoFiles]);
+  }, [repo, dispatch, repoFiles.isFetchingFiles]);
+
+   // create home path, and search engine after all loads
+  useEffect(() => {
+    if (repo && repository && !repoFiles.isFetchingFiles) {
+      var homeDir = [];
+      
+      // push home directory files into home path as array
+      for (const [key, val] of Object.entries(repository)) {
+        key.split("/").length === 1 && homeDir.push(val);
+      }
+      
+      // set files in pulled repo to be linked if files
+      // in current react flow elements
+      for (const node of nodesArr){
+        if (repository[node.data.path]){
+          repository[node.data.path].linked = true  
+        }
+      }
+
+      var hPath = {
+        name: repo,
+        dir: homeDir,
+        path: repo,
+      };
+   
+      const myFuse = new Fuse(Object.values(repository), options);
+      setHomePath(hPath);
+      setFuse(myFuse);
+      dispatch(storeRepoFiles(repository));
+      setNotifs(repo + " has been loaded!");
+
+    }
+  }, [repoFiles.isFetchingFiles, isLoadingDiagram]);
 
   // Retrieves user details once authenticated
   useEffect(() => {
@@ -241,7 +265,6 @@ function App() {
     // set null during search so any clicks after a serach still trigger rerender
     setSearch(event.target.value);
   };
-
 
   const handleAlertClose = () => {
     setNotifs(null);
@@ -299,16 +322,16 @@ function App() {
                       onChange={handleRepoChange}
                       placeholder="Choose your repository"
                       style={{
-                        borderRadius:'0.6vw',
+                        borderRadius: "0.6vw",
                         "padding-left": "20px",
                         "padding-right": "20px",
-                        outline:'none',
-                        height:'4vh',
-                        border: '1px solid #ffaea6',
-                        color:'#FFAEA6',
-                        background:'transparent',
-                        appearance:'none',
-                        cursor:'pointer'
+                        outline: "none",
+                        height: "4vh",
+                        border: "1px solid #ffaea6",
+                        color: "#FFAEA6",
+                        background: "transparent",
+                        appearance: "none",
+                        cursor: "pointer",
                       }}
                     >
                       {renderRepos()}
@@ -352,7 +375,7 @@ function App() {
               className="welcomeMessage"
               fontWeight="light"
               color="primary.grey"
-              fontWeight={"2vh"}ß
+              fontWeight={"2vh"}
             >
               Welcome to CodeGram demo {user.username}!
             </Typography>
@@ -388,14 +411,14 @@ function App() {
                   backgroundColor: "rgb(247, 247, 247)",
                   boxShadow: 6,
                   color: "grey",
-                  fontSize:"1vw",
+                  fontSize: "1vw",
                   outline: "none",
                   width: "65%",
-                  fontWeight:'bold'
+                  fontWeight: "bold",
                 }}
               />
             </div>
-              { toolBarRender }
+            {toolBarRender}
             <Container className="canvasContainer">{render}</Container>
             <SourceDoc
               functions={{
@@ -406,22 +429,26 @@ function App() {
                 handleName: handleName,
                 setSelectedEL: setSelectedEL,
                 setIsOpenSD: setIsOpenSD,
-                setElements:setElements
+                setElements: setElements,
               }}
               data={{
                 repo: repo,
                 repoData: repoData,
                 selectedEL: selectedEL,
                 isOpenSD: isOpenSD,
-                fuse:fuse, 
-                repository:repository,
-                search:search, 
-                homePath:homePath
+                fuse: fuse,
+                repository: repository,
+                search: search,
+                homePath: homePath,
               }}
             />
 
-            <Snackbar open={notifs} autoHideDuration={4000} onClose={handleAlertClose}>
-                <Alert onClose={handleAlertClose}>{notifs}</Alert>
+            <Snackbar
+              open={notifs}
+              autoHideDuration={4000}
+              onClose={handleAlertClose}
+            >
+              <Alert onClose={handleAlertClose}>{notifs}</Alert>
             </Snackbar>
           </div>
         </ReactFlowProvider>
