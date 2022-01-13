@@ -32,7 +32,7 @@ export default function SourceDocFile(props) {
   // openArtifact must exist to match names 
   var selected = openArtifact && (openArtifact.name === file.name) ? "selectedFile" : "";
 
-  displayClass = selected ? "" : displayClass 
+  // displayClass = selected ? "" : displayClass 
   
   function fileClickHandler(file){ 
     setOpenArtifact(file)  
@@ -44,13 +44,13 @@ export default function SourceDocFile(props) {
       >
       <div 
       onClick={() => fileClickHandler(file)}
-      style = {{width:"100%", height:"100%", padding:0}}> 
+      style = {{width:"100%", height:"100%", padding:'10px 5px'}}> 
       <div
         style={{
           position: "relative",
           display: "flex",
           alignItems: "center",
-          margin:'2%'
+          
         }}
         >
         <div className="iconWrapper" style={{marginRight:'10px'}}>

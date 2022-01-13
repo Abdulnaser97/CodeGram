@@ -103,10 +103,11 @@ body {
   position: relative;
   width: 90%;
   border-radius: 1vh;
-  margin: 1% 0; 
+  margin: 5px 0; 
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
   display: flex;
   justify-content: space-between;
+  max-height: 60px;
 }
 
 .SourceDocFile:hover {
@@ -115,8 +116,7 @@ body {
 }
 
 .selectedFile {
-  background-color: #f58282;
-  color: white;
+  border: 1px solid #f58282;
 }
 
 .unlinked {
@@ -222,6 +222,7 @@ pre {
   padding: 1% 5%;
   background-color: rgb(241, 241, 241);
   border-radius: 1vw;
+  max-height: 30px;
 }
 
 .pathContainer p {

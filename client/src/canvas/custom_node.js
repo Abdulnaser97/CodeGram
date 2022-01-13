@@ -130,7 +130,7 @@ const CustomNodeComponent = (props) => {
 
         {(props.data.type !== 'square-container' && props.data.type !== 'cylinder') &&
           <Typography
-            color={props.selected ? "white" : "primary.darkGrey"}
+            //color={props.selected ? "white" : "primary.darkGrey"}
             fontWeight="Medium"
             style={{ "font-size": fontSize }}
             textAlign="center"
