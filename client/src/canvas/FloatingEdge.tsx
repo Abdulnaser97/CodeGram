@@ -1,5 +1,5 @@
 import { FC, useMemo, CSSProperties } from 'react';
-import { EdgeProps, getMarkerEnd, useStoreState, getBezierPath } from 'react-flow-renderer';
+import { EdgeProps, getMarkerEnd, useStoreState, getSmoothStepPath } from 'react-flow-renderer';
 
 import { getEdgeParams } from './utils';
 
@@ -16,7 +16,7 @@ const FloatingEdge: FC<EdgeProps> = ({ id, source, target, arrowHeadType, marker
 
   const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(sourceNode, targetNode);
 
-  const d = getBezierPath({
+  const d = getSmoothStepPath({
     sourceX: sx,
     sourceY: sy,
     sourcePosition: sourcePos,

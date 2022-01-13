@@ -70,7 +70,7 @@ function a11yProps(index) {
 function SourceDoc(props) {
   const state = useSelector((state) => state);
 
-  // console.log(props.data.selectedEL)
+  console.log(props.data.selectedEL)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
   
@@ -111,8 +111,9 @@ function SourceDoc(props) {
 
   // change open artifact to beb the file from react flow
   useEffect(() => {
-    if (repository)
+    if (repository && props.data.selectedEL.data.path){
       setOpenArtifact(repository[props.data.selectedEL.data.path]);
+    }
   }, [props.data.selectedEL]);
 
   // highlight node on canvas if exists -> may need optimizing
@@ -177,7 +178,7 @@ function SourceDoc(props) {
 
   // logic for updating our path variable whenever the selected File changes
   useEffect(() => {
-    if (openArtifact && repository) {
+    if (openArtifact && repository ) {
       // if new openArtifact iis on the path already
       if (path.includes(openArtifact)) {
         let curPath = [...path];
@@ -199,7 +200,7 @@ function SourceDoc(props) {
         setPath(pathCreator(pathArr));
       }
     }
-  }, [state, openArtifact]);
+  }, [openArtifact]);
 
   // create path state which is a list of path subsection name and the subpath
   function pathCreator(path) {

@@ -157,7 +157,7 @@ body {
   transition: ease-in 0.1s;
 }
 .iconWrapper:hover {
-  box-shadow: rgba(0, 0, 0, 0.603) 0px 3px 8px;
+  color: black;
 }
 
 html,
