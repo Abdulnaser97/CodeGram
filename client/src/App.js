@@ -127,39 +127,7 @@ function App() {
   // TODO: think about when to release selecttion on create node
   // useEffect(() => setCursor('default'), [selectedEL]).
 
-  // create home path, and search engine from new repo
-  useEffect(() => {
-    if (repo && repository && !repoFiles.isFetchingFiles) {
-      var homeDir = [];
-      //var workingRepo = {repository}
-      // push home directory files into home path
-      for (const [key, val] of Object.entries(repository)) {
-        key.split("/").length === 1 && homeDir.push(val);
-      }
-      console.log('in repo loading function')
-      console.log(nodesArr)
-      for (const node of nodesArr){
-        console.log(node)
-        if (repository[node.data.path]){
-          console.log(repository[node.data.path])
-          repository[node.data.path].linked = true  
-        }
-      }
-
-      var hPath = {
-        name: repo,
-        dir: homeDir,
-        path: repo,
-      };
-   
-      const myFuse = new Fuse(Object.values(repository), options);
-      setHomePath(hPath);
-      setFuse(myFuse);
-      dispatch(storeRepoFiles(repository));
-      setNotifs(repo + " has been loaded!");
-
-    }
-  }, [repoFiles.isFetchingFiles, isLoadingDiagram]);
+ 
   
 
   // get all repos in users account
@@ -243,6 +211,39 @@ function App() {
       dispatch(loadDiagram(repoFiles.repoFiles));
     }
   }, [repo, dispatch, repoFiles.isFetchingFiles]);
+
+   // create home path, and search engine after all loads
+  useEffect(() => {
+    if (repo && repository && !repoFiles.isFetchingFiles) {
+      var homeDir = [];
+      
+      // push home directory files into home path as array
+      for (const [key, val] of Object.entries(repository)) {
+        key.split("/").length === 1 && homeDir.push(val);
+      }
+      
+      // set files in pulled repo to be linked if files
+      // in current react flow elements
+      for (const node of nodesArr){
+        if (repository[node.data.path]){
+          repository[node.data.path].linked = true  
+        }
+      }
+
+      var hPath = {
+        name: repo,
+        dir: homeDir,
+        path: repo,
+      };
+   
+      const myFuse = new Fuse(Object.values(repository), options);
+      setHomePath(hPath);
+      setFuse(myFuse);
+      dispatch(storeRepoFiles(repository));
+      setNotifs(repo + " has been loaded!");
+
+    }
+  }, [repoFiles.isFetchingFiles, isLoadingDiagram]);
 
   // Retrieves user details once authenticated
   useEffect(() => {

@@ -69,11 +69,10 @@ function a11yProps(index) {
 
 function SourceDoc(props) {
   const state = useSelector((state) => state);
-  console.log(state)
+
   // console.log(props.data.selectedEL)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
-  // state for search
   
   const [curCode, setCurCode] = useState("Select a nnode to view file");
   
@@ -86,10 +85,7 @@ function SourceDoc(props) {
   const [wiki, setWiki] = useState('');
   const [isEditing, setIsEditing] = useState('');    
   
-  // console.log(openArtifact)
-  // console.log(path)
-  // console.log(openArtifact)
-  console.log(SDContent)
+
   // react flow functions 
   const setSelectedElements = useStoreActions(
     (actions) => actions.setSelectedElements

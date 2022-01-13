@@ -7,7 +7,7 @@ import {
 import { RFStateReducer, nodesReducer } from "./reducers/nodesReducer";
 import devToolsEnhancer from "remote-redux-devtools";
 import { addNodeToArray, deleteNodeFromArray } from "./actions/nodes";
-import { fetchRepoFiles, storeRepoFiles, updateRepoFile } from "./actions/repoFiles";
+import { fetchRepoFiles, storeRepoFiles } from "./actions/repoFiles";
 import thunk from "redux-thunk";
 import repoReducer from "./reducers/repoReducer";
 import { loadDiagramToStore } from "./actions/loadDiagram";
@@ -33,7 +33,6 @@ const ActionCreators = Object.assign(
   fetchRepoFiles,
   storeRepoFiles,
   loadDiagramToStore,
-  updateRepoFile
 );
 export const mapStateToProps = (state) => ({
   nodes: state.nodes,
