@@ -94,6 +94,8 @@ export function useReactFlowWrapper({ dispatch, selectedShapeName, activeShape }
 
   const handleContextMenuClose = (event) => {
     setContextMenu(null);
+    console.log("rfInstance", rfInstance);
+    console.log("rfInstance to Object", rfInstance.toObject());
   };
   // get stat
   const [useShape, setUseShape] = useState(selectedShapeName)
@@ -150,14 +152,17 @@ export function useReactFlowWrapper({ dispatch, selectedShapeName, activeShape }
   };
 
   // Delete Node
-  const onElementsRemove = (elementsToRemove) => {
-    if (elementsToRemove.length === 0) {
-      console.log("nothing selected");
-      return;
-    }
-    dispatch(deleteNodeFromArray(elementsToRemove));
-    setElements((els) => removeElements(elementsToRemove, els));
-  };
+  const onElementsRemove = useCallback(
+    (elementsToRemove) => {
+      if (elementsToRemove.length === 0) {
+        console.log("nothing selected");
+        return;
+      }
+      dispatch(deleteNodeFromArray(elementsToRemove));
+      setElements((els) => removeElements(elementsToRemove, els));
+    },
+    [setElements, dispatch]
+  );
 
   // Add node function
   const addNode = useCallback(
