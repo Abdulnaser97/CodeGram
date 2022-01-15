@@ -5,6 +5,7 @@ import {
 } from "../canvas/custom_node";
 import ReactFlow, {
   addEdge,
+  removeElements,
   useZoomPanHelper,
   ArrowHeadType,
   useStoreState,
@@ -18,6 +19,8 @@ import { addNodeToArray, deleteNodeFromArray } from "../Redux/actions/nodes";
 import FloatingEdge from "../canvas/FloatingEdge.tsx";
 import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
 
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 // const edgeTypes = {
 //   floating: FloatingEdge,
 // };
@@ -76,6 +79,7 @@ export function useReactFlowWrapper({
   const [rfInstance, setRfInstance] = useState(null);
   const [connectionStarted, setConnectionStarted] = useState(false);
   const [floatTargetHandle, setFloatTargetHandle] = useState(false); // This is a hacky method to force rendering
+  const [contextMenu, setContextMenu] = useState(null);
 
   // Add node function
   const addNode = useCallback(
@@ -128,6 +132,27 @@ export function useReactFlowWrapper({
     [setElements, nodeName, dispatch]
   );
 
+  const handleContextMenu = (event, node) => {
+    event.preventDefault();
+    setSelectedEL(node);
+    setContextMenu(
+      contextMenu === null
+        ? {
+            mouseX: event.clientX - 2,
+            mouseY: event.clientY - 4,
+          }
+        : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+          // Other native context menus might behave different.
+          // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+          null
+    );
+  };
+
+  const handleContextMenuClose = (event) => {
+    setContextMenu(null);
+    console.log("rfInstance", rfInstance);
+    console.log("rfInstance to Object", rfInstance.toObject());
+  };
   // get stat
   const onElementClick = (event, element) => {
     //console.log("click", element);
@@ -141,6 +166,19 @@ export function useReactFlowWrapper({
       setActiveToolBarButton("cursor");
     }
   };
+
+  // Delete Node
+  const onElementsRemove = useCallback(
+    (elementsToRemove) => {
+      if (elementsToRemove.length === 0) {
+        console.log("nothing selected");
+        return;
+      }
+      dispatch(deleteNodeFromArray(elementsToRemove));
+      setElements((els) => removeElements(elementsToRemove, els));
+    },
+    [setElements, dispatch]
+  );
 
   const onConnect = (params) => {
     setElements((els) =>
@@ -192,13 +230,10 @@ export function useReactFlowWrapper({
     setFloatTargetHandle(false);
   };
 
-  // Delete Node
-  const onElementsRemove = (elementsToRemove) => {
-    if (elementsToRemove.length === 0) {
-      console.log("nothing selected");
-      return;
-    }
-    dispatch(deleteNodeFromArray(elementsToRemove[0]));
+  const onNodeContextMenuDelete = (event) => {
+    event.preventDefault();
+    onElementsRemove([selectedEL]);
+    handleContextMenuClose();
   };
 
   return {
@@ -229,9 +264,24 @@ export function useReactFlowWrapper({
           onNodeMouseLeave={onNodeMouseLeave}
           onPaneClick={onPaneClick}
           selectNodesOnDrag={false}
+          onNodeContextMenu={handleContextMenu}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>
+        <Menu
+          open={contextMenu !== null}
+          onClose={handleContextMenuClose}
+          anchorReference="anchorPosition"
+          anchorPosition={
+            contextMenu !== null
+              ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+              : undefined
+          }
+        >
+          <MenuItem onClick={onNodeContextMenuDelete}>Delete</MenuItem>
+          <MenuItem onClick={handleContextMenuClose}>Bring Forward</MenuItem>
+          <MenuItem onClick={handleContextMenuClose}>Bring Backward</MenuItem>
+        </Menu>
       </div>
     ),
     elements: elements,

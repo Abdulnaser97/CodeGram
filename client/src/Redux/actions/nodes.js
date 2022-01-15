@@ -11,9 +11,9 @@ export function addNodeToArray(node) {
   };
 }
 
-export function deleteNodeFromArray(node) {
+export function deleteNodeFromArray(elementsToRemove) {
   return {
     type: DELETE_NODES_FROM_ARRAY,
-    nodeId: node.id,
+    nodes: elementsToRemove,
   };
 }
