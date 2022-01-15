@@ -6,7 +6,7 @@ const nodeWrapper = styled.div`
   width: 100%;
 `;
 
-export const Cylinder = () => {
+export const CircleShape = () => {
   return (
     <nodeWrapper className="nodeWrapper">
       <svg
@@ -16,7 +16,7 @@ export const Cylinder = () => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <g id="cylinder">
+        <g id="CircleShape">
           <rect
             id="Rectangle 86"
             y="66"

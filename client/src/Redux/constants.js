@@ -12,4 +12,6 @@ export const UPDATE_REPO_FILE = "UPDATE_REPO_FILE";
 // Load existing diagram from github repo
 export const LOAD_DIAGRAM_TO_STORE = "LOAD_DIAGRAM_TO_STORE";
 
-
+// Display popup notification
+export const ERROR_NOTIFICATION = "ERROR_NOTIFICATION";
+export const SUCCESS_NOTIFICATION = "SUCCESS_NOTIFICATION";

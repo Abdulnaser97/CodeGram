@@ -31,9 +31,22 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+var whitelist = [
+  "http://localhost:3001",
+  "https://api.code-gram.com",
+  "https://code-gram.com",
+];
+
 app.use(
   cors({
-    origin: "http://localhost:3001",
+    origin: function (origin, callback) {
+      if (whitelist.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        console.log("Origin is", origin);
+        callback(null, true);
+      }
+    },
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   })

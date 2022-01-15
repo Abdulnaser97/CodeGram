@@ -11,11 +11,14 @@ import { fetchRepoFiles, storeRepoFiles } from "./actions/repoFiles";
 import thunk from "redux-thunk";
 import repoReducer from "./reducers/repoReducer";
 import { loadDiagramToStore } from "./actions/loadDiagram";
+import { notificationReducer } from "./reducers/notificationReducer";
+import { successNotification, errorNotification } from "./actions/notification";
 
 const rootReducer = combineReducers({
   nodes: nodesReducer,
   repoFiles: repoReducer,
   RFState: RFStateReducer,
+  notifications: notificationReducer,
 });
 
 const enhancers = [devToolsEnhancer({ realtime: true })];
@@ -33,11 +36,17 @@ const ActionCreators = Object.assign(
   fetchRepoFiles,
   storeRepoFiles,
   loadDiagramToStore,
+  successNotification,
+  errorNotification
 );
 export const mapStateToProps = (state) => ({
   nodes: state.nodes,
   repoFiles: state.repoFiles,
   RFState: state.RFState,
+  notifications: {
+    successNotificationMessage: state.successNotificationMessage,
+    errorNotificationMessage: state.errorNotificationMessage,
+  },
 });
 export const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators(ActionCreators, dispatch),

@@ -24,8 +24,6 @@ import {
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import { Alert } from "@mui/material";
-import Snackbar from "@mui/material/Snackbar";
 
 import { useDispatch } from "react-redux";
 import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
@@ -48,6 +46,14 @@ import { LandingPage } from "./Landing/LandingPage";
 
 import SourceDocButton from "./Media/SourceDocButton";
 import useToolBar from "./components/ToolBar.js";
+import {
+  NotifDiagramLoaded,
+  NotifError,
+} from "./components/NotificationsPopups";
+import {
+  errorNotification,
+  successNotification,
+} from "./Redux/actions/notification";
 
 const LogoTopNav = styled.div`
   position: relative;
@@ -71,16 +77,18 @@ const LogoTopNav = styled.div`
  *
  */
 function App() {
-  const { nodesArr, repoFiles, repository, isLoadingDiagram } = useSelector((state) => {
-    return {
-      nodesArr: state.nodes.nodesArr,
-      isLoadingDiagram:state.nodes.isLoadingDiagram, 
-      repoFiles: state.repoFiles,
-      repository: state.repoFiles.repoFiles,
-    };
-  });
+  const { nodesArr, repoFiles, repository, isLoadingDiagram } = useSelector(
+    (state) => {
+      return {
+        nodesArr: state.nodes.nodesArr,
+        isLoadingDiagram: state.nodes.isLoadingDiagram,
+        repoFiles: state.repoFiles,
+        repository: state.repoFiles.repoFiles,
+      };
+    }
+  );
 
-//  console.log(nodesArr)
+  //  console.log(nodesArr)
 
   const [user, setUser] = useState([]);
   const [content, setContent] = useState([]);
@@ -94,7 +102,6 @@ function App() {
   const [openArtifact, setOpenArtifact] = useState("");
   const [search, setSearch] = useState("search");
   const [cursor, setCursor] = useState("default");
-  const [notifs, setNotifs] = useState(null);
 
   // redux
   const dispatch = useDispatch();
@@ -104,7 +111,12 @@ function App() {
   };
 
   //Dereference ToolBar function to access render
-  const { toolBarRender, selectedShapeName, activeShape } = useToolBar();
+  const {
+    toolBarRender,
+    selectedShapeName,
+    activeToolBarButton,
+    setActiveToolBarButton,
+  } = useToolBar();
   const {
     render,
     addNode,
@@ -115,20 +127,22 @@ function App() {
     selectedEL,
     rfInstance,
     setSelectedEL,
-  } = useReactFlowWrapper({ dispatch, selectedShapeName, activeShape });
+  } = useReactFlowWrapper({
+    dispatch,
+    selectedShapeName,
+    activeToolBarButton,
+    setActiveToolBarButton,
+  });
 
   // change cursor to be opposite as previous
   useEffect(() => {
-    activeShape === "selectShape"
+    activeToolBarButton === "selectShape"
       ? setCursor("crosshair")
       : setCursor("default");
-  }, [activeShape]);
+  }, [activeToolBarButton]);
 
   // TODO: think about when to release selecttion on create node
   // useEffect(() => setCursor('default'), [selectedEL]).
-
- 
-  
 
   // get all repos in users account
   const getRepoList = async () => {
@@ -200,6 +214,11 @@ function App() {
       const flow = rfInstance.toObject();
       const result = await save(repo, flow);
       console.log(result);
+      if (result.status === 200 || result.status === 201) {
+        dispatch(successNotification(`Successfully saved diagram to ${repo}`));
+      } else {
+        dispatch(errorNotification(`Error saving diagram to github repo`));
+      }
     }
   }, [repo, rfInstance]);
 
@@ -212,36 +231,43 @@ function App() {
     }
   }, [repo, dispatch, repoFiles.isFetchingFiles]);
 
-   // create home path, and search engine after all loads
+  // create home path, and search engine after all loads
   useEffect(() => {
-    if (repo && repository && !repoFiles.isFetchingFiles) {
-      var homeDir = [];
-      
-      // push home directory files into home path as array
-      for (const [key, val] of Object.entries(repository)) {
-        key.split("/").length === 1 && homeDir.push(val);
-      }
-      
-      // set files in pulled repo to be linked if files
-      // in current react flow elements
-      for (const node of nodesArr){
-        if (repository[node.data.path]){
-          repository[node.data.path].linked = true  
+    try {
+      if (repo && repository && !repoFiles.isFetchingFiles) {
+        var homeDir = [];
+
+        // push home directory files into home path as array
+        for (const [key, val] of Object.entries(repository)) {
+          key.split("/").length === 1 && homeDir.push(val);
         }
+
+        // set files in pulled repo to be linked if files
+        // in current react flow elements
+        for (const node of nodesArr) {
+          if (!node.data) {
+            continue;
+          }
+          if (repository[node.data.path]) {
+            repository[node.data.path].linked = true;
+          }
+        }
+
+        var hPath = {
+          name: repo,
+          dir: homeDir,
+          path: repo,
+        };
+
+        const myFuse = new Fuse(Object.values(repository), options);
+        setHomePath(hPath);
+        setFuse(myFuse);
+        dispatch(storeRepoFiles(repository));
+        dispatch(successNotification(repo + " has been loaded!"));
       }
-
-      var hPath = {
-        name: repo,
-        dir: homeDir,
-        path: repo,
-      };
-   
-      const myFuse = new Fuse(Object.values(repository), options);
-      setHomePath(hPath);
-      setFuse(myFuse);
-      dispatch(storeRepoFiles(repository));
-      setNotifs(repo + " has been loaded!");
-
+    } catch (err) {
+      console.log(err);
+      dispatch(errorNotification(`Error loading repository ${repo}`));
     }
   }, [repoFiles.isFetchingFiles, isLoadingDiagram]);
 
@@ -266,13 +292,10 @@ function App() {
     setSearch(event.target.value);
   };
 
-  const handleAlertClose = () => {
-    setNotifs(null);
-  };
-
   if (loggedIn) {
     return (
       <ThemeProvider theme={theme}>
+        <NotifError />
         <ReactFlowProvider>
           <div className="App" style={{ cursor: cursor }}>
             {!isOpenSD && (
@@ -393,16 +416,16 @@ function App() {
 
               <Typography
                 fontSize={"1vw"}
-                color={"#f58282"}
-                fontWeight={"bold"}
+                color={"primary.main"}
+                fontWeight={"medium"}
                 mx={1}
                 my={0}
               >
-                codeGram =>:
+                Search >
               </Typography>
 
               <input
-                placeholder=" Start typing to search!"
+                placeholder="Search Repo Content"
                 onChange={handleSearch}
                 onKeyPress={handleSearch}
                 style={{
@@ -414,7 +437,7 @@ function App() {
                   fontSize: "1vw",
                   outline: "none",
                   width: "65%",
-                  fontWeight: "bold",
+                  fontWeight: theme.typography.fontWeightMedium,
                 }}
               />
             </div>
@@ -443,13 +466,7 @@ function App() {
               }}
             />
 
-            <Snackbar
-              open={notifs}
-              autoHideDuration={4000}
-              onClose={handleAlertClose}
-            >
-              <Alert onClose={handleAlertClose}>{notifs}</Alert>
-            </Snackbar>
+            <NotifDiagramLoaded />
           </div>
         </ReactFlowProvider>
       </ThemeProvider>

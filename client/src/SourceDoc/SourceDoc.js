@@ -16,12 +16,11 @@ import {
 import PropTypes from "prop-types";
 import { useStoreActions } from "react-flow-renderer";
 
-
 // react
 import { useState, useEffect } from "react";
 
 // redux
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { mapDispatchToProps, mapStateToProps } from "../Redux/configureStore";
 import { connect } from "react-redux";
 
@@ -32,7 +31,7 @@ import TextEditor from "../components/TextEditor.js";
 import axios from "axios";
 import { fontWeight } from "@mui/system";
 import { Resizable } from "re-resizable";
-
+import { errorNotification } from "../Redux/actions/notification";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -70,64 +69,69 @@ function a11yProps(index) {
 function SourceDoc(props) {
   const state = useSelector((state) => state);
 
-  console.log(props.data.selectedEL)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
-  
+
   const [curCode, setCurCode] = useState("Select a nnode to view file");
-  
+
   // state for selected file
   const [openArtifact, setOpenArtifact] = useState("");
   const [sourceFiles, setSourceFiles] = useState(null);
   const [path, setPath] = useState([]);
   const [pathComponent, setPathComponent] = useState(null);
   const [SDContent, setSDContent] = useState(null);
-  const [wiki, setWiki] = useState('');
-  const [isEditing, setIsEditing] = useState('');    
-  
+  const [wiki, setWiki] = useState("");
+  const [isEditing, setIsEditing] = useState("");
 
-  // react flow functions 
+  // react flow functions
   const setSelectedElements = useStoreActions(
     (actions) => actions.setSelectedElements
-    );
+  );
 
-  // resizeable state varaiables 
+  // resizeable state varaiables
   const [width, setWidth] = useState("40vw");
   const [height, setHeight] = useState("85vh");
 
-  const { search, repository, fuse, homePath } = props.data 
+  const dispatch = useDispatch();
 
-  useEffect(()=> {
-    if (!state.repoFiles.repoFiles.isFetchingFiles){
-      setOpenArtifact("")
-      setSourceFiles(null)
-      setPath([])
-      setPathComponent('...Loading')
-      setSDContent('')
-      setWiki('')
-      setIsEditing('')
-   }
-  }, [props.data.repo])
+  const { search, repository, fuse, homePath } = props.data;
 
-  // change open artifact to beb the file from react flow
   useEffect(() => {
-    if (repository && props.data.selectedEL.data.path){
+    if (!state.repoFiles.repoFiles.isFetchingFiles) {
+      setOpenArtifact("");
+      setSourceFiles(null);
+      setPath([]);
+      setPathComponent("...Loading");
+      setSDContent("");
+      setWiki("");
+      setIsEditing("");
+    }
+  }, [props.data.repo]);
+
+  // change open artifact to be the file from react flow
+  useEffect(() => {
+    if (repository && props.data.selectedEL.data.path) {
       setOpenArtifact(repository[props.data.selectedEL.data.path]);
     }
   }, [props.data.selectedEL]);
 
-  // highlight node on canvas if exists -> may need optimizing
+  // highlight node on canvas if exists -> may need optimizing. Indeed it needed :)
   useEffect(() => {
-    if (openArtifact) {
-      var el = state.nodes.nodesArr.find(
-        (node) => node.data.path == openArtifact.path
-      );
-      if (el) {
-        setSelectedElements(el);
-        props.functions.setSelectedEL(el);
-      } else {
-        setSelectedElements([]);
+    try {
+      if (openArtifact) {
+        var el = state.nodes.nodesArr.find((node) =>
+          node.data ? node.data.path === openArtifact.path : false
+        );
+        if (el) {
+          setSelectedElements(el);
+          props.functions.setSelectedEL(el);
+        } else {
+          setSelectedElements([]);
+        }
       }
+    } catch (e) {
+      console.log(e);
+      dispatch(errorNotification(`Error loading repo file`));
     }
   }, [openArtifact]);
 
@@ -136,49 +140,48 @@ function SourceDoc(props) {
     if (SDContent === null || SDContent === undefined) {
       return;
     } else if (SDContent[0] && SDContent[0].length > 1) {
-        var repoList = [];
-        const files = SDContent;
-        for (const [key, value] of Object.entries(files)) {
-          repoList.push(
-            <SourceDocFile
-              addNode={props.functions.addNode}
-              setOpenArtifact={setOpenArtifact}
-              file={repository[value[1].path]}
-              openArtifact={openArtifact}
-              selectedEL={props.data.selectedEL}
-            />
-          );
-        }
-        setSourceFiles(repoList);
+      var repoList = [];
+      const files = SDContent;
+      for (const [key, value] of Object.entries(files)) {
+        repoList.push(
+          <SourceDocFile
+            addNode={props.functions.addNode}
+            setOpenArtifact={setOpenArtifact}
+            file={repository[value[1].path]}
+            openArtifact={openArtifact}
+            selectedEL={props.data.selectedEL}
+          />
+        );
+      }
+      setSourceFiles(repoList);
     } else {
-        var repoList = [];
-        const files = SDContent;
-        for (var f of files) {
-          repoList.push(
-            <SourceDocFile
-              addNode={props.functions.addNode}
-              setOpenArtifact={setOpenArtifact}
-              file={repository[f.path]}
-              openArtifact={openArtifact}
-              selectedEL={props.data.selectedEL}
-            />
-          );
-        }
-        setSourceFiles(repoList);
-        
+      var repoList = [];
+      const files = SDContent;
+      for (var f of files) {
+        repoList.push(
+          <SourceDocFile
+            addNode={props.functions.addNode}
+            setOpenArtifact={setOpenArtifact}
+            file={repository[f.path]}
+            openArtifact={openArtifact}
+            selectedEL={props.data.selectedEL}
+          />
+        );
+      }
+      setSourceFiles(repoList);
     }
   }, [SDContent, props.data.selectedEL, openArtifact]);
 
   useEffect(() => {
     if (repository && homePath) {
-      setOpenArtifact(homePath);  
+      setOpenArtifact(homePath);
       setPath([homePath]);
     }
   }, [homePath]);
 
   // logic for updating our path variable whenever the selected File changes
   useEffect(() => {
-    if (openArtifact && repository ) {
+    if (openArtifact && repository) {
       // if new openArtifact iis on the path already
       if (path.includes(openArtifact)) {
         let curPath = [...path];
@@ -242,14 +245,14 @@ function SourceDoc(props) {
   // separate for now as may need more logic here in future
   function pathClickHandler(curFile) {
     // if clicked path has SDContent member (root directory)
-      if (curFile.dir) {
-        setOpenArtifact(curFile);
-      }
-      // else find file from state
-      else {
-        setOpenArtifact(repository[curFile.path]);
-      }
+    if (curFile.dir) {
+      setOpenArtifact(curFile);
     }
+    // else find file from state
+    else {
+      setOpenArtifact(repository[curFile.path]);
+    }
+  }
 
   // re render path component and directory if path ever changes
   useEffect(() => {
@@ -266,7 +269,8 @@ function SourceDoc(props) {
       }
       // all other files and directories
       else {
-        repository[path[path.length - 1].path] && setSDContent(repository[path[path.length - 1].path].contents);
+        repository[path[path.length - 1].path] &&
+          setSDContent(repository[path[path.length - 1].path].contents);
       }
     }
   }, [path]);
@@ -287,9 +291,11 @@ function SourceDoc(props) {
     setValue(newValue);
   };
 
-
-  useEffect(() => { ////////////////////////////////////////////////////////////////////////////////////////
-    if (props.data.selectedEL.data.url !== undefined) {
+  useEffect(() => {
+    if (
+      props.data.selectedEL.data.url &&
+      props.data.selectedEL.data.url !== undefined
+    ) {
       // calls node url to get file content
       axios
         .get(props.data.selectedEL.data.url)
@@ -304,11 +310,9 @@ function SourceDoc(props) {
     }
   }, [props.data.selectedEL]);
 
-  
-  
   const handleWikiChange = (data) => {
-    setWiki(data)
-  }
+    setWiki(data);
+  };
 
   const saveWikiToNode = () => {
     props.functions.setElements((els) =>
@@ -324,18 +328,17 @@ function SourceDoc(props) {
         return el;
       })
     );
-  }
-  
-  // search method called whenevr search var changes 
-  useEffect(() => {
-    setOpenArtifact('')
-    if (fuse && search){
-      var results = fuse.search(search)
-      var newResults = results.map(result => result.item);
-      setSDContent(newResults);
-    } 
-  }, [search])
+  };
 
+  // search method called whenevr search var changes
+  useEffect(() => {
+    setOpenArtifact("");
+    if (fuse && search) {
+      var results = fuse.search(search);
+      var newResults = results.map((result) => result.item);
+      setSDContent(newResults);
+    }
+  }, [search]);
 
   //if(props.data.isOpenSD){
   return (
@@ -399,14 +402,13 @@ function SourceDoc(props) {
               className="repoContainer"
               style={{
                 position: "relative",
-                maxHeight:"50vh",
+                maxHeight: "50vh",
                 "overflow-y": "scroll",
               }}
             >
               {sourceFiles}
             </div>
           </Box>
-
         </TabPanel>
         <TabPanel
           value={value}
@@ -429,41 +431,31 @@ function SourceDoc(props) {
           <Box sx={{ disaply: "flex", flexDirection: "column" }}>
             <div
               className="navbar-button github"
-              style={{position:"fixed", right:'1.5vw' }}
+              style={{ position: "fixed", right: "1.5vw" }}
               onClick={() => setIsEditing(!isEditing)}
             >
-              <Box 
-                className="EditWikiButtonWrapper">
-                <Typography
-                  mx={1}
-                  my={0.8}
-                  fontSize=".8vw"
-                  fontWeight="Thin"
-                >
-                  {isEditing ? "Done" : "Edit" } 
+              <Box className="EditWikiButtonWrapper">
+                <Typography mx={1} my={0.8} fontSize=".8vw" fontWeight="Thin">
+                  {isEditing ? "Done" : "Edit"}
                 </Typography>
               </Box>
             </div>
-            {isEditing && <div
-              className="navbar-button github"
-              style={{position:"fixed", right:'6vw' }}
-              onClick={() => {
-                saveWikiToNode() 
-                setIsEditing(!isEditing)
-              }}
-            >
-              <Box 
-                className="EditWikiButtonWrapper">
-                <Typography
-                  mx={1}
-                  my={0.8}
-                  fontSize=".8vw"
-                  fontWeight="Thin"
-                >
-                  Save
-                </Typography>
-              </Box>
-            </div>} 
+            {isEditing && (
+              <div
+                className="navbar-button github"
+                style={{ position: "fixed", right: "6vw" }}
+                onClick={() => {
+                  saveWikiToNode();
+                  setIsEditing(!isEditing);
+                }}
+              >
+                <Box className="EditWikiButtonWrapper">
+                  <Typography mx={1} my={0.8} fontSize=".8vw" fontWeight="Thin">
+                    Save
+                  </Typography>
+                </Box>
+              </div>
+            )}
             <Typography variant="h5" fontWeight="bold">
               {props.data.selectedEL.data.label}
             </Typography>
@@ -473,12 +465,19 @@ function SourceDoc(props) {
             </Typography>
             <Typography my={1} variant="h6">
               Wiki
-            </Typography> 
-            {isEditing ? 
-              <TextEditor content={props.data.selectedEL.data.wiki} onChange={handleWikiChange}/>
-              : 
-              <div dangerouslySetInnerHTML={{__html: props.data.selectedEL.data.wiki }} />
-            }
+            </Typography>
+            {isEditing ? (
+              <TextEditor
+                content={props.data.selectedEL.data.wiki}
+                onChange={handleWikiChange}
+              />
+            ) : (
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: props.data.selectedEL.data.wiki,
+                }}
+              />
+            )}
             <Typography variant="h7" mt={2}>
               Parent Nodes <br />
               <Typography>

@@ -70,23 +70,21 @@ const PopupButton = styled(PopupButtonStyle)`
 `;
 
 export function useToolBar(props) {
-  const [active, setActive] = useState(null);
+  const [active, setActive] = useState("cursor");
   const [anchorEl, setAnchorEl] = useState(null);
-
 
   //initialization of shape type to be drawn
   const [selectedShape, setSelectedShape] = useState(<Rectangle />);
-  const selectedShapeName = useRef("rect");
-  
+  const selectedShapeName = useRef("FileNode");
+
   const moreShapes = (event) => {
     setAnchorEl(event.currentTarget);
     setActive("selectShape");
   };
 
-
   //handles user's choice of shape
   const shapeSelect = (shape, name) => {
-    console.log(shape)
+    console.log(shape);
     setAnchorEl(null);
     setSelectedShape(shape);
     selectedShapeName.current = name;
@@ -153,19 +151,21 @@ export function useToolBar(props) {
           }}
           transitionDuration={{ enter: 100, exit: 120 }}
         >
-          <div className="ShapesGrid" key="ShapesGrid"> 
+          <div className="ShapesGrid" key="ShapesGrid">
             <PopupButton
               className="PopupButton"
               key="PopupButton1"
-              active={selectedShapeName.current === "rect" ? true : false}
-              onClick={() => shapeSelect(<Rectangle />, "rect")}
+              active={selectedShapeName.current === "FileNode" ? true : false}
+              onClick={() => shapeSelect(<Rectangle />, "FileNode")}
             >
               <Rectangle />
             </PopupButton>
             <PopupButton
               className="PopupButton"
               key="PopupButton2"
-              active={selectedShapeName.current === "DashedShape" ? true : false}
+              active={
+                selectedShapeName.current === "DashedShape" ? true : false
+              }
               onClick={() => shapeSelect(<DashedShape />, "DashedShape")}
             >
               <DashedShape />
@@ -173,7 +173,9 @@ export function useToolBar(props) {
             <PopupButton
               className="PopupButton"
               key="PopupButton3"
-              active={selectedShapeName.current === "CircleShape" ? true : false}
+              active={
+                selectedShapeName.current === "CircleShape" ? true : false
+              }
               onClick={() => shapeSelect(<CircleShape />, "CircleShape")}
             >
               <CircleShape />
@@ -196,12 +198,12 @@ export function useToolBar(props) {
           <Options />
         </ToolBarButton>
       </ToolBarBox>
-    ), 
-    selectedShape:selectedShape, 
-    selectedShapeName:selectedShapeName, 
-    activeShape: active
-  }
+    ),
+    selectedShape: selectedShape,
+    selectedShapeName: selectedShapeName,
+    activeToolBarButton: active,
+    setActiveToolBarButton: setActive,
+  };
 }
 
-export default useToolBar; 
-
+export default useToolBar;
