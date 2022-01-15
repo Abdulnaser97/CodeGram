@@ -1,68 +1,81 @@
 import AddBoxIcon from "@mui/icons-material/AddBox";
-import { ListItem } from "@mui/material";
-import { display } from "@mui/system";
+import CodeIcon from "@mui/icons-material/Code";
+import Folder from "@mui/icons-material/Folder";
+import FolderIcon from "@mui/icons-material/Folder";
 
 export default function SourceDocFile(props) {
   const { addNode, setOpenArtifact, openArtifact } = props;
-  var { file } = props; 
+  var { file } = props;
 
+  if (!file) {
+    return;
+  }
   // search results from fuse are returned as items
-  file = file.item ? file.item : file 
+  file = file.item ? file.item : file;
 
-  var fileName = file.name 
+  var fileName = file.name;
   var displayClass = "";
+  var fileIcon = null;
 
-  // cstyle lass rendering 
+  // cstyle lass rendering
   if (file.type !== "dir") {
-    displayClass = "filetype";
+    fileIcon = <CodeIcon fontSize="small" />;
   } else {
     fileName = "/" + fileName;
-    displayClass = "foldertype";
+    fileIcon = <FolderIcon fontSize="small" />;
   }
 
+  // cstyle lass rendering
+  if (!file.linked) {
+    displayClass = "unlinked";
+  } else {
+    displayClass = "linked";
+  }
 
-  // openArtifact must exist to match names 
-  var selected = openArtifact && (openArtifact.name === file.name) ? "selectedFile" : "";
+  // openArtifact must exist to match names
+  var selected =
+    openArtifact && openArtifact.name === file.name ? "selectedFile" : "";
 
-  displayClass = selected ? "" : displayClass 
-  
-  function fileClickHandler(file){ 
-    setOpenArtifact(file)  
+  // displayClass = selected ? "" : displayClass
+
+  function fileClickHandler(file) {
+    setOpenArtifact(file);
   }
 
   return (
-    <div
-      className={`SourceDocFile ${displayClass} ${selected} `}
-      >
-      <div 
-      onClick={() => fileClickHandler(file)}
-      style = {{width:"100%", height:"100%", padding:0}}> 
+    <div className={`SourceDocFile ${displayClass} ${selected}`}>
       <div
-        style={{
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-        }}
-        >
-        <p
+        onClick={() => fileClickHandler(file)}
+        style={{ width: "100%", height: "100%", padding: "10px 5px" }}
+      >
+        <div
           style={{
-            fontFamily: "Poppins-Bold",
-            "font-size": "70%",
-            color: "#25252",
-            margin:0
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
           }}
+        >
+          <div className="iconWrapper" style={{ marginRight: "10px" }}>
+            {fileIcon}
+          </div>
+          <p
+            style={{
+              fontFamily: "Poppins-Bold",
+              "font-size": "70%",
+              color: "#25252",
+              margin: 0,
+            }}
           >
-          {fileName}
-        </p>
-          
+            {fileName}
+          </p>
+        </div>
       </div>
-      </div>
-      <div className="iconWrapper">
+      <div className="iconWrapper" style={{ marginRight: "10px" }}>
         <AddBoxIcon
           fontSize="small"
           onClick={() => {
-            addNode(file);
-            setOpenArtifact(file)
+            addNode({ file: file });
+            setOpenArtifact(file);
           }}
         />
       </div>

@@ -3,10 +3,13 @@ import {
   SAVE_NODES_TO_FILE,
   DELETE_NODES_FROM_ARRAY,
   LOAD_DIAGRAM_TO_STORE,
+  FETCH_REPO_FILES
 } from "../constants";
+
 
 const initialState = {
   nodesArr: [],
+  isLoadingDiagram: true 
 };
 
 export const nodesReducer = (state = initialState, action) => {
@@ -19,12 +22,19 @@ export const nodesReducer = (state = initialState, action) => {
     case DELETE_NODES_FROM_ARRAY:
       return {
         ...state,
-        nodesArr: state.nodesArr.filter((node) => action.nodeId !== node.id),
+        nodesArr: state.nodesArr.filter((node) => !(action.nodes.includes(node))),
       };
     case LOAD_DIAGRAM_TO_STORE:
       return {
         ...state,
         nodesArr: action.payload.elements,
+        isLoadingDiagram: false, 
+      };
+    case FETCH_REPO_FILES:
+      state.isFetchingFiles = true;
+      return {
+        ...state,
+        isLoadingDiagram: true,
       };
     default:
       return state;

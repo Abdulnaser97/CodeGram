@@ -149,19 +149,32 @@ export const CircleShape = () => {
 export const Cylinder = () => {
   return (
     <ButtonWrapper className="buttonWrapper">
-      <svg 
-        width="100%" 
-        height="100%" 
-        viewBox="0 0 19 19" 
-        fill="none" 
-        xmlns="http://www.w3.org/2000/svg">
-        
+      <svg
+        width="100%"
+        height="100%"
+        viewBox="0 0 19 19"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <g id="Cylinder">
-            <rect id="Rectangle 86" y="66" width="290" height="232" fill="none"/>
-            <ellipse id="Ellipse 20" cx="145" cy="65.5" rx="145" ry="65.5" fill="none"/>
-            <ellipse id="Ellipse 21" cx="145" cy="297.5" rx="145" ry="65.5" fill="none"/>
+          <rect id="Rectangle 86" y="66" width="290" height="232" fill="none" />
+          <ellipse
+            id="Ellipse 20"
+            cx="145"
+            cy="65.5"
+            rx="145"
+            ry="65.5"
+            fill="none"
+          />
+          <ellipse
+            id="Ellipse 21"
+            cx="145"
+            cy="297.5"
+            rx="145"
+            ry="65.5"
+            fill="none"
+          />
         </g>
-
       </svg>
     </ButtonWrapper>
   );
