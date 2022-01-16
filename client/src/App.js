@@ -103,9 +103,9 @@ function App() {
   const [openArtifact, setOpenArtifact] = useState("");
   const [search, setSearch] = useState("search");
   const [cursor, setCursor] = useState("default");
-  const [branch, setBranch] = useState('')
+  const [branch, setBranch] = useState("");
   const [repoBranches, setRepoBranches] = useState([]);
-  console.log(branch)
+  console.log(branch);
   // redux
   const dispatch = useDispatch();
 
@@ -153,29 +153,29 @@ function App() {
     setRepos(userRepos.data);
   };
 
-  // get all branches in repo 
+  // get all branches in repo
   const getBranchesList = async (repo) => {
-    const repoBranches = await getBranches(repo); 
-    setRepoBranches(repoBranches.data)
-  }  
+    const repoBranches = await getBranches(repo);
+    setRepoBranches(repoBranches.data);
+  };
 
   // set new repo from drop down menu
   const handleRepoChange = (event) => {
-    // if (event.target.value){ 
-      // getBranchesList(event.target.value)
-      setElements(initialElements);
-      getBranchesList(event.target.value);
-      setRepo(event.target.value);
-      setBranch('')
+    // if (event.target.value){
+    // getBranchesList(event.target.value)
+    setElements(initialElements);
+    getBranchesList(event.target.value);
+    setRepo(event.target.value);
+    setBranch("");
     // }
   };
 
-  // set new branch from drop down menu 
+  // set new branch from drop down menu
   const handleBranchChange = (event) => {
     setElements(initialElements);
     dispatch(getRepoFiles(repo, event.target.value));
-    setBranch(event.target.value)
-  }
+    setBranch(event.target.value);
+  };
 
   const handleName = (event, newValue) => {
     setNodeName(event.target.value);
@@ -184,7 +184,7 @@ function App() {
   const renderRepos = () => {
     var repoChoiceItems = [];
 
-    if (repos.length !== 0 && repos!== undefined) {
+    if (repos.length !== 0 && repos !== undefined) {
       repoChoiceItems.push(<option value={""}>Repository</option>);
       for (var i = 0; i < repos.length; i++) {
         var name = repos[i].name;
@@ -199,7 +199,7 @@ function App() {
 
   const renderBranches = () => {
     var branchChoiceItems = [];
-    if (repo && repoBranches!= undefined && repoBranches.length !== 0) {
+    if (repo && repoBranches != undefined && repoBranches.length !== 0) {
       branchChoiceItems.push(<option value={""}>Branch</option>);
       for (var i = 0; i < repoBranches.length; i++) {
         var name = repoBranches[i].name;
@@ -257,11 +257,10 @@ function App() {
 
   /** useEffect Hools ************************************************* useEffect Hooks *****************************************************************/
 
-    // // Load saved diagram when new repo is selected
-    // useEffect(() => {
-    //   repo && getBranchesList(repo)  
-    // }, [repo]);
-
+  // // Load saved diagram when new repo is selected
+  // useEffect(() => {
+  //   repo && getBranchesList(repo)
+  // }, [repo]);
 
   // Load saved diagram when new repo is selected
   useEffect(() => {
@@ -394,7 +393,6 @@ function App() {
                         background: "transparent",
                         appearance: "none",
                         cursor: "pointer",
-                        boxShadow: !repo ? '-2.5px 4px 5px #A36363' : ''
                       }}
                     >
                       {renderRepos()}
@@ -423,7 +421,8 @@ function App() {
                         background: "transparent",
                         appearance: "none",
                         cursor: "pointer",
-                        boxShadow: repo && !branch ? '-2.5px 4px 5px #A36363' : ''
+                        boxShadow:
+                          repo && !branch ? "-2.5px 4px 5px #A36363" : "",
                       }}
                     >
                       {renderBranches()}
@@ -532,7 +531,7 @@ function App() {
                 repository: repository,
                 search: search,
                 homePath: homePath,
-                branch: branch 
+                branch: branch,
               }}
             />
 
