@@ -13,14 +13,12 @@ import ReactFlow, {
   SmoothStepEdge,
   StraightEdge,
   StepEdge,
-  updateEdge,
 } from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import { addNodeToArray, deleteNodeFromArray } from "../Redux/actions/nodes";
 
 import FloatingEdge from "../canvas/FloatingEdge.tsx";
 import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
-import ButtonEdge from "../canvas/ButtonEdge";
 
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -54,7 +52,6 @@ const edgeTypes = {
   step: StepEdge,
   smoothstep: SmoothStepEdge,
   floating: FloatingEdge,
-  buttonEdge: ButtonEdge,
 };
 
 const getNodeId = () => `randomnode_${+new Date()}`;
@@ -366,8 +363,6 @@ export function useReactFlowWrapper({
           onNodeContextMenu={handleContextMenu}
           onEdgeContextMenu={handleEdgeContextMenu}
           onPaneContextMenu={handlePaneContextMenu}
-          copyKeyCode={"cmd+c"}
-          pasteKeyCode={"cmd+v"}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>
@@ -444,10 +439,7 @@ export function useReactFlowWrapper({
 
 export function ReactFlowStoreInterface({ RFState, setElements }) {
   // Uncomment below to view reactFlowState
-  const reactFlowState = useStoreState((state) => state);
-  useEffect(() => {
-    console.log("reactFlowState", reactFlowState);
-  }, [reactFlowState]);
+  //const reactFlowState = useStoreState((state) => state);
 
   const { transform } = useZoomPanHelper();
 
