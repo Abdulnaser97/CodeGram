@@ -2,11 +2,11 @@ import { getRepo } from "../../api/apiClient";
 import { FETCH_REPO_FILES, STORE_REPO_FILES, UPDATE_REPO_FILE } from "../constants";
 
 
-async function recursiveRepoBuilder(repoName, subRepo, subProcessedFiles){
+async function recursiveRepoBuilder(repoName, subRepo, subProcessedFiles, branch){
   for (const file of subRepo){
     if (file.type === "dir"){
-      const contents = await getRepo(repoName,file.path);
-      await recursiveRepoBuilder(repoName, contents.data, subProcessedFiles)
+      const contents = await getRepo(repoName,file.path, branch);
+      await recursiveRepoBuilder(repoName, contents.data, subProcessedFiles, branch)
       subProcessedFiles[file.path] = { 
         name: file.name, 
         contents: contents.data,
@@ -28,12 +28,12 @@ async function recursiveRepoBuilder(repoName, subRepo, subProcessedFiles){
   return subProcessedFiles;
 }
 
-export const getRepoFiles = (repoName) => async (dispatch) => {
+export const getRepoFiles = (repoName, branch) => async (dispatch) => {
   dispatch(fetchRepoFiles());
-  const newRepo = await getRepo(repoName, null);
+  const newRepo = await getRepo(repoName, null, branch);
   const files = newRepo.data;
   var processedRepo = {}
-  var processedFiles = await recursiveRepoBuilder(repoName, files, processedRepo);
+  var processedFiles = await recursiveRepoBuilder(repoName, files, processedRepo, branch);
   dispatch(storeRepoFiles(processedFiles));
 };
 

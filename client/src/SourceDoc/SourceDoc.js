@@ -68,7 +68,7 @@ function a11yProps(index) {
 
 function SourceDoc(props) {
   const state = useSelector((state) => state);
-
+  console.log(state)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
 
@@ -106,7 +106,7 @@ function SourceDoc(props) {
       setWiki("");
       setIsEditing("");
     }
-  }, [props.data.repo]);
+  }, [props.data.repo, props.data.branch]);
 
   // change open artifact to be the file from react flow
   useEffect(() => {
