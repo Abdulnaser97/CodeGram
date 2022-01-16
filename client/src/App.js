@@ -393,6 +393,7 @@ function App() {
                         background: "transparent",
                         appearance: "none",
                         cursor: "pointer",
+                        boxShadow: !repo ? "-2.5px 4px 5px #c9c9c9" : "",
                       }}
                     >
                       {renderRepos()}
@@ -422,7 +423,7 @@ function App() {
                         appearance: "none",
                         cursor: "pointer",
                         boxShadow:
-                          repo && !branch ? "-2.5px 4px 5px #A36363" : "",
+                          repo && !branch ? "-2.5px 4px 5px #c9c9c9" : "",
                       }}
                     >
                       {renderBranches()}
