@@ -35,6 +35,7 @@ export const nodesReducer = (state = initialState, action) => {
       return {
         ...state,
         isLoadingDiagram: true,
+        nodesArr:[]
       };
     default:
       return state;

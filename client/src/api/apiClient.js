@@ -47,12 +47,22 @@ export async function invalidateToken() {
   return result.success;
 }
 
-export async function getRepo(repo, path) {
+export async function getRepo(repo, path, branch) {
+  console.log(branch)
   const data = {
     repo: repo,
     path: path,
+    branch:branch
   };
   return await perform("post", `/getcontent`, data);
+}
+
+export async function getBranches(repo) { 
+  console.log(repo)
+  const data = {
+    repo: repo,
+  };
+  return await perform("post", `/getbranches`, data);
 }
 
 export async function getRepos() {
@@ -72,9 +82,11 @@ export async function getUser() {
   return await perform("get", `/auth/login/success`);
 }
 
-export async function save(repo, content) {
+export async function save(repo, branch, content) {
+  console.log(branch)
   const data = {
     repo: repo,
+    branch: branch, 
     content: content,
   };
   return await perform("put", `/save`, data);
