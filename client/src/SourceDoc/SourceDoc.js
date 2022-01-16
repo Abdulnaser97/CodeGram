@@ -110,7 +110,11 @@ function SourceDoc(props) {
 
   // change open artifact to be the file from react flow
   useEffect(() => {
-    if (repository && props.data.selectedEL.data.path) {
+    if (
+      repository &&
+      props.data.selectedEL.data &&
+      props.data.selectedEL.data.path
+    ) {
       setOpenArtifact(repository[props.data.selectedEL.data.path]);
     }
   }, [props.data.selectedEL]);
@@ -278,7 +282,7 @@ function SourceDoc(props) {
   //
   function renderFiles() {
     var files = [];
-    if (props.data.selectedEL.data.parentNodes) {
+    if (props.data.selectedEL.data && props.data.selectedEL.data.parentNodes) {
       const f = props.data.selectedEL.data.parentNodes.map((pNode) => {
         <li className="SourceDocFile foldertype">hello</li>;
       });
@@ -293,6 +297,7 @@ function SourceDoc(props) {
 
   useEffect(() => {
     if (
+      props.data.selectedEL.data &&
       props.data.selectedEL.data.url &&
       props.data.selectedEL.data.url !== undefined
     ) {
@@ -423,7 +428,9 @@ function SourceDoc(props) {
               zIndex: 1,
             }}
           >
-            {props.data.selectedEL.data.label}
+            {props.data.selectedEL.data
+              ? props.data.selectedEL.data.label
+              : props.data.selectedEL}
           </Typography>
           <pre> {`${curCode}`} </pre>
         </TabPanel>
@@ -457,24 +464,41 @@ function SourceDoc(props) {
               </div>
             )}
             <Typography variant="h5" fontWeight="bold">
-              {props.data.selectedEL.data.label}
+              {props.data.selectedEL.data
+                ? props.data.selectedEL.data.label
+                : ""}
             </Typography>
 
             <Typography variant="h6">
-              <a href={props.data.selectedEL.data.url}> source code link </a>
+              <a
+                href={
+                  props.data.selectedEL.data
+                    ? props.data.selectedEL.data.url
+                    : ""
+                }
+              >
+                {" "}
+                source code link{" "}
+              </a>
             </Typography>
             <Typography my={1} variant="h6">
               Wiki
             </Typography>
             {isEditing ? (
               <TextEditor
-                content={props.data.selectedEL.data.wiki}
+                content={
+                  props.data.selectedEL.data
+                    ? props.data.selectedEL.data.wiki
+                    : ""
+                }
                 onChange={handleWikiChange}
               />
             ) : (
               <div
                 dangerouslySetInnerHTML={{
-                  __html: props.data.selectedEL.data.wiki,
+                  __html: props.data.selectedEL.data
+                    ? props.data.selectedEL.data.wiki
+                    : "",
                 }}
               />
             )}
@@ -482,18 +506,27 @@ function SourceDoc(props) {
               Parent Nodes <br />
               <Typography>
                 {" "}
-                {props.data.selectedEL.data.parentNodes}{" "}
+                {props.data.selectedEL.data
+                  ? props.data.selectedEL.data.parentNodes
+                  : ""}{" "}
               </Typography>
             </Typography>
             <Typography variant="h7" mt={2}>
               Child Nodes <br />
-              <Typography> {props.data.selectedEL.data.childNodes} </Typography>
+              <Typography>
+                {" "}
+                {props.data.selectedEL.data
+                  ? props.data.selectedEL.data.childNodes
+                  : ""}{" "}
+              </Typography>
             </Typography>
             <Typography variant="h7" mt={2}>
               Configuration Files <br />
               <Typography>
                 {" "}
-                {props.data.selectedEL.data.parentNodes}{" "}
+                {props.data.selectedEL.data
+                  ? props.data.selectedEL.data.parentNodes
+                  : ""}{" "}
               </Typography>
             </Typography>
             <Typography variant="h7" mt={2}>
@@ -501,7 +534,9 @@ function SourceDoc(props) {
               {renderFiles()}
               <Typography>
                 {" "}
-                {props.data.selectedEL.data.documentation}
+                {props.data.selectedEL.data
+                  ? props.data.selectedEL.data.documentation
+                  : ""}
               </Typography>
             </Typography>
           </Box>
