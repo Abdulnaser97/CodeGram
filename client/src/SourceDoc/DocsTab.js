@@ -1,11 +1,15 @@
-import react, { useState, useCallback, useEffect } from "react";
+import react, { useState, useEffect } from "react";
 
 import { Box, Typography } from "@mui/material";
 
 import TextEditor from "../components/TextEditor.js";
 import { theme } from "../Themes";
 import { useStoreActions } from "react-flow-renderer";
-import { SignalCellularNull } from "@mui/icons-material";
+
+
+// TODO: needs extra click and click away to set the selectedEL to 
+// the properly updated one. Tried to resolve using setSelectedElements 
+// on saveWikiToNode
 
 export default function DocsTab(props) {
   const { isEditing, setIsEditing, renderFiles, selectedEL, setElements } =
@@ -40,8 +44,8 @@ export default function DocsTab(props) {
         selEl = el 
         return el;
       })
-      );
-      setSelectedElements(selEl);
+    );
+    setSelectedElements(selEl);
   };
 
   const handleWikiChange = (data) => {
@@ -52,16 +56,24 @@ export default function DocsTab(props) {
     setNewLabel(event.target.value);
   };
 
+  const handleDoneOrEditClick = () => {
+    if (isEditing){
+      setWiki(selectedEL.data.wiki)
+      setNewLabel(selectedEL.data.label)
+    }
+    setIsEditing(!isEditing)
+  }
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       <div
         className="navbar-button github"
         style={{ position: "fixed", right: "1.5vw" }}
-        onClick={() => setIsEditing(!isEditing)}
+        onClick={() => handleDoneOrEditClick()}
       >
         <Box className="EditWikiButtonWrapper">
           <Typography mx={1} my={0.8} fontSize=".8vw" fontWeight="Thin">
-            {isEditing ? "Done" : "Edit"}
+            {isEditing ? "Cancel" : "Edit"}
           </Typography>
         </Box>
       </div>
@@ -74,7 +86,7 @@ export default function DocsTab(props) {
             setIsEditing(!isEditing);
           }}
         >
-          <Box className="EditWikiButtonWrapper">
+          <Box className="EditWikiButtonWrapper" mx={1}>
             <Typography mx={1} my={0.8} fontSize=".8vw" fontWeight="Thin">
               Save
             </Typography>
@@ -90,6 +102,7 @@ export default function DocsTab(props) {
           onClick={() => setIsEditing(true)}
           placeholder="Add name"
           onChange={handleLabelChange}
+          value={newLabel}
           // onKeyPress={handleSearch}
           style={{
             "z-index": 0,
@@ -114,7 +127,7 @@ export default function DocsTab(props) {
       </Typography>
       {isEditing ? (
         <TextEditor
-          content={selectedEL.data.wiki}
+          content={selectedEL.data.wiki ? selectedEL.data.wiki : ''}
           onChange={handleWikiChange}
         />
       ) : (
@@ -124,11 +137,11 @@ export default function DocsTab(props) {
           }}
         />
       )}
-      <Typography variant="h7" mt={2}>
+      {/* <Typography variant="h7" mt={2}>
         Parent Nodes <br />
         <Typography> {selectedEL.data.parentNodes} </Typography>
       </Typography>
-      <Typography variant="h7" color={theme.palette.darkestGrey} fontWeight={theme.typography.fontWeight} mt={2}>
+      <Typography variant="h7" mt={2}>
         Child Nodes <br />
         <Typography> {selectedEL.data.childNodes} </Typography>
       </Typography>
@@ -140,7 +153,7 @@ export default function DocsTab(props) {
         Reference Docs <br />
         {renderFiles()}
         <Typography> {selectedEL.data.documentation}</Typography>
-      </Typography>
+      </Typography> */}
     </Box>
   );
 }

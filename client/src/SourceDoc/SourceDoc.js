@@ -91,7 +91,7 @@ function SourceDoc(props) {
   const dispatch = useDispatch();
 
   const { search, repository, fuse, homePath, selectedEL } = props.data;
-
+  console.log(state)
   useEffect(() => {
     if (!state.repoFiles.repoFiles.isFetchingFiles) {
       setOpenArtifact("");
@@ -107,6 +107,8 @@ function SourceDoc(props) {
   useEffect(() => {
     if (repository && selectedEL.data.path) {
       setOpenArtifact(repository[selectedEL.data.path]);
+    } else {
+      setOpenArtifact("")
     }
   }, [selectedEL]);
 
