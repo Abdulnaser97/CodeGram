@@ -1,4 +1,4 @@
-import { ADD_NODE_TO_ARRAY, FETCH_REPO_FILES, STORE_REPO_FILES, UPDATE_REPO_FILE } from "../constants";
+import { ADD_NODE_TO_ARRAY, FETCH_REPO_FILES, STORE_REPO_FILES, DELETE_NODES_FROM_ARRAY } from "../constants";
 
 const initialState = {
   repoFiles: [],
@@ -31,6 +31,20 @@ const repoReducer = (state = initialState, action) => {
         }
       }
     };
+    case DELETE_NODES_FROM_ARRAY: {
+      //TODO: doesnt work need to take nodes from action, loop through and modify
+      //required files in repository 
+      // return {
+      //   ...state,
+      //   repoFiles: {
+      //     ...state.repoFiles,
+      //     [action.payload.data.path]: {
+      //       ...state.repoFiles[action.payload.data.path],
+      //       linked: false
+      //     }
+      //   }
+      // } 
+    }
     default:
       return state;
   }

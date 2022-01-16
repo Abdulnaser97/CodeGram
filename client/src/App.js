@@ -176,6 +176,7 @@ function App() {
   const handleBranchChange = (event) => {
     setElements(initialElements);
     dispatch(getRepoFiles(repo, event.target.value));
+    setSelectedEL(initialElements[0])
     setBranch(event.target.value)
   }
 
