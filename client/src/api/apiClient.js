@@ -83,7 +83,6 @@ export async function getUser() {
 }
 
 export async function save(repo, branch, content) {
-  console.log(branch)
   const data = {
     repo: repo,
     branch: branch, 

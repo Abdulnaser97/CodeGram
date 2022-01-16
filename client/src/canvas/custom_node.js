@@ -198,7 +198,11 @@ const WrapperNodeComponent = (props) => {
       style={{ "border-radius": borderRadius }}
     >
       <div className="node-label corner">
+        {props.data.label ? 
+          <> 
         {props.data.label}
+          </>
+        : 
         <input
           placeholder="wrapper"
           // onChange={handleSearch}
@@ -215,6 +219,9 @@ const WrapperNodeComponent = (props) => {
             color: theme.palette.primary.pinkerPink,
           }}
         />
+        }
+
+
       </div>
       <Handle
         className="handle target"
