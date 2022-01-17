@@ -12,7 +12,7 @@ import { useStoreActions } from "react-flow-renderer";
 // on saveWikiToNode
 
 export default function DocsTab(props) {
-  const { isEditing, setIsEditing, renderFiles, selectedEL, setElements } =
+  const { isEditing, setIsEditing, renderFiles, selectedEL, setElements, setSelectedEL } =
     props;
 
   const [wiki, setWiki] = useState(selectedEL.data.wiki);
@@ -22,11 +22,6 @@ export default function DocsTab(props) {
     setWiki(selectedEL.data.wiki)
     setNewLabel(selectedEL.data.label)
   }, [selectedEL])  
-
-  // react flow functions
-  const setSelectedElements = useStoreActions(
-    (actions) => actions.setSelectedElements
-  );
 
   const saveWikiToNode = () => {
     var selEl = null
@@ -45,7 +40,7 @@ export default function DocsTab(props) {
         return el;
       })
     );
-    setSelectedElements(selEl);
+    setSelectedEL(selEl);
   };
 
   const handleWikiChange = (data) => {

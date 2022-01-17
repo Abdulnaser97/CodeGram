@@ -409,6 +409,7 @@ function SourceDoc(props) {
             setIsEditing={setIsEditing}
             renderFiles={renderFiles}
             setElements={props.functions.setElements}
+            setSelectedEL={props.functions.setSelectedEL}
             />
         </TabPanel>
       </Resizable>
