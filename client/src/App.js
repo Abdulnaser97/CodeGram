@@ -540,7 +540,7 @@ function App() {
                 branch: branch,
               }}
             />
-
+            <NotifDiagramLoading/>
             <NotifDiagramLoaded />
           </div>
         </ReactFlowProvider>
