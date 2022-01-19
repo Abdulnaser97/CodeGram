@@ -18,8 +18,8 @@ export function NotifDiagramLoaded() {
         position: "fixed",
         "max-height": "fit-content",
         "min-width": "15vw",
-        top: "5vh",
-        left: "30vw",
+        top: "90vh",
+        left: "1vw",
       }}
       open={message}
       autoHideDuration={4000}
@@ -42,8 +42,8 @@ export function NotifDiagramLoading() {
         position: "fixed",
         "max-height": "fit-content",
         "min-width": "15vw",
-        top: "5vh",
-        left: "30vw",
+        top: "90vh",
+        left: "1vw",
       }}
       open={message}
       autoHideDuration={4000}
@@ -66,8 +66,8 @@ export function NotifError() {
         position: "fixed",
         "max-height": "fit-content",
         "min-width": "15vw",
-        top: "5vh",
-        left: "30vw",
+        top: "90vh",
+        left: "1vw",
       }}
       open={message}
       autoHideDuration={4000}
