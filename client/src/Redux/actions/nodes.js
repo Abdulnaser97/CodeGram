@@ -14,21 +14,24 @@ export function addNodeToArray(node) {
 export function deleteNodeFromArray(elementsToRemove) {
   return (dispatch, getState) => {
     const {nodes, repoFiles} = getState();
-    console.log("deleteNodes Action nodes", nodes);
-    console.log("deleteNodes Action repoFiles", repoFiles);
-    console.log("deleteNodes Action elementsToRemove", elementsToRemove);
 
     const idsToRemove = elementsToRemove.map(node => { return node.id; });
-    console.log("IDS", idsToRemove);
+    const filesToUnlink = elementsToRemove.map(node => { return node.data.path; });
+
     const newNodesArr = nodes.nodesArr.filter(node => { 
       return !(idsToRemove.includes(node.id));
     });
-    console.log("newNodesArr", newNodesArr);
-    // state.nodesArr.filter((node) => !(action.nodes.includes(node)))
+
+    filesToUnlink.forEach(file => {
+      if (repoFiles.repoFiles[file]) {
+        repoFiles.repoFiles[file].linked = false;
+      }
+    })
 
     dispatch({
       type: DELETE_NODES_FROM_ARRAY,
       nodesArr: newNodesArr,
+      repoFiles: repoFiles.repoFiles,
     });
   };
 }

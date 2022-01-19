@@ -2,8 +2,11 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 import CodeIcon from "@mui/icons-material/Code";
 import Folder from "@mui/icons-material/Folder";
 import FolderIcon from "@mui/icons-material/Folder";
+import { mapDispatchToProps, mapStateToProps } from "../Redux/configureStore";
+import { connect } from "react-redux";
 
-export default function SourceDocFile(props) {
+// export default function SourceDocFile(props) {
+function SourceDocFile(props) {
   const { addNode, setOpenArtifact, openArtifact } = props;
   var { file } = props;
 
@@ -82,3 +85,5 @@ export default function SourceDocFile(props) {
     </div>
   );
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(SourceDocFile);
