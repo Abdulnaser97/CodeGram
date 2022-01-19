@@ -1,8 +1,9 @@
-import { SUCCESS_NOTIFICATION, ERROR_NOTIFICATION } from "../constants";
+import { SUCCESS_NOTIFICATION, ERROR_NOTIFICATION, LOADING_NOTIFICATION } from "../constants";
 
 const initialState = {
   successNotificationMessage: "",
   errorNotificationMessage: "",
+  loadingNotificationMessage: "",
 };
 
 export const notificationReducer = (state = initialState, action) => {
@@ -17,6 +18,11 @@ export const notificationReducer = (state = initialState, action) => {
         ...state,
         errorNotificationMessage: action.payload,
       };
+    case LOADING_NOTIFICATION:
+      return {
+        ...state,
+        loadingNotificationMessage: action.payload,
+      };  
     default:
       return state;
   }

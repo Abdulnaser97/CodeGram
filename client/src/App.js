@@ -49,11 +49,13 @@ import SourceDocButton from "./Media/SourceDocButton";
 import useToolBar from "./components/ToolBar.js";
 import {
   NotifDiagramLoaded,
+  NotifDiagramLoading,
   NotifError,
 } from "./components/NotificationsPopups";
 import {
   errorNotification,
   successNotification,
+  loadingNotification,
 } from "./Redux/actions/notification";
 
 const LogoTopNav = styled.div`
@@ -275,6 +277,9 @@ function App() {
       if (repo && repository && !repoFiles.isFetchingFiles && branch) {
         var homeDir = [];
 
+        dispatch(loadingNotification(repo + " is being loaded.")); /////////////////////////////////////////////////////////
+        console.log("loading diagram!");
+
         // push home directory files into home path as array
         for (const [key, val] of Object.entries(repository)) {
           key.split("/").length === 1 && homeDir.push(val);
@@ -490,7 +495,7 @@ function App() {
                 mx={1}
                 my={0}
               >
-                Search >
+                Search 
               </Typography>
 
               <input
