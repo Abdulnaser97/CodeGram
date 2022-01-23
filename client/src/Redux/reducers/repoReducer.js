@@ -32,19 +32,11 @@ const repoReducer = (state = initialState, action) => {
       }
     };
     case DELETE_NODES_FROM_ARRAY: {
-      //TODO: doesnt work need to take nodes from action, loop through and modify
-      //required files in repository 
-      // return {
-      //   ...state,
-      //   repoFiles: {
-      //     ...state.repoFiles,
-      //     [action.payload.data.path]: {
-      //       ...state.repoFiles[action.payload.data.path],
-      //       linked: false
-      //     }
-      //   }
-      // } 
-    }
+      return {
+        ...state,
+        repoFiles: action.repoFiles,
+      }
+    };
     default:
       return state;
   }

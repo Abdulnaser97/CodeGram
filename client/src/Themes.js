@@ -16,9 +16,11 @@ export const theme = createTheme({
   },
   typography: {
     fontFamily: "Poppins, sans-serif",
-    fontWeightLight: 200,
+    fontWeightThin: 200,
+    fontWeightLight: 300,
     fontWeightRegular: 400,
     fontWeightMedium: 500,
+    fontWeightBold: 600,
     button: {
       textTransform: "none",
     },

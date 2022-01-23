@@ -103,9 +103,8 @@ function App() {
   const [openArtifact, setOpenArtifact] = useState("");
   const [search, setSearch] = useState("search");
   const [cursor, setCursor] = useState("default");
-  const [branch, setBranch] = useState('')
+  const [branch, setBranch] = useState("");
   const [repoBranches, setRepoBranches] = useState([]);
-
   // redux
   const dispatch = useDispatch();
 
@@ -135,6 +134,7 @@ function App() {
     selectedShapeName,
     activeToolBarButton,
     setActiveToolBarButton,
+    setOpenArtifact,
   });
 
   // change cursor to be opposite as previous
@@ -153,11 +153,11 @@ function App() {
     setRepos(userRepos.data);
   };
 
-  // get all branches in repo 
+  // get all branches in repo
   const getBranchesList = async (repo) => {
-    const repoBranches = await getBranches(repo); 
-    setRepoBranches(repoBranches.data)
-  }  
+    const repoBranches = await getBranches(repo);
+    setRepoBranches(repoBranches.data);
+  };
 
   // set new repo from drop down menu
   const handleRepoChange = (event) => {
@@ -172,7 +172,7 @@ function App() {
     // }
   };
 
-  // set new branch from drop down menu 
+  // set new branch from drop down menu
   const handleBranchChange = (event) => {
     setElements(initialElements);
     dispatch(getRepoFiles(repo, event.target.value));
@@ -187,7 +187,7 @@ function App() {
   const renderRepos = () => {
     var repoChoiceItems = [];
 
-    if (repos.length !== 0 && repos!== undefined) {
+    if (repos.length !== 0 && repos !== undefined) {
       repoChoiceItems.push(<option value={""}>Repository</option>);
       for (var i = 0; i < repos.length; i++) {
         var name = repos[i].name;
@@ -260,11 +260,10 @@ function App() {
 
   /** useEffect Hools ************************************************* useEffect Hooks *****************************************************************/
 
-    // // Load saved diagram when new repo is selected
-    // useEffect(() => {
-    //   repo && getBranchesList(repo)  
-    // }, [repo]);
-
+  // // Load saved diagram when new repo is selected
+  // useEffect(() => {
+  //   repo && getBranchesList(repo)
+  // }, [repo]);
 
   // Load saved diagram when new repo is selected
   useEffect(() => {
@@ -397,7 +396,7 @@ function App() {
                         background: "transparent",
                         appearance: "none",
                         cursor: "pointer",
-                        boxShadow: !repo ? '-2.5px 4px 5px #A36363' : ''
+                        boxShadow: !repo ? "-2.5px 4px 5px #c9c9c9" : "",
                       }}
                     >
                       {renderRepos()}
@@ -426,7 +425,8 @@ function App() {
                         background: "transparent",
                         appearance: "none",
                         cursor: "pointer",
-                        boxShadow: repo && !branch ? '-2.5px 4px 5px #A36363' : ''
+                        boxShadow:
+                          repo && !branch ? "-2.5px 4px 5px #c9c9c9" : "",
                       }}
                     >
                       {renderBranches()}
@@ -525,6 +525,7 @@ function App() {
                 setSelectedEL: setSelectedEL,
                 setIsOpenSD: setIsOpenSD,
                 setElements: setElements,
+                setOpenArtifact: setOpenArtifact,
               }}
               data={{
                 repo: repo,
@@ -535,7 +536,8 @@ function App() {
                 repository: repository,
                 search: search,
                 homePath: homePath,
-                branch: branch 
+                branch: branch,
+                openArtifact: openArtifact,
               }}
             />
 

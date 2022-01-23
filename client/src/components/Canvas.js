@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
   CustomNodeComponent,
   WrapperNodeComponent,
+  FolderNodeComponent,
 } from "../canvas/custom_node";
 import ReactFlow, {
   addEdge,
@@ -65,6 +66,7 @@ export function useReactFlowWrapper({
   selectedShapeName,
   activeToolBarButton,
   setActiveToolBarButton,
+  setOpenArtifact,
 }) {
   const { RFState } = useSelector((state) => {
     return { RFState: state.RFState };
@@ -80,6 +82,8 @@ export function useReactFlowWrapper({
   const [connectionStarted, setConnectionStarted] = useState(false);
   const [floatTargetHandle, setFloatTargetHandle] = useState(false); // This is a hacky method to force rendering
   const [contextMenu, setContextMenu] = useState(null);
+  const [clipBoard, setClipBoard] = useState(null);
+  const [selectedNodeEvent, setSelectedNodeEvent] = useState(null);
 
   // Add node function
   const addNode = useCallback(
@@ -135,11 +139,13 @@ export function useReactFlowWrapper({
   const handleContextMenu = (event, node) => {
     event.preventDefault();
     setSelectedEL(node);
+    setSelectedNodeEvent(event);
     setContextMenu(
       contextMenu === null
         ? {
             mouseX: event.clientX - 2,
             mouseY: event.clientY - 4,
+            type: "elementMenu",
           }
         : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
           // Other native context menus might behave different.
@@ -148,14 +154,52 @@ export function useReactFlowWrapper({
     );
   };
 
+  const handleEdgeContextMenu = (event, edge) => {
+    event.preventDefault();
+    setSelectedEL(edge);
+    setContextMenu(
+      contextMenu === null
+        ? {
+            mouseX: event.clientX - 2,
+            mouseY: event.clientY - 4,
+            type: "elementMenu",
+          }
+        : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+          // Other native context menus might behave different.
+          // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+          null
+    );
+  };
   const handleContextMenuClose = (event) => {
     setContextMenu(null);
+    setSelectedNodeEvent(null);
     console.log("rfInstance", rfInstance);
     console.log("rfInstance to Object", rfInstance.toObject());
   };
+
+  const handlePaneContextMenu = (event) => {
+    event.preventDefault();
+    if (clipBoard) {
+      clipBoard.position.x = event.clientX;
+      clipBoard.position.y = event.clientY;
+      setClipBoard(clipBoard);
+    }
+    setContextMenu(
+      contextMenu === null
+        ? {
+            mouseX: event.clientX - 2,
+            mouseY: event.clientY - 4,
+            type: "paneMenu",
+          }
+        : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+          // Other native context menus might behave different.
+          // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+          null
+    );
+  };
   // get stat
   const onElementClick = (event, element) => {
-    //console.log("click", element);
+    console.log("click", element);
     setSelectedEL(element);
   };
 
@@ -175,6 +219,7 @@ export function useReactFlowWrapper({
         return;
       }
       dispatch(deleteNodeFromArray(elementsToRemove));
+      setOpenArtifact("");
       setElements((els) => removeElements(elementsToRemove, els));
     },
     [setElements, dispatch]
@@ -184,7 +229,13 @@ export function useReactFlowWrapper({
     setElements((els) =>
       addEdge(
         // TODO : lookinto styling floating edges  and smoothstep
-        { ...params, type: "floating", arrowHeadType: ArrowHeadType.Arrow },
+        { ...params, 
+          type: "floating", 
+          arrowHeadType: ArrowHeadType.Arrow, 
+          data:{
+            label: '', 
+            wiki:''
+          }},
         els
       )
     );
@@ -236,6 +287,62 @@ export function useReactFlowWrapper({
     handleContextMenuClose();
   };
 
+  const onCopy = (event) => {
+    event.preventDefault();
+    let copyEl = JSON.parse(JSON.stringify(selectedEL));
+    copyEl.id = getNodeId();
+    setClipBoard(copyEl);
+    handleContextMenuClose();
+  };
+
+  const onPaste = (event) => {
+    event.preventDefault();
+    if (clipBoard) {
+      setElements((els) => els.concat(clipBoard));
+      dispatch(addNodeToArray(clipBoard));
+    }
+    handleContextMenuClose();
+  };
+
+  const keydownHandler = (e) => {
+    if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
+      // Ctrl + C (Cmd + C)
+      if (selectedEL) {
+        let copyEl = JSON.parse(JSON.stringify(selectedEL));
+        copyEl.id = getNodeId();
+        setClipBoard(copyEl);
+      }
+    }
+    if (e.keyCode === 86 && (e.ctrlKey || e.metaKey)) {
+      // Ctrl + V (Cmd + V)
+      if (clipBoard) {
+        clipBoard.position.x += 70;
+        clipBoard.position.y -= 70;
+        setClipBoard(clipBoard);
+        setElements((els) => els.concat(clipBoard));
+        dispatch(addNodeToArray(clipBoard));
+      }
+    }
+
+    if (e.keyCode === 8) {
+      // backspace
+      if (
+        selectedEL && 
+        document.activeElement.tagName !== "INPUT" &&
+        document.activeElement.tagName !== "DIV" 
+        ) {
+        onElementsRemove([selectedEL]);
+      }
+    }
+  };
+  useEffect(() => {
+    document.addEventListener("keydown", keydownHandler);
+
+    return () => {
+      document.removeEventListener("keydown", keydownHandler);
+    };
+  });
+
   return {
     render: (
       <div className="canvas">
@@ -244,7 +351,7 @@ export function useReactFlowWrapper({
             default: CustomNodeComponent,
             FileNode: CustomNodeComponent,
             DashedShape: WrapperNodeComponent,
-            CircleShape: CustomNodeComponent,
+            CircleShape: FolderNodeComponent,
             circle: CustomNodeComponent,
           }}
           elements={elements}
@@ -254,7 +361,8 @@ export function useReactFlowWrapper({
           onConnect={onConnect}
           onLoad={setRfInstance}
           onElementClick={onElementClick}
-          key="edges"
+          snapToGrid
+          key="floating"
           onConnectStart={onConnectStart}
           onConnectStop={onConnectStop}
           onConnectEnd={onConnectEnd}
@@ -265,6 +373,8 @@ export function useReactFlowWrapper({
           onPaneClick={onPaneClick}
           selectNodesOnDrag={false}
           onNodeContextMenu={handleContextMenu}
+          onEdgeContextMenu={handleEdgeContextMenu}
+          onPaneContextMenu={handlePaneContextMenu}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>
@@ -278,9 +388,52 @@ export function useReactFlowWrapper({
               : undefined
           }
         >
-          <MenuItem onClick={onNodeContextMenuDelete}>Delete</MenuItem>
-          <MenuItem onClick={handleContextMenuClose}>Bring Forward</MenuItem>
-          <MenuItem onClick={handleContextMenuClose}>Bring Backward</MenuItem>
+          {contextMenu !== null && contextMenu.type === "elementMenu" && (
+            <MenuItem onClick={onNodeContextMenuDelete}>
+              <div className="menu-item">
+                <div className="menu-text">Delete</div>
+                <div className="shortcut-key">backspace</div>
+              </div>
+            </MenuItem>
+          )}
+          {contextMenu !== null && contextMenu.type === "elementMenu" && (
+            <MenuItem onClick={handleContextMenuClose}>
+              <div className="menu-item">
+                <div className="menu-text">Bring To Front</div>
+                <div className="shortcut-key">]</div>
+              </div>
+            </MenuItem>
+          )}
+          {contextMenu !== null && contextMenu.type === "elementMenu" && (
+            <MenuItem onClick={handleContextMenuClose}>
+              <div className="menu-item">
+                <div className="menu-text">Send To Back</div>
+                <div className="shortcut-key">[</div>
+              </div>
+            </MenuItem>
+          )}
+          {contextMenu !== null && contextMenu.type === "elementMenu" && (
+            <MenuItem
+              onClick={onCopy}
+              style={{ position: "relative", width: "15vw" }}
+            >
+              <div className="menu-item">
+                <div className="menu-text">Copy Shape</div>
+                <div className="shortcut-key">cmd/ctrl+c</div>
+              </div>
+            </MenuItem>
+          )}
+          {contextMenu !== null && contextMenu.type === "paneMenu" && (
+            <MenuItem
+              onClick={onPaste}
+              style={{ position: "relative", width: "15vw" }}
+            >
+              <div className="menu-item">
+                <div className="menu-text">Paste Shape</div>
+                <div className="shortcut-key">cmd/ctrl+v</div>
+              </div>
+            </MenuItem>
+          )}
         </Menu>
       </div>
     ),

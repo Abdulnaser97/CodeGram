@@ -71,7 +71,6 @@ function SourceDoc(props) {
   const [curCode, setCurCode] = useState("Select a nnode to view file");
 
   // state for selected file
-  const [openArtifact, setOpenArtifact] = useState("");
   const [sourceFiles, setSourceFiles] = useState(null);
   const [path, setPath] = useState([]);
   const [pathComponent, setPathComponent] = useState(null);
@@ -94,7 +93,7 @@ function SourceDoc(props) {
   console.log(state)
   useEffect(() => {
     if (!state.repoFiles.repoFiles.isFetchingFiles) {
-      setOpenArtifact("");
+      props.functions.setOpenArtifact("");
       setSourceFiles(null);
       setPath([]);
       setPathComponent("...Loading");
@@ -105,19 +104,21 @@ function SourceDoc(props) {
 
   // change open artifact to be the file from react flow
   useEffect(() => {
-    if (repository && selectedEL.data.path) {
-      setOpenArtifact(repository[selectedEL.data.path]);
-    } else {
-      setOpenArtifact("")
+    if (
+      repository &&
+      props.data.selectedEL.data &&
+      props.data.selectedEL.data.path
+    ) {
+      props.functions.setOpenArtifact(repository[props.data.selectedEL.data.path]);
     }
   }, [selectedEL]);
 
   // highlight node on canvas if exists -> may need optimizing. Indeed it needed :)
   useEffect(() => {
     try {
-      if (openArtifact) {
+      if (props.data.openArtifact) {
         var el = state.nodes.nodesArr.find((node) =>
-          node.data ? node.data.path === openArtifact.path : false
+          node.data ? node.data.path === props.data.openArtifact.path : false
         );
         if (el) {
           setSelectedElements(el);
@@ -130,7 +131,7 @@ function SourceDoc(props) {
       console.log(e);
       dispatch(errorNotification(`Error loading repo file`));
     }
-  }, [openArtifact]);
+  }, [props.data.openArtifact]);
 
   // set content of sourceDoc
   useEffect(() => {
@@ -143,10 +144,10 @@ function SourceDoc(props) {
         repoList.push(
           <SourceDocFile
             addNode={props.functions.addNode}
-            setOpenArtifact={setOpenArtifact}
+            setOpenArtifact={props.functions.setOpenArtifact}
             file={repository[value[1].path]}
-            openArtifact={openArtifact}
-            selectedEL={selectedEL}
+            openArtifact={props.data.openArtifact}
+            selectedEL={props.data.selectedEL}
           />
         );
       }
@@ -158,49 +159,49 @@ function SourceDoc(props) {
         repoList.push(
           <SourceDocFile
             addNode={props.functions.addNode}
-            setOpenArtifact={setOpenArtifact}
+            setOpenArtifact={props.functions.setOpenArtifact}
             file={repository[f.path]}
-            openArtifact={openArtifact}
-            selectedEL={selectedEL}
+            openArtifact={props.data.openArtifact}
+            selectedEL={props.data.selectedEL}
           />
         );
       }
       setSourceFiles(repoList);
     }
-  }, [SDContent, selectedEL, openArtifact]);
+  }, [SDContent, props.data.selectedEL, props.data.openArtifact]);
 
   useEffect(() => {
     if (repository && homePath) {
-      setOpenArtifact(homePath);
+      props.functions.setOpenArtifact(homePath);
       setPath([homePath]);
     }
   }, [homePath]);
 
   // logic for updating our path variable whenever the selected File changes
   useEffect(() => {
-    if (openArtifact && repository) {
+    if (props.data.openArtifact && repository) {
       // if new openArtifact iis on the path already
-      if (path.includes(openArtifact)) {
+      if (path.includes(props.data.openArtifact)) {
         let curPath = [...path];
-        curPath.length = path.indexOf(openArtifact) + 1;
+        curPath.length = path.indexOf(props.data.openArtifact) + 1;
         setPath(curPath);
       }
       //location exists and is a directory (has contents member)
       else if (
-        repository[openArtifact.path] &&
-        repository[openArtifact.path].contents
+        repository[props.data.openArtifact.path] &&
+        repository[props.data.openArtifact.path].contents
       ) {
-        setPath(pathCreator(openArtifact.path.split("/")));
+        setPath(pathCreator(props.data.openArtifact.path.split("/")));
       }
       // else set path to parent directory of a openArtifact
       else {
-        let curPath = openArtifact.path.split("/");
+        let curPath = props.data.openArtifact.path.split("/");
         var pathArr = curPath.slice(0, curPath.length);
         pathArr.length -= 1;
         setPath(pathCreator(pathArr));
       }
     }
-  }, [openArtifact]);
+  }, [props.data.openArtifact]);
 
   // create path state which is a list of path subsection name and the subpath
   function pathCreator(path) {
@@ -243,24 +244,24 @@ function SourceDoc(props) {
   function pathClickHandler(curFile) {
     // if clicked path has SDContent member (root directory)
     if (curFile.dir) {
-      setOpenArtifact(curFile);
+      props.functions.setOpenArtifact(curFile);
     }
     // else find file from state
     else {
-      setOpenArtifact(repository[curFile.path]);
+      props.functions.setOpenArtifact(repository[curFile.path]);
     }
   }
 
   // re render path component and directory if path ever changes
   useEffect(() => {
     // guard the use effect
-    if (path.length && repository && openArtifact) {
+    if (path.length && repository && props.data.openArtifact) {
       // create new path component
       setPathComponent(renderPath(path));
       // render home root
       if (
-        (openArtifact.dir || path.length === 1) &&
-        !openArtifact.path.includes("/")
+        (props.data.openArtifact.dir || path.length === 1) &&
+        !props.data.openArtifact.path.includes("/")
       ) {
         setSDContent(homePath.dir);
       }
@@ -275,8 +276,8 @@ function SourceDoc(props) {
   //
   function renderFiles() {
     var files = [];
-    if (selectedEL.data.parentNodes) {
-      const f = selectedEL.data.parentNodes.map((pNode) => {
+    if (props.data.selectedEL.data && props.data.selectedEL.data.parentNodes) {
+      const f = props.data.selectedEL.data.parentNodes.map((pNode) => {
         <li className="SourceDocFile foldertype">hello</li>;
       });
     }
@@ -290,8 +291,9 @@ function SourceDoc(props) {
 
   useEffect(() => {
     if (
-      selectedEL.data.url &&
-      selectedEL.data.url !== undefined
+      props.data.selectedEL.data &&
+      props.data.selectedEL.data.url &&
+      props.data.selectedEL.data.url !== undefined
     ) {
       // calls node url to get file content
       axios
@@ -309,7 +311,7 @@ function SourceDoc(props) {
 
   // search method called whenevr search var changes
   useEffect(() => {
-    setOpenArtifact("");
+    props.functions.setOpenArtifact("");
     if (fuse && search) {
       var results = fuse.search(search);
       var newResults = results.map((result) => result.item);
@@ -398,7 +400,9 @@ function SourceDoc(props) {
               zIndex: 1,
             }}
           >
-            {selectedEL.data.label}
+            {props.data.selectedEL.data
+              ? props.data.selectedEL.data.label
+              : props.data.selectedEL}
           </Typography>
           <pre> {`${curCode}`} </pre>
         </TabPanel>

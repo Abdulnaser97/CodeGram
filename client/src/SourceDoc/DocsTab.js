@@ -17,7 +17,6 @@ export default function DocsTab(props) {
 
   const [wiki, setWiki] = useState(selectedEL.data.wiki);
   const [newLabel, setNewLabel] = useState(selectedEL.data.label);
-
   useEffect(() => {
     setWiki(selectedEL.data.wiki)
     setNewLabel(selectedEL.data.label)
@@ -35,8 +34,9 @@ export default function DocsTab(props) {
             label: newLabel.toString(),
             wiki: wiki,
           };
+          selEl = el 
         }
-        selEl = el 
+
         return el;
       })
     );
@@ -88,7 +88,7 @@ export default function DocsTab(props) {
           </Box>
         </div>
       )}
-      {selectedEL.data.label ? (
+      {selectedEL.data.label && !isEditing ? (
         <Typography variant="h5" fontWeight="bold">
           {selectedEL.data.label}
         </Typography>

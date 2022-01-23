@@ -12,8 +12,26 @@ export function addNodeToArray(node) {
 }
 
 export function deleteNodeFromArray(elementsToRemove) {
-  return {
-    type: DELETE_NODES_FROM_ARRAY,
-    nodes: elementsToRemove,
+  return (dispatch, getState) => {
+    const {nodes, repoFiles} = getState();
+
+    const idsToRemove = elementsToRemove.map(node => { return node.id; });
+    const filesToUnlink = elementsToRemove.map(node => { return node.data.path; });
+
+    const newNodesArr = nodes.nodesArr.filter(node => { 
+      return !(idsToRemove.includes(node.id));
+    });
+
+    filesToUnlink.forEach(file => {
+      if (repoFiles.repoFiles[file]) {
+        repoFiles.repoFiles[file].linked = false;
+      }
+    })
+
+    dispatch({
+      type: DELETE_NODES_FROM_ARRAY,
+      nodesArr: newNodesArr,
+      repoFiles: repoFiles.repoFiles,
+    });
   };
 }
