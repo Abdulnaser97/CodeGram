@@ -135,6 +135,7 @@ function App() {
     selectedShapeName,
     activeToolBarButton,
     setActiveToolBarButton,
+    setOpenArtifact,
   });
 
   // change cursor to be opposite as previous
@@ -522,6 +523,7 @@ function App() {
                 setSelectedEL: setSelectedEL,
                 setIsOpenSD: setIsOpenSD,
                 setElements: setElements,
+                setOpenArtifact: setOpenArtifact,
               }}
               data={{
                 repo: repo,
@@ -533,6 +535,7 @@ function App() {
                 search: search,
                 homePath: homePath,
                 branch: branch,
+                openArtifact: openArtifact,
               }}
             />
 

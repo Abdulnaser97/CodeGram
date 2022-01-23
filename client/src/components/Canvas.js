@@ -66,6 +66,7 @@ export function useReactFlowWrapper({
   selectedShapeName,
   activeToolBarButton,
   setActiveToolBarButton,
+  setOpenArtifact,
 }) {
   const { RFState } = useSelector((state) => {
     return { RFState: state.RFState };
@@ -218,6 +219,7 @@ export function useReactFlowWrapper({
         return;
       }
       dispatch(deleteNodeFromArray(elementsToRemove));
+      setOpenArtifact("");
       setElements((els) => removeElements(elementsToRemove, els));
     },
     [setElements, dispatch]
