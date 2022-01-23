@@ -105,7 +105,6 @@ function App() {
   const [cursor, setCursor] = useState("default");
   const [branch, setBranch] = useState("");
   const [repoBranches, setRepoBranches] = useState([]);
-  console.log(branch);
   // redux
   const dispatch = useDispatch();
 
@@ -162,12 +161,14 @@ function App() {
 
   // set new repo from drop down menu
   const handleRepoChange = (event) => {
-    // if (event.target.value){
-    // getBranchesList(event.target.value)
-    setElements(initialElements);
-    getBranchesList(event.target.value);
-    setRepo(event.target.value);
-    setBranch("");
+    // if (event.target.value){ 
+      // getBranchesList(event.target.value)
+      setElements(initialElements);
+      getBranchesList(event.target.value);
+      setRepo(event.target.value);
+      setSelectedEL(initialElements[0])
+      setBranch('')
+
     // }
   };
 
@@ -175,8 +176,9 @@ function App() {
   const handleBranchChange = (event) => {
     setElements(initialElements);
     dispatch(getRepoFiles(repo, event.target.value));
-    setBranch(event.target.value);
-  };
+    setSelectedEL(initialElements[0])
+    setBranch(event.target.value)
+  }
 
   const handleName = (event, newValue) => {
     setNodeName(event.target.value);
@@ -200,8 +202,8 @@ function App() {
 
   const renderBranches = () => {
     var branchChoiceItems = [];
-    if (repo && repoBranches != undefined && repoBranches.length !== 0) {
-      branchChoiceItems.push(<option value={""}>Branch</option>);
+    if (repo && repoBranches!= undefined && repoBranches.length !== 0) {
+      branchChoiceItems.push(<option value={""}>Select branch</option>);
       for (var i = 0; i < repoBranches.length; i++) {
         var name = repoBranches[i].name;
         branchChoiceItems.push(<option value={name}>{name}</option>);

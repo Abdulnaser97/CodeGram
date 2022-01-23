@@ -229,7 +229,13 @@ export function useReactFlowWrapper({
     setElements((els) =>
       addEdge(
         // TODO : lookinto styling floating edges  and smoothstep
-        { ...params, type: "floating", arrowHeadType: ArrowHeadType.Arrow },
+        { ...params, 
+          type: "floating", 
+          arrowHeadType: ArrowHeadType.Arrow, 
+          data:{
+            label: '', 
+            wiki:''
+          }},
         els
       )
     );
@@ -320,7 +326,11 @@ export function useReactFlowWrapper({
 
     if (e.keyCode === 8) {
       // backspace
-      if (selectedEL && document.activeElement.tagName !== "INPUT") {
+      if (
+        selectedEL && 
+        document.activeElement.tagName !== "INPUT" &&
+        document.activeElement.tagName !== "DIV" 
+        ) {
         onElementsRemove([selectedEL]);
       }
     }

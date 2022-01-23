@@ -1,15 +1,12 @@
 import "../App.css";
 import "./SourceDoc.css";
+
 // mui components
 import {
   Box,
   Typography,
-  Container,
   Tabs,
   Tab,
-  TextField,
-  Button,
-  responsiveFontSizes,
 } from "@mui/material";
 
 // third party dependecnies
@@ -27,9 +24,9 @@ import { connect } from "react-redux";
 // components
 import SourceDocFile from "./SourceDocFile";
 import TextEditor from "../components/TextEditor.js";
+import DocsTab from "./DocsTab";
 
 import axios from "axios";
-import { fontWeight } from "@mui/system";
 import { Resizable } from "re-resizable";
 import { errorNotification } from "../Redux/actions/notification";
 
@@ -68,7 +65,6 @@ function a11yProps(index) {
 
 function SourceDoc(props) {
   const state = useSelector((state) => state);
-  console.log(state)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
 
@@ -79,7 +75,7 @@ function SourceDoc(props) {
   const [path, setPath] = useState([]);
   const [pathComponent, setPathComponent] = useState(null);
   const [SDContent, setSDContent] = useState(null);
-  const [wiki, setWiki] = useState("");
+
   const [isEditing, setIsEditing] = useState("");
 
   // react flow functions
@@ -93,8 +89,8 @@ function SourceDoc(props) {
 
   const dispatch = useDispatch();
 
-  const { search, repository, fuse, homePath } = props.data;
-
+  const { search, repository, fuse, homePath, selectedEL } = props.data;
+  console.log(state)
   useEffect(() => {
     if (!state.repoFiles.repoFiles.isFetchingFiles) {
       props.functions.setOpenArtifact("");
@@ -102,7 +98,6 @@ function SourceDoc(props) {
       setPath([]);
       setPathComponent("...Loading");
       setSDContent("");
-      setWiki("");
       setIsEditing("");
     }
   }, [props.data.repo, props.data.branch]);
@@ -116,7 +111,7 @@ function SourceDoc(props) {
     ) {
       props.functions.setOpenArtifact(repository[props.data.selectedEL.data.path]);
     }
-  }, [props.data.selectedEL]);
+  }, [selectedEL]);
 
   // highlight node on canvas if exists -> may need optimizing. Indeed it needed :)
   useEffect(() => {
@@ -302,7 +297,7 @@ function SourceDoc(props) {
     ) {
       // calls node url to get file content
       axios
-        .get(props.data.selectedEL.data.url)
+        .get(selectedEL.data.url)
         .then(function (response) {
           // handle success
           setCurCode(response.data);
@@ -312,27 +307,7 @@ function SourceDoc(props) {
           console.log(error);
         });
     }
-  }, [props.data.selectedEL]);
-
-  const handleWikiChange = (data) => {
-    setWiki(data);
-  };
-
-  const saveWikiToNode = () => {
-    props.functions.setElements((els) =>
-      els.map((el) => {
-        if (el.id === props.data.selectedEL.id) {
-          // it's important that you create a new object here
-          // in order to notify react flow about the change
-          el.data = {
-            ...el.data,
-            wiki: wiki,
-          };
-        }
-        return el;
-      })
-    );
-  };
+  }, [selectedEL]);
 
   // search method called whenevr search var changes
   useEffect(() => {
@@ -347,8 +322,6 @@ function SourceDoc(props) {
   //if(props.data.isOpenSD){
   return (
     <div className={props.data.isOpenSD ? "openSD" : "hiddenSD"}>
-      {/* TODO: extract this compontnt to dashboard if team wants to do "terminal/key
-      board command idea on one side of screen */}
       <Resizable
         size={{ width, height }}
         className="sourceDocContainer"
@@ -434,111 +407,14 @@ function SourceDoc(props) {
           <pre> {`${curCode}`} </pre>
         </TabPanel>
         <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
-          <Box sx={{ disaply: "flex", flexDirection: "column" }}>
-            <div
-              className="navbar-button github"
-              style={{ position: "fixed", right: "1.5vw" }}
-              onClick={() => setIsEditing(!isEditing)}
-            >
-              <Box className="EditWikiButtonWrapper">
-                <Typography mx={1} my={0.8} fontSize=".8vw" fontWeight="Thin">
-                  {isEditing ? "Done" : "Edit"}
-                </Typography>
-              </Box>
-            </div>
-            {isEditing && (
-              <div
-                className="navbar-button github"
-                style={{ position: "fixed", right: "6vw" }}
-                onClick={() => {
-                  saveWikiToNode();
-                  setIsEditing(!isEditing);
-                }}
-              >
-                <Box className="EditWikiButtonWrapper">
-                  <Typography mx={1} my={0.8} fontSize=".8vw" fontWeight="Thin">
-                    Save
-                  </Typography>
-                </Box>
-              </div>
-            )}
-            <Typography variant="h5" fontWeight="bold">
-              {props.data.selectedEL.data
-                ? props.data.selectedEL.data.label
-                : ""}
-            </Typography>
-
-            <Typography variant="h6">
-              <a
-                href={
-                  props.data.selectedEL.data
-                    ? props.data.selectedEL.data.url
-                    : ""
-                }
-              >
-                {" "}
-                source code link{" "}
-              </a>
-            </Typography>
-            <Typography my={1} variant="h6">
-              Wiki
-            </Typography>
-            {isEditing ? (
-              <TextEditor
-                content={
-                  props.data.selectedEL.data
-                    ? props.data.selectedEL.data.wiki
-                    : ""
-                }
-                onChange={handleWikiChange}
-              />
-            ) : (
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: props.data.selectedEL.data
-                    ? props.data.selectedEL.data.wiki
-                    : "",
-                }}
-              />
-            )}
-            <Typography variant="h7" mt={2}>
-              Parent Nodes <br />
-              <Typography>
-                {" "}
-                {props.data.selectedEL.data
-                  ? props.data.selectedEL.data.parentNodes
-                  : ""}{" "}
-              </Typography>
-            </Typography>
-            <Typography variant="h7" mt={2}>
-              Child Nodes <br />
-              <Typography>
-                {" "}
-                {props.data.selectedEL.data
-                  ? props.data.selectedEL.data.childNodes
-                  : ""}{" "}
-              </Typography>
-            </Typography>
-            <Typography variant="h7" mt={2}>
-              Configuration Files <br />
-              <Typography>
-                {" "}
-                {props.data.selectedEL.data
-                  ? props.data.selectedEL.data.parentNodes
-                  : ""}{" "}
-              </Typography>
-            </Typography>
-            <Typography variant="h7" mt={2}>
-              Reference Docs <br />
-              {renderFiles()}
-              <Typography>
-                {" "}
-                {props.data.selectedEL.data
-                  ? props.data.selectedEL.data.documentation
-                  : ""}
-              </Typography>
-            </Typography>
-          </Box>
+            <DocsTab 
+            isEditing={isEditing} 
+            selectedEL={selectedEL} 
+            setIsEditing={setIsEditing}
+            renderFiles={renderFiles}
+            setElements={props.functions.setElements}
+            setSelectedEL={props.functions.setSelectedEL}
+            />
         </TabPanel>
       </Resizable>
     </div>

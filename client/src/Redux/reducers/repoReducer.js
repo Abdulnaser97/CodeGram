@@ -1,4 +1,4 @@
-import { ADD_NODE_TO_ARRAY, FETCH_REPO_FILES, STORE_REPO_FILES, UPDATE_REPO_FILE, DELETE_NODES_FROM_ARRAY } from "../constants";
+import { ADD_NODE_TO_ARRAY, FETCH_REPO_FILES, STORE_REPO_FILES, DELETE_NODES_FROM_ARRAY } from "../constants";
 
 const initialState = {
   repoFiles: [],

@@ -252,6 +252,7 @@ pre {
   border: 1px solid black;
   border-radius: 0.6vw;
   color: black;
+  z-index: 10;
 }
 
 .navbar-button:hover .EditWikiButtonWrapper {

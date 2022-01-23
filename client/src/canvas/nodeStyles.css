@@ -86,9 +86,6 @@
   box-shadow: -2px 4px 5px #dadadacd;
 }
 
-.CircleShape .node-label {
-  text-align: center;
-}
 
 .react-flow__node {
   border-width: 2px;
