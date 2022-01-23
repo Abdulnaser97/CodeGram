@@ -168,7 +168,7 @@ function SourceDoc(props) {
       }
       setSourceFiles(repoList);
     }
-  }, [SDContent, props.data.selectedEL, props.data.openArtifact]);
+  }, [SDContent, props.data.selectedEL, props.data.openArtifact, repository]);
 
   useEffect(() => {
     if (repository && homePath) {

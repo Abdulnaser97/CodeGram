@@ -58,7 +58,6 @@ export async function getRepo(repo, path, branch) {
 }
 
 export async function getBranches(repo) { 
-  console.log(repo)
   const data = {
     repo: repo,
   };
