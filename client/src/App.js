@@ -9,6 +9,7 @@ import {
   getRepos,
   save,
   getUser,
+  getBranches,
 } from "./api/apiClient";
 import { connect, useSelector } from "react-redux";
 import {
@@ -102,7 +103,9 @@ function App() {
   const [openArtifact, setOpenArtifact] = useState("");
   const [search, setSearch] = useState("search");
   const [cursor, setCursor] = useState("default");
-
+  const [branch, setBranch] = useState("");
+  const [repoBranches, setRepoBranches] = useState([]);
+  console.log(branch);
   // redux
   const dispatch = useDispatch();
 
@@ -147,14 +150,31 @@ function App() {
   // get all repos in users account
   const getRepoList = async () => {
     const userRepos = await getRepos();
-    setRepos(userRepos);
+    setRepos(userRepos.data);
+  };
+
+  // get all branches in repo
+  const getBranchesList = async (repo) => {
+    const repoBranches = await getBranches(repo);
+    setRepoBranches(repoBranches.data);
   };
 
   // set new repo from drop down menu
   const handleRepoChange = (event) => {
+    // if (event.target.value){
+    // getBranchesList(event.target.value)
     setElements(initialElements);
-    dispatch(getRepoFiles(event.target.value));
+    getBranchesList(event.target.value);
     setRepo(event.target.value);
+    setBranch("");
+    // }
+  };
+
+  // set new branch from drop down menu
+  const handleBranchChange = (event) => {
+    setElements(initialElements);
+    dispatch(getRepoFiles(repo, event.target.value));
+    setBranch(event.target.value);
   };
 
   const handleName = (event, newValue) => {
@@ -162,14 +182,12 @@ function App() {
   };
 
   const renderRepos = () => {
-    var repoNames = [];
     var repoChoiceItems = [];
 
-    if (repos.length !== 0 && repos.data !== undefined) {
+    if (repos.length !== 0 && repos !== undefined) {
       repoChoiceItems.push(<option value={""}>Repository</option>);
-      for (var i = 0; i < repos.data.length; i++) {
-        var name = repos.data[i].name;
-        repoNames.push(name);
+      for (var i = 0; i < repos.length; i++) {
+        var name = repos[i].name;
         repoChoiceItems.push(<option value={name}>{name}</option>);
       }
     } else {
@@ -177,6 +195,21 @@ function App() {
     }
 
     return repoChoiceItems;
+  };
+
+  const renderBranches = () => {
+    var branchChoiceItems = [];
+    if (repo && repoBranches != undefined && repoBranches.length !== 0) {
+      branchChoiceItems.push(<option value={""}>Branch</option>);
+      for (var i = 0; i < repoBranches.length; i++) {
+        var name = repoBranches[i].name;
+        branchChoiceItems.push(<option value={name}>{name}</option>);
+      }
+    } else {
+      return <option value="">Choose repo to see branches</option>;
+    }
+
+    return branchChoiceItems;
   };
 
   const getPRContent = async () => {
@@ -212,7 +245,7 @@ function App() {
   const onSave = useCallback(async () => {
     if (rfInstance) {
       const flow = rfInstance.toObject();
-      const result = await save(repo, flow);
+      const result = await save(repo, branch, flow);
       console.log(result);
       if (result.status === 200 || result.status === 201) {
         dispatch(successNotification(`Successfully saved diagram to ${repo}`));
@@ -220,21 +253,26 @@ function App() {
         dispatch(errorNotification(`Error saving diagram to github repo`));
       }
     }
-  }, [repo, rfInstance]);
+  }, [repo, rfInstance, branch]);
 
   /** useEffect Hools ************************************************* useEffect Hooks *****************************************************************/
 
+  // // Load saved diagram when new repo is selected
+  // useEffect(() => {
+  //   repo && getBranchesList(repo)
+  // }, [repo]);
+
   // Load saved diagram when new repo is selected
   useEffect(() => {
-    if (repo && !repoFiles.isFetchingFiles && repoFiles.repoFiles) {
+    if (repo && !repoFiles.isFetchingFiles && repoFiles.repoFiles && branch) {
       dispatch(loadDiagram(repoFiles.repoFiles));
     }
-  }, [repo, dispatch, repoFiles.isFetchingFiles]);
+  }, [repo, dispatch, repoFiles.isFetchingFiles, branch]);
 
   // create home path, and search engine after all loads
   useEffect(() => {
     try {
-      if (repo && repository && !repoFiles.isFetchingFiles) {
+      if (repo && repository && !repoFiles.isFetchingFiles && branch) {
         var homeDir = [];
 
         // push home directory files into home path as array
@@ -269,7 +307,7 @@ function App() {
       console.log(err);
       dispatch(errorNotification(`Error loading repository ${repo}`));
     }
-  }, [repoFiles.isFetchingFiles, isLoadingDiagram]);
+  }, [repoFiles.isFetchingFiles, isLoadingDiagram, branch]);
 
   // Retrieves user details once authenticated
   useEffect(() => {
@@ -355,9 +393,40 @@ function App() {
                         background: "transparent",
                         appearance: "none",
                         cursor: "pointer",
+                        boxShadow: !repo ? "-2.5px 4px 5px #c9c9c9" : "",
                       }}
                     >
                       {renderRepos()}
+                    </select>
+                  </FormControl>
+                </Box>
+
+                <Box
+                  sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}
+                >
+                  <FormControl fullWidth variant="outlined">
+                    <select
+                      className=""
+                      value={branch}
+                      label="Branch"
+                      onChange={handleBranchChange}
+                      placeholder="Choose your repository"
+                      style={{
+                        borderRadius: "0.6vw",
+                        "padding-left": "20px",
+                        "padding-right": "20px",
+                        outline: "none",
+                        height: "4vh",
+                        border: "1px solid #ffaea6",
+                        color: "#FFAEA6",
+                        background: "transparent",
+                        appearance: "none",
+                        cursor: "pointer",
+                        boxShadow:
+                          repo && !branch ? "-2.5px 4px 5px #c9c9c9" : "",
+                      }}
+                    >
+                      {renderBranches()}
                     </select>
                   </FormControl>
                 </Box>
@@ -463,6 +532,7 @@ function App() {
                 repository: repository,
                 search: search,
                 homePath: homePath,
+                branch: branch,
               }}
             />
 

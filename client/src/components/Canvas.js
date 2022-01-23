@@ -318,7 +318,7 @@ export function useReactFlowWrapper({
 
     if (e.keyCode === 8) {
       // backspace
-      if (selectedEL) {
+      if (selectedEL && document.activeElement.tagName !== "INPUT") {
         onElementsRemove([selectedEL]);
       }
     }
