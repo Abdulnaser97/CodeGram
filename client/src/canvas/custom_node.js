@@ -11,9 +11,10 @@ const targetHandleStyle = {
   borderRadius: 5,
   background: "transparent",
   border: "transparent",
-  zIndex: 999,
+  zIndex: -1,
   width: "inherit",
   height: "inherit",
+  top: "0px",
 };
 
 const sourceHandleStyle = {
@@ -38,6 +39,7 @@ const CustomNodeComponent = (props) => {
     `${Math.min(width, height) / 12}px`
   );
   const [selected, setSelected] = useState("");
+
   useEffect(() => {
     if (props.selected) {
       if (props.data.type === "FileNode") setSelected("highlightedNode");
@@ -70,7 +72,9 @@ const CustomNodeComponent = (props) => {
 
         ref.className = `${props.data.type}`;
       }}
-      style={{ "border-radius": borderRadius }}
+      style={{
+        "border-radius": borderRadius,
+      }}
     >
       {
         <Typography
@@ -112,39 +116,51 @@ const CustomNodeComponent = (props) => {
           "z-index": `${props.data.floatTargetHandle ? 9999 : -1}`,
         }}
       />
-      {/* Only render handles when node is selected */}
-      {true && (
-        <>
-          <Handle
-            className="handle source"
-            id={`top-handle-${props.id}`}
-            type="source"
-            position="top"
-            style={{ ...sourceHandleStyle, top: "-20px" }}
-          />
-          <Handle
-            className="handle source"
-            id={`bottom-handle-${props.id}`}
-            type="source"
-            position="bottom"
-            style={{ ...sourceHandleStyle, bottom: "-20px" }}
-          />
-          <Handle
-            className="handle source"
-            id={`left-handle-${props.id}`}
-            type="source"
-            position="left"
-            style={{ ...sourceHandleStyle, left: "-20px" }}
-          />
-          <Handle
-            className="handle source"
-            id={`right-handle-${props.id}`}
-            type="source"
-            position="right"
-            style={{ ...sourceHandleStyle, right: "-20px" }}
-          />
-        </>
-      )}
+      {/* Only display handles when node is selected */}
+      <Handle
+        className="handle source"
+        id={`top-handle-${props.id}`}
+        type="source"
+        position="top"
+        style={{
+          ...sourceHandleStyle,
+          top: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
+      <Handle
+        className="handle source"
+        id={`bottom-handle-${props.id}`}
+        type="source"
+        position="bottom"
+        style={{
+          ...sourceHandleStyle,
+          bottom: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
+      <Handle
+        className="handle source"
+        id={`left-handle-${props.id}`}
+        type="source"
+        position="left"
+        style={{
+          ...sourceHandleStyle,
+          left: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
+      <Handle
+        className="handle source"
+        id={`right-handle-${props.id}`}
+        type="source"
+        position="right"
+        style={{
+          ...sourceHandleStyle,
+          right: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
     </Resizable>
   );
 };
@@ -195,23 +211,40 @@ const WrapperNodeComponent = (props) => {
       style={{ "border-radius": borderRadius }}
     >
       <div className="node-label corner">
-        {props.data.label}
-        <input
-          placeholder="wrapper"
-          // onChange={handleSearch}
-          // onKeyPress={handleSearch}
-          style={{
-            "z-index": 0,
-            border: "none",
-            fontSize: "100%",
-            outline: "none",
-            width: "100%",
-            background: "transparent",
-            fontFamily: theme.typography.fontFamily,
-            fontWeight: theme.typography.fontWeightMedium,
-            color: theme.palette.primary.pinkerPink,
-          }}
-        />
+        {props.data.label ? (
+          <div
+            style={{
+              "z-index": 0,
+              border: "none",
+              fontSize: "100%",
+              outline: "none",
+              width: "100%",
+              background: "transparent",
+              fontFamily: theme.typography.fontFamily,
+              fontWeight: theme.typography.fontWeightMedium,
+              color: theme.palette.primary.pinkerPink,
+            }}
+          >
+            {props.data.label}
+          </div>
+        ) : (
+          <input
+            placeholder="wrapper"
+            // onChange={handleSearch}
+            // onKeyPress={handleSearch}
+            style={{
+              "z-index": 0,
+              border: "none",
+              fontSize: "100%",
+              outline: "none",
+              width: "100%",
+              background: "transparent",
+              fontFamily: theme.typography.fontFamily,
+              fontWeight: theme.typography.fontWeightMedium,
+              color: theme.palette.primary.pinkerPink,
+            }}
+          />
+        )}
       </div>
       <Handle
         className="handle target"
@@ -222,40 +255,51 @@ const WrapperNodeComponent = (props) => {
           "z-index": `${props.data.floatTargetHandle ? 9999 : -1}`,
         }}
       />
-
-      {/* Only render handles when node is selected */}
-      {true && (
-        <>
-          <Handle
-            className="handle source"
-            id={`top-handle-${props.id}`}
-            type="source"
-            position="top"
-            style={{ ...sourceHandleStyle, top: "-20px" }}
-          />
-          <Handle
-            className="handle source"
-            id={`bottom-handle-${props.id}`}
-            type="source"
-            position="bottom"
-            style={{ ...sourceHandleStyle, bottom: "-20px" }}
-          />
-          <Handle
-            className="handle source"
-            id={`left-handle-${props.id}`}
-            type="source"
-            position="left"
-            style={{ ...sourceHandleStyle, left: "-20px" }}
-          />
-          <Handle
-            className="handle source"
-            id={`right-handle-${props.id}`}
-            type="source"
-            position="right"
-            style={{ ...sourceHandleStyle, right: "-20px" }}
-          />
-        </>
-      )}
+      {/* Only display handles when node is selected */}
+      <Handle
+        className="handle source"
+        id={`top-handle-${props.id}`}
+        type="source"
+        position="top"
+        style={{
+          ...sourceHandleStyle,
+          top: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
+      <Handle
+        className="handle source"
+        id={`bottom-handle-${props.id}`}
+        type="source"
+        position="bottom"
+        style={{
+          ...sourceHandleStyle,
+          bottom: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
+      <Handle
+        className="handle source"
+        id={`left-handle-${props.id}`}
+        type="source"
+        position="left"
+        style={{
+          ...sourceHandleStyle,
+          left: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
+      <Handle
+        className="handle source"
+        id={`right-handle-${props.id}`}
+        type="source"
+        position="right"
+        style={{
+          ...sourceHandleStyle,
+          right: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
     </Resizable>
   );
 };
@@ -306,23 +350,26 @@ const FolderNodeComponent = (props) => {
       style={{ "border-radius": borderRadius }}
     >
       <div className="node-label corner">
-        {props.data.label}
-        <input
-          placeholder="wrapper"
-          // onChange={handleSearch}
-          // onKeyPress={handleSearch}
-          style={{
-            "z-index": 0,
-            border: "none",
-            fontSize: "70%",
-            outline: "none",
-            width: "100%",
-            background: "transparent",
-            fontFamily: theme.typography.fontFamily,
-            fontWeight: theme.typography.fontWeightRegular,
-            color: theme.palette.primary.darkestGrey,
-          }}
-        />
+        {props.data.label ? (
+          <>{props.data.label}</>
+        ) : (
+          <input
+            placeholder="wrapper"
+            // onChange={handleSearch}
+            // onKeyPress={handleSearch}
+            style={{
+              "z-index": 0,
+              border: "none",
+              fontSize: "70%",
+              outline: "none",
+              width: "100%",
+              background: "transparent",
+              fontFamily: theme.typography.fontFamily,
+              fontWeight: theme.typography.fontWeightRegular,
+              color: theme.palette.primary.darkestGrey,
+            }}
+          />
+        )}
       </div>
       <Handle
         className="handle target"
@@ -333,40 +380,50 @@ const FolderNodeComponent = (props) => {
           "z-index": `${props.data.floatTargetHandle ? 9999 : -1}`,
         }}
       />
-
-      {/* Only render handles when node is selected */}
-      {true && (
-        <>
-          <Handle
-            className="handle source"
-            id={`top-handle-${props.id}`}
-            type="source"
-            position="top"
-            style={{ ...sourceHandleStyle, top: "-20px" }}
-          />
-          <Handle
-            className="handle source"
-            id={`bottom-handle-${props.id}`}
-            type="source"
-            position="bottom"
-            style={{ ...sourceHandleStyle, bottom: "-20px" }}
-          />
-          <Handle
-            className="handle source"
-            id={`left-handle-${props.id}`}
-            type="source"
-            position="left"
-            style={{ ...sourceHandleStyle, left: "-20px" }}
-          />
-          <Handle
-            className="handle source"
-            id={`right-handle-${props.id}`}
-            type="source"
-            position="right"
-            style={{ ...sourceHandleStyle, right: "-20px" }}
-          />
-        </>
-      )}
+      <Handle
+        className="handle source"
+        id={`top-handle-${props.id}`}
+        type="source"
+        position="top"
+        style={{
+          ...sourceHandleStyle,
+          top: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
+      <Handle
+        className="handle source"
+        id={`bottom-handle-${props.id}`}
+        type="source"
+        position="bottom"
+        style={{
+          ...sourceHandleStyle,
+          bottom: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
+      <Handle
+        className="handle source"
+        id={`left-handle-${props.id}`}
+        type="source"
+        position="left"
+        style={{
+          ...sourceHandleStyle,
+          left: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
+      <Handle
+        className="handle source"
+        id={`right-handle-${props.id}`}
+        type="source"
+        position="right"
+        style={{
+          ...sourceHandleStyle,
+          right: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
     </Resizable>
   );
 };

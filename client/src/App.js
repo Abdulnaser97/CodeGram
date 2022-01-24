@@ -20,11 +20,9 @@ import {
   Toolbar,
   MenuItem,
   FormControl,
-  Select,
   circularProgressClasses,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
-import GitHubIcon from "@mui/icons-material/GitHub";
 
 import { useDispatch } from "react-redux";
 import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
@@ -34,11 +32,6 @@ import { theme } from "./Themes";
 import { loadDiagram } from "./Redux/actions/loadDiagram";
 import { storeRepoFiles } from "./Redux/actions/repoFiles";
 import SourceDoc from "./SourceDoc/SourceDoc";
-import { ReactFlowProvider } from "react-flow-renderer";
-import {
-  CustomNodeComponent,
-  WrapperNodeComponent,
-} from "./canvas/custom_node";
 
 import Fuse from "fuse.js";
 
@@ -105,7 +98,6 @@ function App() {
   const [cursor, setCursor] = useState("default");
   const [branch, setBranch] = useState("");
   const [repoBranches, setRepoBranches] = useState([]);
-  console.log(branch);
   // redux
   const dispatch = useDispatch();
 
@@ -135,6 +127,7 @@ function App() {
     selectedShapeName,
     activeToolBarButton,
     setActiveToolBarButton,
+    setOpenArtifact,
   });
 
   // change cursor to be opposite as previous
@@ -166,7 +159,9 @@ function App() {
     setElements(initialElements);
     getBranchesList(event.target.value);
     setRepo(event.target.value);
+    setSelectedEL(initialElements[0]);
     setBranch("");
+
     // }
   };
 
@@ -174,6 +169,7 @@ function App() {
   const handleBranchChange = (event) => {
     setElements(initialElements);
     dispatch(getRepoFiles(repo, event.target.value));
+    setSelectedEL(initialElements[0]);
     setBranch(event.target.value);
   };
 
@@ -200,7 +196,7 @@ function App() {
   const renderBranches = () => {
     var branchChoiceItems = [];
     if (repo && repoBranches != undefined && repoBranches.length !== 0) {
-      branchChoiceItems.push(<option value={""}>Branch</option>);
+      branchChoiceItems.push(<option value={""}>Select branch</option>);
       for (var i = 0; i < repoBranches.length; i++) {
         var name = repoBranches[i].name;
         branchChoiceItems.push(<option value={name}>{name}</option>);
@@ -334,211 +330,205 @@ function App() {
     return (
       <ThemeProvider theme={theme}>
         <NotifError />
-        <ReactFlowProvider>
-          <div className="App" style={{ cursor: cursor }}>
-            {!isOpenSD && (
-              <div
-                className="SourceDocButtonWrapper"
-                onClick={() => setIsOpenSD((prevIsOpenSD) => !prevIsOpenSD)}
-              >
-                <SourceDocButton />
-              </div>
-            )}
-            {/* move app bar to its own navigation component  */}
-            <AppBar
-              elevation={0}
-              position="sticky"
-              sx={{
-                backgroundColor: "#f7f7f7",
-                borderColor: "black",
-                borderWidth: "1",
-                height: "8vh",
-              }}
+
+        <div className="App" style={{ cursor: cursor }}>
+          {!isOpenSD && (
+            <div
+              className="SourceDocButtonWrapper"
+              onClick={() => setIsOpenSD((prevIsOpenSD) => !prevIsOpenSD)}
             >
-              <Toolbar>
-                <MenuItem
-                  sx={{ flexGrow: 3 }}
+              <SourceDocButton />
+            </div>
+          )}
+          {/* move app bar to its own navigation component  */}
+          <AppBar
+            elevation={0}
+            position="sticky"
+            sx={{
+              backgroundColor: "#f7f7f7",
+              borderColor: "black",
+              borderWidth: "1",
+              height: "8vh",
+            }}
+          >
+            <Toolbar>
+              <MenuItem
+                sx={{ flexGrow: 3 }}
+                style={{ backgroundColor: "transparent" }}
+              >
+                <div className="LogoWrapper">
+                  <LogoTopNav className="LogoTopNav" />
+                  <h2
+                    style={{
+                      fontFamily: "Poppins-Thin",
+                      color: "#FFAEA6",
+                    }}
+                  >
+                    CodeGram
+                  </h2>
+                </div>
+              </MenuItem>
+              <Box sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}>
+                <FormControl fullWidth variant="outlined">
+                  <select
+                    className=""
+                    value={repo}
+                    label="Repository"
+                    onChange={handleRepoChange}
+                    placeholder="Choose your repository"
+                    style={{
+                      borderRadius: "0.6vw",
+                      "padding-left": "20px",
+                      "padding-right": "20px",
+                      outline: "none",
+                      height: "4vh",
+                      border: "1px solid #ffaea6",
+                      color: "#FFAEA6",
+                      background: "transparent",
+                      appearance: "none",
+                      cursor: "pointer",
+                      boxShadow: !repo ? "-2.5px 4px 5px #c9c9c9" : "",
+                    }}
+                  >
+                    {renderRepos()}
+                  </select>
+                </FormControl>
+              </Box>
+
+              <Box sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}>
+                <FormControl fullWidth variant="outlined">
+                  <select
+                    className=""
+                    value={branch}
+                    label="Branch"
+                    onChange={handleBranchChange}
+                    placeholder="Choose your repository"
+                    style={{
+                      borderRadius: "0.6vw",
+                      "padding-left": "20px",
+                      "padding-right": "20px",
+                      outline: "none",
+                      height: "4vh",
+                      border: "1px solid #ffaea6",
+                      color: "#FFAEA6",
+                      background: "transparent",
+                      appearance: "none",
+                      cursor: "pointer",
+                      boxShadow:
+                        repo && !branch ? "-2.5px 4px 5px #c9c9c9" : "",
+                    }}
+                  >
+                    {renderBranches()}
+                  </select>
+                </FormControl>
+              </Box>
+
+              <Box mx={2} sx={{ "box-shadow": 0 }}>
+                <div
+                  className="navbar-button github"
                   style={{ backgroundColor: "transparent" }}
+                  onClick={() => onSave()}
                 >
-                  <div className="LogoWrapper">
-                    <LogoTopNav className="LogoTopNav" />
-                    <h2
-                      style={{
-                        fontFamily: "Poppins-Thin",
-                        color: "#FFAEA6",
-                      }}
+                  <Box className="SaveButtonWrapper">
+                    <Typography
+                      mx={1}
+                      my={0.8}
+                      fontSize=".8vw"
+                      fontWeight="Thin"
+                      color="primary"
                     >
-                      CodeGram
-                    </h2>
-                  </div>
-                </MenuItem>
-                <Box
-                  sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}
-                >
-                  <FormControl fullWidth variant="outlined">
-                    <select
-                      className=""
-                      value={repo}
-                      label="Repository"
-                      onChange={handleRepoChange}
-                      placeholder="Choose your repository"
-                      style={{
-                        borderRadius: "0.6vw",
-                        "padding-left": "20px",
-                        "padding-right": "20px",
-                        outline: "none",
-                        height: "4vh",
-                        border: "1px solid #ffaea6",
-                        color: "#FFAEA6",
-                        background: "transparent",
-                        appearance: "none",
-                        cursor: "pointer",
-                        boxShadow: !repo ? "-2.5px 4px 5px #c9c9c9" : "",
-                      }}
-                    >
-                      {renderRepos()}
-                    </select>
-                  </FormControl>
-                </Box>
+                      Save
+                    </Typography>
+                  </Box>
+                </div>
+              </Box>
 
-                <Box
-                  sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}
-                >
-                  <FormControl fullWidth variant="outlined">
-                    <select
-                      className=""
-                      value={branch}
-                      label="Branch"
-                      onChange={handleBranchChange}
-                      placeholder="Choose your repository"
-                      style={{
-                        borderRadius: "0.6vw",
-                        "padding-left": "20px",
-                        "padding-right": "20px",
-                        outline: "none",
-                        height: "4vh",
-                        border: "1px solid #ffaea6",
-                        color: "#FFAEA6",
-                        background: "transparent",
-                        appearance: "none",
-                        cursor: "pointer",
-                        boxShadow:
-                          repo && !branch ? "-2.5px 4px 5px #c9c9c9" : "",
-                      }}
-                    >
-                      {renderBranches()}
-                    </select>
-                  </FormControl>
-                </Box>
+              <Box sx={{ "box-shadow": 0 }}>
+                <div className="navbar-button github" onClick={() => logout()}>
+                  <LogoutIcon color="primary"> </LogoutIcon>
+                </div>
+              </Box>
+            </Toolbar>
+          </AppBar>
+          {/* everything from here down can be in a cashboard component */}
 
-                <Box mx={2} sx={{ "box-shadow": 0 }}>
-                  <div
-                    className="navbar-button github"
-                    style={{ backgroundColor: "transparent" }}
-                    onClick={() => onSave()}
-                  >
-                    <Box className="SaveButtonWrapper">
-                      <Typography
-                        mx={1}
-                        my={0.8}
-                        fontSize=".8vw"
-                        fontWeight="Thin"
-                        color="primary"
-                      >
-                        Save
-                      </Typography>
-                    </Box>
-                  </div>
-                </Box>
-
-                <Box sx={{ "box-shadow": 0 }}>
-                  <div
-                    className="navbar-button github"
-                    onClick={() => logout()}
-                  >
-                    <LogoutIcon color="primary"> </LogoutIcon>
-                  </div>
-                </Box>
-              </Toolbar>
-            </AppBar>
-            {/* everything from here down can be in a cashboard component */}
+          <Typography
+            className="welcomeMessage"
+            fontWeight="light"
+            color="primary.grey"
+            fontWeight={"2vh"}
+          >
+            Welcome to CodeGram demo {user.username}!
+          </Typography>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              position: "fixed",
+              top: "8vh",
+              right: "2vw",
+              width: "40vw",
+            }}
+          >
+            <div className="SourceDocMinimize" />
 
             <Typography
-              className="welcomeMessage"
-              fontWeight="light"
-              color="primary.grey"
-              fontWeight={"2vh"}
+              fontSize={"1vw"}
+              color={"primary.main"}
+              fontWeight={"medium"}
+              mx={1}
+              my={0}
             >
-              Welcome to CodeGram demo {user.username}!
+              Search >
             </Typography>
-            <div
+
+            <input
+              placeholder="Search Repo Content"
+              onChange={handleSearch}
+              onKeyPress={handleSearch}
               style={{
-                display: "flex",
-                flexDirection: "row",
-                position: "fixed",
-                top: "8vh",
-                right: "2vw",
-                width: "40vw",
-              }}
-            >
-              <div className="SourceDocMinimize" />
-
-              <Typography
-                fontSize={"1vw"}
-                color={"primary.main"}
-                fontWeight={"medium"}
-                mx={1}
-                my={0}
-              >
-                Search >
-              </Typography>
-
-              <input
-                placeholder="Search Repo Content"
-                onChange={handleSearch}
-                onKeyPress={handleSearch}
-                style={{
-                  "z-index": 0,
-                  border: "none",
-                  backgroundColor: "rgb(247, 247, 247)",
-                  boxShadow: 6,
-                  color: "grey",
-                  fontSize: "1vw",
-                  outline: "none",
-                  width: "65%",
-                  fontWeight: theme.typography.fontWeightMedium,
-                }}
-              />
-            </div>
-            {toolBarRender}
-            <Container className="canvasContainer">{render}</Container>
-            <SourceDoc
-              functions={{
-                addNode: addNode,
-                deleteNode: onElementsRemove, //TODO: Add deleteNode function to DELETE NODE button(?)
-                printNodesArr: printNodesArr,
-                getPRContent: getPRContent,
-                handleName: handleName,
-                setSelectedEL: setSelectedEL,
-                setIsOpenSD: setIsOpenSD,
-                setElements: setElements,
-              }}
-              data={{
-                repo: repo,
-                repoData: repoData,
-                selectedEL: selectedEL,
-                isOpenSD: isOpenSD,
-                fuse: fuse,
-                repository: repository,
-                search: search,
-                homePath: homePath,
-                branch: branch,
+                "z-index": 0,
+                border: "none",
+                backgroundColor: "rgb(247, 247, 247)",
+                boxShadow: 6,
+                color: "grey",
+                fontSize: "1vw",
+                outline: "none",
+                width: "65%",
+                fontWeight: theme.typography.fontWeightMedium,
               }}
             />
-
-            <NotifDiagramLoaded />
           </div>
-        </ReactFlowProvider>
+          {toolBarRender}
+          <Container className="canvasContainer">{render}</Container>
+          <SourceDoc
+            functions={{
+              addNode: addNode,
+              deleteNode: onElementsRemove, //TODO: Add deleteNode function to DELETE NODE button(?)
+              printNodesArr: printNodesArr,
+              getPRContent: getPRContent,
+              handleName: handleName,
+              setSelectedEL: setSelectedEL,
+              setIsOpenSD: setIsOpenSD,
+              setElements: setElements,
+              setOpenArtifact: setOpenArtifact,
+            }}
+            data={{
+              repo: repo,
+              repoData: repoData,
+              selectedEL: selectedEL,
+              isOpenSD: isOpenSD,
+              fuse: fuse,
+              repository: repository,
+              search: search,
+              homePath: homePath,
+              branch: branch,
+              openArtifact: openArtifact,
+            }}
+          />
+
+          <NotifDiagramLoaded />
+        </div>
       </ThemeProvider>
     );
   } else {

@@ -58,7 +58,6 @@ export async function getRepo(repo, path, branch) {
 }
 
 export async function getBranches(repo) { 
-  console.log(repo)
   const data = {
     repo: repo,
   };
@@ -83,7 +82,6 @@ export async function getUser() {
 }
 
 export async function save(repo, branch, content) {
-  console.log(branch)
   const data = {
     repo: repo,
     branch: branch, 

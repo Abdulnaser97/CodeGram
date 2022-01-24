@@ -1,15 +1,15 @@
 import {
   ADD_NODE_TO_ARRAY,
-  SAVE_NODES_TO_FILE,
   DELETE_NODES_FROM_ARRAY,
   LOAD_DIAGRAM_TO_STORE,
-  FETCH_REPO_FILES
+  FETCH_REPO_FILES,
+  UPDATE_NODE_Z_INDEX,
 } from "../constants";
-
 
 const initialState = {
   nodesArr: [],
-  isLoadingDiagram: true 
+  isLoadingDiagram: true,
+  nodesZIndex: [],
 };
 
 export const nodesReducer = (state = initialState, action) => {
@@ -18,24 +18,33 @@ export const nodesReducer = (state = initialState, action) => {
       return {
         ...state,
         nodesArr: [...state.nodesArr, action.payload],
+        nodesZIndex: [...state.nodesZIndex, action.payload.id],
       };
     case DELETE_NODES_FROM_ARRAY:
       return {
         ...state,
-        nodesArr: state.nodesArr.filter((node) => !(action.nodes.includes(node))),
+        // nodesArr: state.nodesArr.filter((node) => !(action.nodes.includes(node))),
+        nodesArr: action.nodesArr,
+        nodesZIndex: action.nodesZIndex,
+      };
+    case UPDATE_NODE_Z_INDEX:
+      return {
+        ...state,
+        nodesZIndex: action.nodesZIndex,
       };
     case LOAD_DIAGRAM_TO_STORE:
       return {
         ...state,
-        nodesArr: action.payload.elements,
-        isLoadingDiagram: false, 
+        nodesArr: action.payload.nodes.elements,
+        nodesZIndex: action.payload.nodesZIndex,
+        isLoadingDiagram: false,
       };
     case FETCH_REPO_FILES:
       state.isFetchingFiles = true;
       return {
         ...state,
         isLoadingDiagram: true,
-        nodesArr:[]
+        nodesArr: [],
       };
     default:
       return state;
@@ -51,7 +60,7 @@ export const RFStateReducer = (state = RFinitialState, action) => {
     case LOAD_DIAGRAM_TO_STORE:
       return {
         ...state,
-        RFState: action.payload,
+        RFState: action.payload.nodes,
       };
     default:
       return state;

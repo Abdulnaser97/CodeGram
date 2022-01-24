@@ -1,16 +1,8 @@
 import "../App.css";
 import "./SourceDoc.css";
+
 // mui components
-import {
-  Box,
-  Typography,
-  Container,
-  Tabs,
-  Tab,
-  TextField,
-  Button,
-  responsiveFontSizes,
-} from "@mui/material";
+import { Box, Typography, Tabs, Tab } from "@mui/material";
 
 // third party dependecnies
 import PropTypes from "prop-types";
@@ -27,9 +19,9 @@ import { connect } from "react-redux";
 // components
 import SourceDocFile from "./SourceDocFile";
 import TextEditor from "../components/TextEditor.js";
+import DocsTab from "./DocsTab";
 
 import axios from "axios";
-import { fontWeight } from "@mui/system";
 import { Resizable } from "re-resizable";
 import { errorNotification } from "../Redux/actions/notification";
 
@@ -68,19 +60,17 @@ function a11yProps(index) {
 
 function SourceDoc(props) {
   const state = useSelector((state) => state);
-  console.log(state)
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
 
   const [curCode, setCurCode] = useState("Select a nnode to view file");
 
   // state for selected file
-  const [openArtifact, setOpenArtifact] = useState("");
   const [sourceFiles, setSourceFiles] = useState(null);
   const [path, setPath] = useState([]);
   const [pathComponent, setPathComponent] = useState(null);
   const [SDContent, setSDContent] = useState(null);
-  const [wiki, setWiki] = useState("");
+
   const [isEditing, setIsEditing] = useState("");
 
   // react flow functions
@@ -94,16 +84,14 @@ function SourceDoc(props) {
 
   const dispatch = useDispatch();
 
-  const { search, repository, fuse, homePath } = props.data;
-
+  const { search, repository, fuse, homePath, selectedEL } = props.data;
   useEffect(() => {
     if (!state.repoFiles.repoFiles.isFetchingFiles) {
-      setOpenArtifact("");
+      props.functions.setOpenArtifact("");
       setSourceFiles(null);
       setPath([]);
       setPathComponent("...Loading");
       setSDContent("");
-      setWiki("");
       setIsEditing("");
     }
   }, [props.data.repo, props.data.branch]);
@@ -115,16 +103,18 @@ function SourceDoc(props) {
       props.data.selectedEL.data &&
       props.data.selectedEL.data.path
     ) {
-      setOpenArtifact(repository[props.data.selectedEL.data.path]);
+      props.functions.setOpenArtifact(
+        repository[props.data.selectedEL.data.path]
+      );
     }
-  }, [props.data.selectedEL]);
+  }, [selectedEL]);
 
   // highlight node on canvas if exists -> may need optimizing. Indeed it needed :)
   useEffect(() => {
     try {
-      if (openArtifact) {
+      if (props.data.openArtifact) {
         var el = state.nodes.nodesArr.find((node) =>
-          node.data ? node.data.path === openArtifact.path : false
+          node.data ? node.data.path === props.data.openArtifact.path : false
         );
         if (el) {
           setSelectedElements(el);
@@ -137,7 +127,7 @@ function SourceDoc(props) {
       console.log(e);
       dispatch(errorNotification(`Error loading repo file`));
     }
-  }, [openArtifact]);
+  }, [props.data.openArtifact]);
 
   // set content of sourceDoc
   useEffect(() => {
@@ -150,9 +140,9 @@ function SourceDoc(props) {
         repoList.push(
           <SourceDocFile
             addNode={props.functions.addNode}
-            setOpenArtifact={setOpenArtifact}
+            setOpenArtifact={props.functions.setOpenArtifact}
             file={repository[value[1].path]}
-            openArtifact={openArtifact}
+            openArtifact={props.data.openArtifact}
             selectedEL={props.data.selectedEL}
           />
         );
@@ -165,49 +155,49 @@ function SourceDoc(props) {
         repoList.push(
           <SourceDocFile
             addNode={props.functions.addNode}
-            setOpenArtifact={setOpenArtifact}
+            setOpenArtifact={props.functions.setOpenArtifact}
             file={repository[f.path]}
-            openArtifact={openArtifact}
+            openArtifact={props.data.openArtifact}
             selectedEL={props.data.selectedEL}
           />
         );
       }
       setSourceFiles(repoList);
     }
-  }, [SDContent, props.data.selectedEL, openArtifact]);
+  }, [SDContent, props.data.selectedEL, props.data.openArtifact, repository]);
 
   useEffect(() => {
     if (repository && homePath) {
-      setOpenArtifact(homePath);
+      props.functions.setOpenArtifact(homePath);
       setPath([homePath]);
     }
   }, [homePath]);
 
   // logic for updating our path variable whenever the selected File changes
   useEffect(() => {
-    if (openArtifact && repository) {
+    if (props.data.openArtifact && repository) {
       // if new openArtifact iis on the path already
-      if (path.includes(openArtifact)) {
+      if (path.includes(props.data.openArtifact)) {
         let curPath = [...path];
-        curPath.length = path.indexOf(openArtifact) + 1;
+        curPath.length = path.indexOf(props.data.openArtifact) + 1;
         setPath(curPath);
       }
       //location exists and is a directory (has contents member)
       else if (
-        repository[openArtifact.path] &&
-        repository[openArtifact.path].contents
+        repository[props.data.openArtifact.path] &&
+        repository[props.data.openArtifact.path].contents
       ) {
-        setPath(pathCreator(openArtifact.path.split("/")));
+        setPath(pathCreator(props.data.openArtifact.path.split("/")));
       }
       // else set path to parent directory of a openArtifact
       else {
-        let curPath = openArtifact.path.split("/");
+        let curPath = props.data.openArtifact.path.split("/");
         var pathArr = curPath.slice(0, curPath.length);
         pathArr.length -= 1;
         setPath(pathCreator(pathArr));
       }
     }
-  }, [openArtifact]);
+  }, [props.data.openArtifact]);
 
   // create path state which is a list of path subsection name and the subpath
   function pathCreator(path) {
@@ -250,24 +240,24 @@ function SourceDoc(props) {
   function pathClickHandler(curFile) {
     // if clicked path has SDContent member (root directory)
     if (curFile.dir) {
-      setOpenArtifact(curFile);
+      props.functions.setOpenArtifact(curFile);
     }
     // else find file from state
     else {
-      setOpenArtifact(repository[curFile.path]);
+      props.functions.setOpenArtifact(repository[curFile.path]);
     }
   }
 
   // re render path component and directory if path ever changes
   useEffect(() => {
     // guard the use effect
-    if (path.length && repository && openArtifact) {
+    if (path.length && repository && props.data.openArtifact) {
       // create new path component
       setPathComponent(renderPath(path));
       // render home root
       if (
-        (openArtifact.dir || path.length === 1) &&
-        !openArtifact.path.includes("/")
+        (props.data.openArtifact.dir || path.length === 1) &&
+        !props.data.openArtifact.path.includes("/")
       ) {
         setSDContent(homePath.dir);
       }
@@ -303,7 +293,7 @@ function SourceDoc(props) {
     ) {
       // calls node url to get file content
       axios
-        .get(props.data.selectedEL.data.url)
+        .get(selectedEL.data.url)
         .then(function (response) {
           // handle success
           setCurCode(response.data);
@@ -313,31 +303,11 @@ function SourceDoc(props) {
           console.log(error);
         });
     }
-  }, [props.data.selectedEL]);
-
-  const handleWikiChange = (data) => {
-    setWiki(data);
-  };
-
-  const saveWikiToNode = () => {
-    props.functions.setElements((els) =>
-      els.map((el) => {
-        if (el.id === props.data.selectedEL.id) {
-          // it's important that you create a new object here
-          // in order to notify react flow about the change
-          el.data = {
-            ...el.data,
-            wiki: wiki,
-          };
-        }
-        return el;
-      })
-    );
-  };
+  }, [selectedEL]);
 
   // search method called whenevr search var changes
   useEffect(() => {
-    setOpenArtifact("");
+    props.functions.setOpenArtifact("");
     if (fuse && search) {
       var results = fuse.search(search);
       var newResults = results.map((result) => result.item);
@@ -348,8 +318,6 @@ function SourceDoc(props) {
   //if(props.data.isOpenSD){
   return (
     <div className={props.data.isOpenSD ? "openSD" : "hiddenSD"}>
-      {/* TODO: extract this compontnt to dashboard if team wants to do "terminal/key
-      board command idea on one side of screen */}
       <Resizable
         size={{ width, height }}
         className="sourceDocContainer"
@@ -435,111 +403,14 @@ function SourceDoc(props) {
           <pre> {`${curCode}`} </pre>
         </TabPanel>
         <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
-          <Box sx={{ disaply: "flex", flexDirection: "column" }}>
-            <div
-              className="navbar-button github"
-              style={{ position: "fixed", right: "1.5vw" }}
-              onClick={() => setIsEditing(!isEditing)}
-            >
-              <Box className="EditWikiButtonWrapper">
-                <Typography mx={1} my={0.8} fontSize=".8vw" fontWeight="Thin">
-                  {isEditing ? "Done" : "Edit"}
-                </Typography>
-              </Box>
-            </div>
-            {isEditing && (
-              <div
-                className="navbar-button github"
-                style={{ position: "fixed", right: "6vw" }}
-                onClick={() => {
-                  saveWikiToNode();
-                  setIsEditing(!isEditing);
-                }}
-              >
-                <Box className="EditWikiButtonWrapper">
-                  <Typography mx={1} my={0.8} fontSize=".8vw" fontWeight="Thin">
-                    Save
-                  </Typography>
-                </Box>
-              </div>
-            )}
-            <Typography variant="h5" fontWeight="bold">
-              {props.data.selectedEL.data
-                ? props.data.selectedEL.data.label
-                : ""}
-            </Typography>
-
-            <Typography variant="h6">
-              <a
-                href={
-                  props.data.selectedEL.data
-                    ? props.data.selectedEL.data.url
-                    : ""
-                }
-              >
-                {" "}
-                source code link{" "}
-              </a>
-            </Typography>
-            <Typography my={1} variant="h6">
-              Wiki
-            </Typography>
-            {isEditing ? (
-              <TextEditor
-                content={
-                  props.data.selectedEL.data
-                    ? props.data.selectedEL.data.wiki
-                    : ""
-                }
-                onChange={handleWikiChange}
-              />
-            ) : (
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: props.data.selectedEL.data
-                    ? props.data.selectedEL.data.wiki
-                    : "",
-                }}
-              />
-            )}
-            <Typography variant="h7" mt={2}>
-              Parent Nodes <br />
-              <Typography>
-                {" "}
-                {props.data.selectedEL.data
-                  ? props.data.selectedEL.data.parentNodes
-                  : ""}{" "}
-              </Typography>
-            </Typography>
-            <Typography variant="h7" mt={2}>
-              Child Nodes <br />
-              <Typography>
-                {" "}
-                {props.data.selectedEL.data
-                  ? props.data.selectedEL.data.childNodes
-                  : ""}{" "}
-              </Typography>
-            </Typography>
-            <Typography variant="h7" mt={2}>
-              Configuration Files <br />
-              <Typography>
-                {" "}
-                {props.data.selectedEL.data
-                  ? props.data.selectedEL.data.parentNodes
-                  : ""}{" "}
-              </Typography>
-            </Typography>
-            <Typography variant="h7" mt={2}>
-              Reference Docs <br />
-              {renderFiles()}
-              <Typography>
-                {" "}
-                {props.data.selectedEL.data
-                  ? props.data.selectedEL.data.documentation
-                  : ""}
-              </Typography>
-            </Typography>
-          </Box>
+          <DocsTab
+            isEditing={isEditing}
+            selectedEL={selectedEL}
+            setIsEditing={setIsEditing}
+            renderFiles={renderFiles}
+            setElements={props.functions.setElements}
+            setSelectedEL={props.functions.setSelectedEL}
+          />
         </TabPanel>
       </Resizable>
     </div>
