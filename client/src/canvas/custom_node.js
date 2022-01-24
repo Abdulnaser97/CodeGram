@@ -39,6 +39,7 @@ const CustomNodeComponent = (props) => {
     `${Math.min(width, height) / 12}px`
   );
   const [selected, setSelected] = useState("");
+
   useEffect(() => {
     if (props.selected) {
       if (props.data.type === "FileNode") setSelected("highlightedNode");
@@ -71,7 +72,9 @@ const CustomNodeComponent = (props) => {
 
         ref.className = `${props.data.type}`;
       }}
-      style={{ "border-radius": borderRadius }}
+      style={{
+        "border-radius": borderRadius,
+      }}
     >
       {
         <Typography
@@ -119,8 +122,8 @@ const CustomNodeComponent = (props) => {
         id={`top-handle-${props.id}`}
         type="source"
         position="top"
-        style={{ 
-          ...sourceHandleStyle, 
+        style={{
+          ...sourceHandleStyle,
           top: "-20px",
           display: `${props.selected ? "block" : "none"}`,
         }}
@@ -130,8 +133,8 @@ const CustomNodeComponent = (props) => {
         id={`bottom-handle-${props.id}`}
         type="source"
         position="bottom"
-        style={{ 
-          ...sourceHandleStyle, 
+        style={{
+          ...sourceHandleStyle,
           bottom: "-20px",
           display: `${props.selected ? "block" : "none"}`,
         }}
@@ -141,8 +144,8 @@ const CustomNodeComponent = (props) => {
         id={`left-handle-${props.id}`}
         type="source"
         position="left"
-        style={{ 
-          ...sourceHandleStyle, 
+        style={{
+          ...sourceHandleStyle,
           left: "-20px",
           display: `${props.selected ? "block" : "none"}`,
         }}
@@ -152,8 +155,8 @@ const CustomNodeComponent = (props) => {
         id={`right-handle-${props.id}`}
         type="source"
         position="right"
-        style={{ 
-          ...sourceHandleStyle, 
+        style={{
+          ...sourceHandleStyle,
           right: "-20px",
           display: `${props.selected ? "block" : "none"}`,
         }}
@@ -208,42 +211,40 @@ const WrapperNodeComponent = (props) => {
       style={{ "border-radius": borderRadius }}
     >
       <div className="node-label corner">
-        {props.data.label ? 
-          <div         
-          style={{
-            "z-index": 0,
-            border: "none",
-            fontSize: "100%",
-            outline: "none",
-            width: "100%",
-            background: "transparent",
-            fontFamily: theme.typography.fontFamily,
-            fontWeight: theme.typography.fontWeightMedium,
-            color: theme.palette.primary.pinkerPink,
-          }}
-          > 
-        {props.data.label}
+        {props.data.label ? (
+          <div
+            style={{
+              "z-index": 0,
+              border: "none",
+              fontSize: "100%",
+              outline: "none",
+              width: "100%",
+              background: "transparent",
+              fontFamily: theme.typography.fontFamily,
+              fontWeight: theme.typography.fontWeightMedium,
+              color: theme.palette.primary.pinkerPink,
+            }}
+          >
+            {props.data.label}
           </div>
-        : 
-        <input
-          placeholder="wrapper"
-          // onChange={handleSearch}
-          // onKeyPress={handleSearch}
-          style={{
-            "z-index": 0,
-            border: "none",
-            fontSize: "100%",
-            outline: "none",
-            width: "100%",
-            background: "transparent",
-            fontFamily: theme.typography.fontFamily,
-            fontWeight: theme.typography.fontWeightMedium,
-            color: theme.palette.primary.pinkerPink,
-          }}
-        />
-        }
-
-
+        ) : (
+          <input
+            placeholder="wrapper"
+            // onChange={handleSearch}
+            // onKeyPress={handleSearch}
+            style={{
+              "z-index": 0,
+              border: "none",
+              fontSize: "100%",
+              outline: "none",
+              width: "100%",
+              background: "transparent",
+              fontFamily: theme.typography.fontFamily,
+              fontWeight: theme.typography.fontWeightMedium,
+              color: theme.palette.primary.pinkerPink,
+            }}
+          />
+        )}
       </div>
       <Handle
         className="handle target"
@@ -260,9 +261,9 @@ const WrapperNodeComponent = (props) => {
         id={`top-handle-${props.id}`}
         type="source"
         position="top"
-        style={{ 
-          ...sourceHandleStyle, 
-          top: "-20px", 
+        style={{
+          ...sourceHandleStyle,
+          top: "-20px",
           display: `${props.selected ? "block" : "none"}`,
         }}
       />
@@ -271,8 +272,8 @@ const WrapperNodeComponent = (props) => {
         id={`bottom-handle-${props.id}`}
         type="source"
         position="bottom"
-        style={{ 
-          ...sourceHandleStyle, 
+        style={{
+          ...sourceHandleStyle,
           bottom: "-20px",
           display: `${props.selected ? "block" : "none"}`,
         }}
@@ -282,8 +283,8 @@ const WrapperNodeComponent = (props) => {
         id={`left-handle-${props.id}`}
         type="source"
         position="left"
-        style={{ 
-          ...sourceHandleStyle, 
+        style={{
+          ...sourceHandleStyle,
           left: "-20px",
           display: `${props.selected ? "block" : "none"}`,
         }}
@@ -293,8 +294,8 @@ const WrapperNodeComponent = (props) => {
         id={`right-handle-${props.id}`}
         type="source"
         position="right"
-        style={{ 
-          ...sourceHandleStyle, 
+        style={{
+          ...sourceHandleStyle,
           right: "-20px",
           display: `${props.selected ? "block" : "none"}`,
         }}
@@ -349,29 +350,26 @@ const FolderNodeComponent = (props) => {
       style={{ "border-radius": borderRadius }}
     >
       <div className="node-label corner">
-        
-      {props.data.label ? 
-          <> 
-        {props.data.label}
-          </>
-        : 
-        <input
-          placeholder="wrapper"
-          // onChange={handleSearch}
-          // onKeyPress={handleSearch}
-          style={{
-            "z-index": 0,
-            border: "none",
-            fontSize: "70%",
-            outline: "none",
-            width: "100%",
-            background: "transparent",
-            fontFamily: theme.typography.fontFamily,
-            fontWeight: theme.typography.fontWeightRegular,
-            color: theme.palette.primary.darkestGrey,
-          }}
-        />
-      }
+        {props.data.label ? (
+          <>{props.data.label}</>
+        ) : (
+          <input
+            placeholder="wrapper"
+            // onChange={handleSearch}
+            // onKeyPress={handleSearch}
+            style={{
+              "z-index": 0,
+              border: "none",
+              fontSize: "70%",
+              outline: "none",
+              width: "100%",
+              background: "transparent",
+              fontFamily: theme.typography.fontFamily,
+              fontWeight: theme.typography.fontWeightRegular,
+              color: theme.palette.primary.darkestGrey,
+            }}
+          />
+        )}
       </div>
       <Handle
         className="handle target"
@@ -387,9 +385,9 @@ const FolderNodeComponent = (props) => {
         id={`top-handle-${props.id}`}
         type="source"
         position="top"
-        style={{ 
-          ...sourceHandleStyle, 
-          top: "-20px", 
+        style={{
+          ...sourceHandleStyle,
+          top: "-20px",
           display: `${props.selected ? "block" : "none"}`,
         }}
       />
@@ -398,8 +396,8 @@ const FolderNodeComponent = (props) => {
         id={`bottom-handle-${props.id}`}
         type="source"
         position="bottom"
-        style={{ 
-          ...sourceHandleStyle, 
+        style={{
+          ...sourceHandleStyle,
           bottom: "-20px",
           display: `${props.selected ? "block" : "none"}`,
         }}
@@ -409,8 +407,8 @@ const FolderNodeComponent = (props) => {
         id={`left-handle-${props.id}`}
         type="source"
         position="left"
-        style={{ 
-          ...sourceHandleStyle, 
+        style={{
+          ...sourceHandleStyle,
           left: "-20px",
           display: `${props.selected ? "block" : "none"}`,
         }}
@@ -420,8 +418,8 @@ const FolderNodeComponent = (props) => {
         id={`right-handle-${props.id}`}
         type="source"
         position="right"
-        style={{ 
-          ...sourceHandleStyle, 
+        style={{
+          ...sourceHandleStyle,
           right: "-20px",
           display: `${props.selected ? "block" : "none"}`,
         }}

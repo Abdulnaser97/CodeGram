@@ -4,26 +4,30 @@ import { Box, Typography } from "@mui/material";
 
 import TextEditor from "../components/TextEditor.js";
 import { theme } from "../Themes";
-import { useStoreActions } from "react-flow-renderer";
 
-
-// TODO: needs extra click and click away to set the selectedEL to 
-// the properly updated one. Tried to resolve using setSelectedElements 
+// TODO: needs extra click and click away to set the selectedEL to
+// the properly updated one. Tried to resolve using setSelectedElements
 // on saveWikiToNode
 
 export default function DocsTab(props) {
-  const { isEditing, setIsEditing, renderFiles, selectedEL, setElements, setSelectedEL } =
-    props;
+  const {
+    isEditing,
+    setIsEditing,
+    renderFiles,
+    selectedEL,
+    setElements,
+    setSelectedEL,
+  } = props;
 
   const [wiki, setWiki] = useState(selectedEL.data.wiki);
   const [newLabel, setNewLabel] = useState(selectedEL.data.label);
   useEffect(() => {
-    setWiki(selectedEL.data.wiki)
-    setNewLabel(selectedEL.data.label)
-  }, [selectedEL])  
+    setWiki(selectedEL.data.wiki);
+    setNewLabel(selectedEL.data.label);
+  }, [selectedEL]);
 
   const saveWikiToNode = () => {
-    var selEl = null
+    var selEl = null;
     setElements((els) =>
       els.map((el) => {
         if (el.id === selectedEL.id) {
@@ -34,7 +38,7 @@ export default function DocsTab(props) {
             label: newLabel.toString(),
             wiki: wiki,
           };
-          selEl = el 
+          selEl = el;
         }
 
         return el;
@@ -52,12 +56,12 @@ export default function DocsTab(props) {
   };
 
   const handleDoneOrEditClick = () => {
-    if (isEditing){
-      setWiki(selectedEL.data.wiki)
-      setNewLabel(selectedEL.data.label)
+    if (isEditing) {
+      setWiki(selectedEL.data.wiki);
+      setNewLabel(selectedEL.data.label);
     }
-    setIsEditing(!isEditing)
-  }
+    setIsEditing(!isEditing);
+  };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -67,7 +71,13 @@ export default function DocsTab(props) {
         onClick={() => handleDoneOrEditClick()}
       >
         <Box className="EditWikiButtonWrapper">
-          <Typography mx={1} my={0.8} fontSize=".8vw" fontWeight="Thin">
+          <Typography
+            mx={1}
+            my={0.8}
+            fontSize=".8vw"
+            fontWeight="Thin"
+            color="primary"
+          >
             {isEditing ? "Cancel" : "Edit"}
           </Typography>
         </Box>
@@ -82,7 +92,13 @@ export default function DocsTab(props) {
           }}
         >
           <Box className="EditWikiButtonWrapper" mx={1}>
-            <Typography mx={1} my={0.8} fontSize=".8vw" fontWeight="Thin">
+            <Typography
+              mx={1}
+              my={0.8}
+              fontSize=".8vw"
+              fontWeight="Thin"
+              color="primary"
+            >
               Save
             </Typography>
           </Box>
@@ -122,13 +138,13 @@ export default function DocsTab(props) {
       </Typography>
       {isEditing ? (
         <TextEditor
-          content={selectedEL.data.wiki ? selectedEL.data.wiki : ''}
+          content={selectedEL.data.wiki ? selectedEL.data.wiki : ""}
           onChange={handleWikiChange}
         />
       ) : (
         <div
           dangerouslySetInnerHTML={{
-            __html: wiki
+            __html: wiki,
           }}
         />
       )}

@@ -6,7 +6,12 @@ import {
 } from "redux";
 import { RFStateReducer, nodesReducer } from "./reducers/nodesReducer";
 import devToolsEnhancer from "remote-redux-devtools";
-import { addNodeToArray, deleteNodeFromArray } from "./actions/nodes";
+import {
+  addNodeToArray,
+  deleteNodeFromArray,
+  sendToBack,
+  bringToFront,
+} from "./actions/nodes";
 import { fetchRepoFiles, storeRepoFiles } from "./actions/repoFiles";
 import thunk from "redux-thunk";
 import repoReducer from "./reducers/repoReducer";
@@ -33,6 +38,8 @@ const ActionCreators = Object.assign(
   {},
   addNodeToArray,
   deleteNodeFromArray,
+  sendToBack,
+  bringToFront,
   fetchRepoFiles,
   storeRepoFiles,
   loadDiagramToStore,
