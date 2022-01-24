@@ -120,8 +120,8 @@ body {
 }
 
 .unlinked {
-  background-color: rgb(226, 226, 226);
-  color: grey;
+  background-color: #f3f3f3;
+  color: #626262;
 }
 
 .linked {
@@ -249,14 +249,14 @@ pre {
   position: relative;
   width: 100%;
   height: 100%;
-  border: 1px solid black;
+  border: 1px solid #ffaea6;
   border-radius: 0.6vw;
-  color: black;
+  color: #ffaea6;
   z-index: 10;
 }
 
 .navbar-button:hover .EditWikiButtonWrapper {
-  background-color: black;
+  background-color: #ffaea6;
 }
 
 .navbar-button:hover .SaveButtonWrapper {

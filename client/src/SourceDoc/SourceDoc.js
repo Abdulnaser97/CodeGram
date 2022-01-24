@@ -2,12 +2,7 @@ import "../App.css";
 import "./SourceDoc.css";
 
 // mui components
-import {
-  Box,
-  Typography,
-  Tabs,
-  Tab,
-} from "@mui/material";
+import { Box, Typography, Tabs, Tab } from "@mui/material";
 
 // third party dependecnies
 import PropTypes from "prop-types";
@@ -90,7 +85,6 @@ function SourceDoc(props) {
   const dispatch = useDispatch();
 
   const { search, repository, fuse, homePath, selectedEL } = props.data;
-  console.log(state)
   useEffect(() => {
     if (!state.repoFiles.repoFiles.isFetchingFiles) {
       props.functions.setOpenArtifact("");
@@ -109,7 +103,9 @@ function SourceDoc(props) {
       props.data.selectedEL.data &&
       props.data.selectedEL.data.path
     ) {
-      props.functions.setOpenArtifact(repository[props.data.selectedEL.data.path]);
+      props.functions.setOpenArtifact(
+        repository[props.data.selectedEL.data.path]
+      );
     }
   }, [selectedEL]);
 
@@ -407,14 +403,14 @@ function SourceDoc(props) {
           <pre> {`${curCode}`} </pre>
         </TabPanel>
         <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
-            <DocsTab 
-            isEditing={isEditing} 
-            selectedEL={selectedEL} 
+          <DocsTab
+            isEditing={isEditing}
+            selectedEL={selectedEL}
             setIsEditing={setIsEditing}
             renderFiles={renderFiles}
             setElements={props.functions.setElements}
             setSelectedEL={props.functions.setSelectedEL}
-            />
+          />
         </TabPanel>
       </Resizable>
     </div>

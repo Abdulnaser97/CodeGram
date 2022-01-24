@@ -6,6 +6,7 @@ import "./index.css";
 import { configureStore } from "./Redux/configureStore";
 
 import { App } from "./App";
+import { ReactFlowProvider } from "react-flow-renderer";
 
 const store = configureStore();
 
@@ -14,7 +15,9 @@ const rootElement = document.getElementById("root");
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <ReactFlowProvider>
+        <App />
+      </ReactFlowProvider>
     </Provider>
   </React.StrictMode>,
   rootElement

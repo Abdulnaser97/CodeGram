@@ -15,7 +15,12 @@ import ReactFlow, {
   StepEdge,
 } from "react-flow-renderer";
 import { useSelector } from "react-redux";
-import { addNodeToArray, deleteNodeFromArray } from "../Redux/actions/nodes";
+import {
+  addNodeToArray,
+  bringToFront,
+  deleteNodeFromArray,
+  sendToBack,
+} from "../Redux/actions/nodes";
 
 import FloatingEdge from "../canvas/FloatingEdge.tsx";
 import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
@@ -60,6 +65,16 @@ const getNodeId = () => `randomnode_${+new Date()}`;
  *
  * Component Starts Here
  *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  **/
 export function useReactFlowWrapper({
   dispatch,
@@ -68,8 +83,8 @@ export function useReactFlowWrapper({
   setActiveToolBarButton,
   setOpenArtifact,
 }) {
-  const { RFState } = useSelector((state) => {
-    return { RFState: state.RFState };
+  const { RFState, nodesZIndex } = useSelector((state) => {
+    return { RFState: state.RFState, nodesZIndex: state.nodes.nodesZIndex };
   });
 
   const [elements, setElements] = useState(initialElements);
@@ -84,13 +99,28 @@ export function useReactFlowWrapper({
   const [contextMenu, setContextMenu] = useState(null);
   const [clipBoard, setClipBoard] = useState(null);
   const [selectedNodeEvent, setSelectedNodeEvent] = useState(null);
+  const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
 
+  // Projects event click position to RF coordinates
+  function calculatePosition(event, rfInstance) {
+    if (event) {
+      if (rfInstance) {
+        return rfInstance.project({ x: event.clientX, y: event.clientY - 60 });
+      } else {
+        return { x: event.clientX, y: event.clientY };
+      }
+    } else {
+      return { x: 500, y: 400 };
+    }
+  }
   // Add node function
   const addNode = useCallback(
     (props) => {
       var file = props.file ? props.file : null;
       var event = props.event ? props.event : null;
       var label = nodeName;
+      var position = calculatePosition(event, rfInstance);
+
       const newNode = {
         id: getNodeId(),
         data: {
@@ -125,8 +155,8 @@ export function useReactFlowWrapper({
         width: selectedShapeName.current && !file === "DashedShape" ? 300 : 100,
         height: selectedShapeName.current && !file === "DashedShape" ? 150 : 70,
         position: {
-          x: event ? event.clientX : 500,
-          y: event ? event.clientY : 400,
+          x: position.x,
+          y: position.y,
         },
         animated: true,
       };
@@ -229,17 +259,36 @@ export function useReactFlowWrapper({
     setElements((els) =>
       addEdge(
         // TODO : lookinto styling floating edges  and smoothstep
-        { ...params, 
-          type: "floating", 
-          arrowHeadType: ArrowHeadType.Arrow, 
-          data:{
-            label: '', 
-            wiki:''
-          }},
+        {
+          ...params,
+          type: "floating",
+          arrowHeadType: ArrowHeadType.Arrow,
+          data: {
+            label: "",
+            wiki: "",
+          },
+        },
         els
       )
     );
   };
+
+  // Updates zIndex of all nodes, this has an O(n^n) complexity TODO: optimize
+  useEffect(() => {
+    setElements((els) =>
+      els.map((el) => {
+        nodesZIndex.forEach((nodeId, index) => {
+          if (el.id === nodeId) {
+            let newIndex = index + 7;
+            newIndex = newIndex.toString();
+            el.style = { ...el.style, zIndex: newIndex };
+          }
+        });
+        return el;
+      })
+    );
+    setRequestUpdateZIndex(false);
+  }, [nodesZIndex, requestUpdateZIndex]);
 
   const onConnectStart = (event, { nodeId, handleType }) => {
     setConnectionStarted(true);
@@ -287,6 +336,21 @@ export function useReactFlowWrapper({
     handleContextMenuClose();
   };
 
+  const onNodeBringToFront = async (event) => {
+    event.preventDefault();
+    await dispatch(bringToFront(selectedEL));
+    setRequestUpdateZIndex(true);
+
+    handleContextMenuClose();
+  };
+
+  const onNodeSendToBack = async (event) => {
+    event.preventDefault();
+    await dispatch(sendToBack(selectedEL));
+    setRequestUpdateZIndex(true);
+    handleContextMenuClose();
+  };
+
   const onCopy = (event) => {
     event.preventDefault();
     let copyEl = JSON.parse(JSON.stringify(selectedEL));
@@ -305,16 +369,21 @@ export function useReactFlowWrapper({
   };
 
   const keydownHandler = (e) => {
+    // Ctrl + C (Cmd + C) for copy
     if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
-      // Ctrl + C (Cmd + C)
-      if (selectedEL) {
+      if (
+        selectedEL &&
+        document.activeElement.tagName !== "INPUT" &&
+        document.activeElement.tagName !== "DIV"
+      ) {
         let copyEl = JSON.parse(JSON.stringify(selectedEL));
         copyEl.id = getNodeId();
         setClipBoard(copyEl);
       }
     }
+
+    // Ctrl + V (Cmd + V) for paste
     if (e.keyCode === 86 && (e.ctrlKey || e.metaKey)) {
-      // Ctrl + V (Cmd + V)
       if (clipBoard) {
         clipBoard.position.x += 70;
         clipBoard.position.y -= 70;
@@ -324,14 +393,38 @@ export function useReactFlowWrapper({
       }
     }
 
+    // backspace for delete
     if (e.keyCode === 8) {
-      // backspace
       if (
-        selectedEL && 
+        selectedEL &&
         document.activeElement.tagName !== "INPUT" &&
-        document.activeElement.tagName !== "DIV" 
-        ) {
+        document.activeElement.tagName !== "DIV"
+      ) {
         onElementsRemove([selectedEL]);
+      }
+    }
+
+    // [ key for send to back
+    if (e.keyCode === 219) {
+      if (
+        selectedEL &&
+        document.activeElement.tagName !== "INPUT" &&
+        document.activeElement.tagName !== "DIV"
+      ) {
+        dispatch(sendToBack(selectedEL));
+        setRequestUpdateZIndex(true);
+      }
+    }
+
+    // ] key for bring to front
+    if (e.keyCode === 221) {
+      if (
+        selectedEL &&
+        document.activeElement.tagName !== "INPUT" &&
+        document.activeElement.tagName !== "DIV"
+      ) {
+        dispatch(bringToFront(selectedEL));
+        setRequestUpdateZIndex(true);
       }
     }
   };
@@ -397,7 +490,7 @@ export function useReactFlowWrapper({
             </MenuItem>
           )}
           {contextMenu !== null && contextMenu.type === "elementMenu" && (
-            <MenuItem onClick={handleContextMenuClose}>
+            <MenuItem onClick={onNodeBringToFront}>
               <div className="menu-item">
                 <div className="menu-text">Bring To Front</div>
                 <div className="shortcut-key">]</div>
@@ -405,7 +498,7 @@ export function useReactFlowWrapper({
             </MenuItem>
           )}
           {contextMenu !== null && contextMenu.type === "elementMenu" && (
-            <MenuItem onClick={handleContextMenuClose}>
+            <MenuItem onClick={onNodeSendToBack}>
               <div className="menu-item">
                 <div className="menu-text">Send To Back</div>
                 <div className="shortcut-key">[</div>

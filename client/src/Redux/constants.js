@@ -15,3 +15,6 @@ export const LOAD_DIAGRAM_TO_STORE = "LOAD_DIAGRAM_TO_STORE";
 // Display popup notification
 export const ERROR_NOTIFICATION = "ERROR_NOTIFICATION";
 export const SUCCESS_NOTIFICATION = "SUCCESS_NOTIFICATION";
+
+// Updates the z-index of the selected node to control layering
+export const UPDATE_NODE_Z_INDEX = "UPDATE_NODE_Z_INDEX";
