@@ -20,6 +20,7 @@ import { connect } from "react-redux";
 import SourceDocFile from "./SourceDocFile";
 import TextEditor from "../components/TextEditor.js";
 import DocsTab from "./DocsTab";
+import CodeTab from "./CodeTab";
 
 import axios from "axios";
 import { Resizable } from "re-resizable";
@@ -303,6 +304,9 @@ function SourceDoc(props) {
           console.log(error);
         });
     }
+    else {
+      setCurCode("Select a nnode to view a file");
+    }
   }, [selectedEL]);
 
   // search method called whenevr search var changes
@@ -386,7 +390,7 @@ function SourceDoc(props) {
         <TabPanel
           value={value}
           index={1}
-          style={{ height: "90%", overflow: "scroll" }}
+          style={{ height: "85%", overflowY: "scroll" }}
         >
           <Typography
             variant="h5"
@@ -400,7 +404,9 @@ function SourceDoc(props) {
               ? props.data.selectedEL.data.label
               : props.data.selectedEL}
           </Typography>
-          <pre> {`${curCode}`} </pre>
+          <CodeTab
+            rawCode={curCode}
+          />
         </TabPanel>
         <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
           <DocsTab
