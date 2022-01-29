@@ -468,6 +468,8 @@ export function useReactFlowWrapper({
           onNodeContextMenu={handleContextMenu}
           onEdgeContextMenu={handleEdgeContextMenu}
           onPaneContextMenu={handlePaneContextMenu}
+          minZoom={0.1}
+          maxZoom={4}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>
