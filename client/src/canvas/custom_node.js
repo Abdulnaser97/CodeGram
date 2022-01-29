@@ -39,6 +39,7 @@ const CustomNodeComponent = (props) => {
     `${Math.min(width, height) / 12}px`
   );
   const [selected, setSelected] = useState("");
+  const [newNodeName, setNewNodeName] = useState(''); 
 
   useEffect(() => {
     if (props.selected) {
@@ -52,6 +53,10 @@ const CustomNodeComponent = (props) => {
     props.data.height = height;
     props.data.width = width;
   }, [height, width]);
+
+  function handleNewNodeName(event){ 
+    props.data.setSearch(event.target.value)
+  }
 
   return (
     <Resizable
@@ -89,7 +94,7 @@ const CustomNodeComponent = (props) => {
             <input
               placeholder="__"
               // onChange={handleSearch}
-              // onKeyPress={handleSearch}
+              onKeyPress={handleNewNodeName}
               style={{
                 "z-index": 0,
                 border: "none",

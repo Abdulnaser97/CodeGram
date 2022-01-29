@@ -1,4 +1,4 @@
-import { ADD_NODE_TO_ARRAY, FETCH_REPO_FILES, STORE_REPO_FILES, DELETE_NODES_FROM_ARRAY } from "../constants";
+import { ADD_NODE_TO_ARRAY, FETCH_REPO_FILES, STORE_REPO_FILES, DELETE_NODES_FROM_ARRAY, UPDATE_REPO_FILE } from "../constants";
 
 const initialState = {
   repoFiles: [],
@@ -20,6 +20,18 @@ const repoReducer = (state = initialState, action) => {
         isFetchingFiles: false,
       };
     case ADD_NODE_TO_ARRAY: {
+      return {
+        ...state,
+        repoFiles: {
+          ...state.repoFiles,
+          [action.payload.data.path]: {
+            ...state.repoFiles[action.payload.data.path],
+            linked:true 
+          }
+        }
+      }
+    };
+    case UPDATE_REPO_FILE: {
       return {
         ...state,
         repoFiles: {

@@ -22,6 +22,10 @@ import {
   sendToBack,
 } from "../Redux/actions/nodes";
 
+import {
+  updateRepoFile
+} from "../Redux/actions/repoFiles";
+
 import FloatingEdge from "../canvas/FloatingEdge.tsx";
 import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
 
@@ -82,6 +86,9 @@ export function useReactFlowWrapper({
   activeToolBarButton,
   setActiveToolBarButton,
   setOpenArtifact,
+  search,
+  setSearch, 
+  fuse
 }) {
   const { RFState, nodesZIndex } = useSelector((state) => {
     return { RFState: state.RFState, nodesZIndex: state.nodes.nodesZIndex };
@@ -150,6 +157,7 @@ export function useReactFlowWrapper({
             selectedShapeName.current && !file === "DashedShape" ? 150 : 70,
           // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
           //file: file
+          setSearch: setSearch, 
         },
         type: file ? "FileNode" : selectedShapeName.current,
         width: selectedShapeName.current && !file === "DashedShape" ? 300 : 100,
@@ -428,6 +436,7 @@ export function useReactFlowWrapper({
       }
     }
   };
+
   useEffect(() => {
     document.addEventListener("keydown", keydownHandler);
 
@@ -436,6 +445,65 @@ export function useReactFlowWrapper({
     };
   });
 
+  const [fileResults, setFileResults] = useState(null)
+
+  const addFileToNode = (file) => {
+    var selEl = null;
+    setElements((els) =>
+      els.map((el) => {
+        if (el.id === selectedEL.id) {
+          // it's important that you create a new object here
+          // in order to notify react flow about the change
+          el.data = {
+            ...el.data,
+            label: file.name,
+            url:
+            file && file.download_url !== undefined
+              ? file.download_url
+              : file && file.url !== undefined
+              ? file.url
+              : null,
+          path: file && file.path ? file.path : "",
+          floatTargetHandle: false,
+
+          // can set this type to whatever is selected in the tool bar for now
+          // but the type will probably be set from a few different places
+          type: file ? "FileNode" : selectedShapeName.current,
+          };
+          selEl = el;
+        }
+
+        return el;
+      })
+    );
+    setSelectedEL(selEl);
+    dispatch(updateRepoFile(selEl));
+  }
+
+  const nodeInputHandler = (event) => {
+      if (event.key === 'Enter'){
+        setElements((els) =>
+        els.map((el) => {
+          if (el.id === selectedEL.id) {
+            el.data = {
+              ...el.data, 
+              label: event.target.value
+            }
+          }
+        })) 
+      } else {
+        setSearch(event.target.value)
+      }
+  }
+  
+  useEffect(() => {
+    if (fuse && search) {
+      var results = fuse.search(search);
+      var newResults = results.map((result) => result.item);
+      setFileResults(newResults);
+    }
+  }, [search])
+  console.log(fileResults)
   return {
     render: (
       <div className="canvas">
@@ -468,6 +536,7 @@ export function useReactFlowWrapper({
           onNodeContextMenu={handleContextMenu}
           onEdgeContextMenu={handleEdgeContextMenu}
           onPaneContextMenu={handlePaneContextMenu}
+          search={search}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>
@@ -527,6 +596,22 @@ export function useReactFlowWrapper({
               </div>
             </MenuItem>
           )}
+          {/* {search !== null && contextMenu === null  && (
+            <MenuItem
+              style={{ position: "relative", width: "15vw", backgroundClolor:'red' }}
+            >
+               <div className="menu-item">
+                <h1>HELLO!</h1>
+              {
+                fileResults && fileResults.map((file) => {
+                  <div className="menu-text">
+                    {file.name}
+                  </div> 
+                })
+              }          
+               </div>
+            </MenuItem> */}
+          )}
         </Menu>
       </div>
     ),
@@ -539,6 +624,7 @@ export function useReactFlowWrapper({
     selectedEL: selectedEL,
     rfInstance: rfInstance,
     setSelectedEL: setSelectedEL,
+    addFileToNode: addFileToNode
   };
 }
 

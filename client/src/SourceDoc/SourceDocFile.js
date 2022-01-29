@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 
 // export default function SourceDocFile(props) {
 function SourceDocFile(props) {
-  const { addNode, setOpenArtifact, openArtifact } = props;
+  const { addNode, setOpenArtifact, openArtifact, addFileToNode, selectedEL } = props;
   var { file } = props;
 
   if (!file) {
@@ -77,7 +77,13 @@ function SourceDocFile(props) {
         <AddBoxIcon
           fontSize="small"
           onClick={() => {
-            addNode({ file: file });
+
+            if (selectedEL && selectedEL.label == null){
+              addFileToNode(file)
+            }
+            else {
+              addNode({ file: file });
+            }
             setOpenArtifact(file);
           }}
         />

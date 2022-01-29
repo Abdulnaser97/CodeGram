@@ -144,6 +144,7 @@ function SourceDoc(props) {
             file={repository[value[1].path]}
             openArtifact={props.data.openArtifact}
             selectedEL={props.data.selectedEL}
+            addFileToNode={props.functions.addFileToNode}
           />
         );
       }
@@ -159,6 +160,7 @@ function SourceDoc(props) {
             file={repository[f.path]}
             openArtifact={props.data.openArtifact}
             selectedEL={props.data.selectedEL}
+            addFileToNode={props.functions.addFileToNode}
           />
         );
       }
