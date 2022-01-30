@@ -159,15 +159,25 @@ export function useReactFlowWrapper({
           // but the type will probably be set from a few different places
           type: file ? "FileNode" : selectedShapeName.current,
           width:
-            selectedShapeName.current && !file === "DashedShape" ? 300 : 100,
+            selectedShapeName.current && !file === "DashedShape"
+              ? Math.floor(300 / 15) * 15
+              : Math.floor(100 / 15) * 15,
           height:
-            selectedShapeName.current && !file === "DashedShape" ? 150 : 70,
+            selectedShapeName.current && !file === "DashedShape"
+              ? Math.floor(150 / 15) * 15
+              : Math.floor(70 / 15) * 15,
           // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
           //file: file
         },
         type: file ? "FileNode" : selectedShapeName.current,
-        width: selectedShapeName.current && !file === "DashedShape" ? 300 : 100,
-        height: selectedShapeName.current && !file === "DashedShape" ? 150 : 70,
+        width:
+          selectedShapeName.current && !file === "DashedShape"
+            ? Math.floor(300 / 15) * 15
+            : Math.floor(100 / 15) * 15,
+        height:
+          selectedShapeName.current && !file === "DashedShape"
+            ? Math.floor(150 / 15) * 15
+            : Math.floor(70 / 15) * 15,
         position: {
           x: position.x,
           y: position.y,
