@@ -277,7 +277,7 @@ function App() {
       if (repo && repository && !repoFiles.isFetchingFiles && branch) {
         var homeDir = [];
 
-        dispatch(loadingNotification(repo + " is being loaded.")); /////////////////////////////////////////////////////////
+        dispatch(loadingNotification(repo + " is being loaded")); 
         console.log("loading diagram!");
 
         // push home directory files into home path as array
