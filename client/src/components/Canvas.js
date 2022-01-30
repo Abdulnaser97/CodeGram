@@ -125,7 +125,7 @@ export function useReactFlowWrapper({
     (props) => {
       var file = props.file ? props.file : null;
       var event = props.event ? props.event : null;
-      var label = nodeName;
+      var label = '';
       var position = calculatePosition(event, rfInstance);
 
       const newNode = {
@@ -157,7 +157,7 @@ export function useReactFlowWrapper({
             selectedShapeName.current && !file === "DashedShape" ? 150 : 70,
           // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
           //file: file
-          setSearch: setSearch, 
+          nodeInputHandler:nodeInputHandler
         },
         type: file ? "FileNode" : selectedShapeName.current,
         width: selectedShapeName.current && !file === "DashedShape" ? 300 : 100,
@@ -445,9 +445,8 @@ export function useReactFlowWrapper({
     };
   });
 
-  const [fileResults, setFileResults] = useState(null)
-
   const addFileToNode = (file) => {
+    console.log(selectedEL)
     var selEl = null;
     setElements((els) =>
       els.map((el) => {
@@ -480,30 +479,55 @@ export function useReactFlowWrapper({
     dispatch(updateRepoFile(selEl));
   }
 
-  const nodeInputHandler = (event) => {
-      if (event.key === 'Enter'){
-        setElements((els) =>
-        els.map((el) => {
-          if (el.id === selectedEL.id) {
-            el.data = {
-              ...el.data, 
-              label: event.target.value
-            }
-          }
-        })) 
+  const [nameFlag, setNameFlag] = useState(false)
+
+  const setter = (value) => {
+    setElements((els) =>
+      els.map((el) => {
+        if (el.id === selectedEL.id) {
+          el.data = {
+            ...el.data, 
+            label: value
+          };
+          setSelectedEL(el)
+          setSearch('')
+        }
+        return el;
+      })
+    );
+  }
+
+  useEffect (() => { 
+    // console.log(selectedEL)
+    if (nameFlag){
+      setter(search) 
+      setNameFlag(false)
+    }
+
+  }, [nameFlag])
+
+
+
+  function nodeInputHandler(event){
+
+    if (event.key === 'Enter'){
+        setSearch(event.target.value)
+        setNameFlag(true)
       } else {
         setSearch(event.target.value)
       }
-  }
-  
-  useEffect(() => {
-    if (fuse && search) {
-      var results = fuse.search(search);
-      var newResults = results.map((result) => result.item);
-      setFileResults(newResults);
     }
-  }, [search])
-  console.log(fileResults)
+
+  // for pop up later 
+  // console.log(selectedEL)
+  // useEffect(() => {
+  //   if (fuse && search) {
+  //     var results = fuse.search(search);
+  //     var newResults = results.map((result) => result.item);
+  //     setFileResults(newResults);
+  //   }
+  // }, [search])
+
   return {
     render: (
       <div className="canvas">

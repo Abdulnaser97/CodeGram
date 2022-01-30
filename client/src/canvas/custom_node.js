@@ -55,7 +55,7 @@ const CustomNodeComponent = (props) => {
   }, [height, width]);
 
   function handleNewNodeName(event){ 
-    props.data.setSearch(event.target.value)
+    props.data.nodeInputHandler(event)
   }
 
   return (
@@ -194,6 +194,10 @@ const WrapperNodeComponent = (props) => {
     props.data.width = width;
   }, [height, width]);
 
+  function handleNewNodeName(event){ 
+    props.data.nodeInputHandler(event)
+  }
+
   return (
     <Resizable
       className={`${props.data.type} ${selected}`}
@@ -236,7 +240,7 @@ const WrapperNodeComponent = (props) => {
           <input
             placeholder="wrapper"
             // onChange={handleSearch}
-            // onKeyPress={handleSearch}
+            onKeyPress={handleNewNodeName}
             style={{
               "z-index": 0,
               border: "none",
@@ -333,6 +337,10 @@ const FolderNodeComponent = (props) => {
     props.data.width = width;
   }, [height, width]);
 
+  function handleNewNodeName(event){ 
+    props.data.nodeInputHandler(event)
+  }
+
   return (
     <Resizable
       className={`${props.data.type} ${selected}`}
@@ -361,7 +369,7 @@ const FolderNodeComponent = (props) => {
           <input
             placeholder="wrapper"
             // onChange={handleSearch}
-            // onKeyPress={handleSearch}
+            onKeyPress={handleNewNodeName}
             style={{
               "z-index": 0,
               border: "none",

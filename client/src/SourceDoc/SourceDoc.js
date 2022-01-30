@@ -77,7 +77,7 @@ function SourceDoc(props) {
   const setSelectedElements = useStoreActions(
     (actions) => actions.setSelectedElements
   );
-
+  // console.log(props.data.selectedEL)
   // resizeable state varaiables
   const [width, setWidth] = useState("40vw");
   const [height, setHeight] = useState("85vh");
@@ -310,7 +310,12 @@ function SourceDoc(props) {
   // search method called whenevr search var changes
   useEffect(() => {
     props.functions.setOpenArtifact("");
-    if (fuse && search) {
+    console.log(search)
+    if (!search.length){
+      props.functions.setOpenArtifact(homePath);
+      setPath([homePath]);
+    }
+    else if (fuse && search) {
       var results = fuse.search(search);
       var newResults = results.map((result) => result.item);
       setSDContent(newResults);

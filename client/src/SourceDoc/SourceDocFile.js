@@ -11,7 +11,7 @@ function SourceDocFile(props) {
   var { file } = props;
 
   if (!file) {
-    return;
+    return <> </>;
   }
   // search results from fuse are returned as items
   file = file.item ? file.item : file;
@@ -78,7 +78,7 @@ function SourceDocFile(props) {
           fontSize="small"
           onClick={() => {
 
-            if (selectedEL && selectedEL.label == null){
+            if (selectedEL && !selectedEL.data.label){
               addFileToNode(file)
             }
             else {
