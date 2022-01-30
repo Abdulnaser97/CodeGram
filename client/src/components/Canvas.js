@@ -102,16 +102,28 @@ export function useReactFlowWrapper({
   const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
 
   // Projects event click position to RF coordinates
-  function calculatePosition(event, rfInstance) {
+  function calculatePosition(
+    event = null,
+    rfInstance = null,
+    oldPosition = null
+  ) {
+    let position = null;
     if (event) {
       if (rfInstance) {
-        return rfInstance.project({ x: event.clientX, y: event.clientY });
+        position = rfInstance.project({ x: event.clientX, y: event.clientY });
       } else {
-        return { x: event.clientX, y: event.clientY };
+        position = { x: event.clientX, y: event.clientY };
       }
+    } else if (oldPosition) {
+      position = { x: oldPosition.x + 30, y: oldPosition.y + 30 };
     } else {
-      return { x: 500, y: 400 };
+      position = { x: 500, y: 400 };
     }
+
+    // Make coordinate a multiple of 15 so it snaps to grid
+    position.x = Math.floor(position.x / 15) * 15;
+    position.y = Math.floor(position.y / 15) * 15;
+    return position;
   }
   // Add node function
   const addNode = useCallback(
@@ -240,6 +252,8 @@ export function useReactFlowWrapper({
     if (activeToolBarButton === "selectShape") {
       await addNode({ event: event });
       setActiveToolBarButton("cursor");
+    } else {
+      setSelectedEL(null);
     }
   };
 
@@ -353,45 +367,52 @@ export function useReactFlowWrapper({
     handleContextMenuClose();
   };
 
-  const onCopy = (event) => {
-    event.preventDefault();
-    let copyEl = JSON.parse(JSON.stringify(selectedEL));
-    copyEl.id = getNodeId();
-    setClipBoard(copyEl);
-    handleContextMenuClose();
+  const onCopy = (event = null) => {
+    if (
+      selectedEL &&
+      document.activeElement.tagName !== "INPUT" &&
+      document.activeElement.tagName !== "DIV"
+    ) {
+      if (event) {
+        event.preventDefault();
+      }
+
+      let copyEl = JSON.parse(JSON.stringify(selectedEL));
+      setClipBoard(copyEl);
+
+      if (event) {
+        handleContextMenuClose();
+      }
+    }
   };
 
-  const onPaste = (event) => {
-    event.preventDefault();
-    if (clipBoard) {
-      setElements((els) => els.concat(clipBoard));
-      dispatch(addNodeToArray(clipBoard));
+  const onPaste = (event = null) => {
+    if (event) {
+      event.preventDefault();
     }
-    handleContextMenuClose();
+    if (clipBoard) {
+      let newNode = clipBoard;
+      newNode.id = getNodeId();
+      newNode.position = calculatePosition(event, rfInstance, newNode.position);
+      console.log("newNode is: ", newNode);
+      setElements((els) => els.concat(newNode));
+      dispatch(addNodeToArray(newNode));
+    }
+    if (event) {
+      handleContextMenuClose();
+    }
   };
 
   const keydownHandler = (e) => {
     // Ctrl + C (Cmd + C) for copy
     if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
-      if (
-        selectedEL &&
-        document.activeElement.tagName !== "INPUT" &&
-        document.activeElement.tagName !== "DIV"
-      ) {
-        let copyEl = JSON.parse(JSON.stringify(selectedEL));
-        copyEl.id = getNodeId();
-        setClipBoard(copyEl);
-      }
+      onCopy();
     }
 
     // Ctrl + V (Cmd + V) for paste
     if (e.keyCode === 86 && (e.ctrlKey || e.metaKey)) {
       if (clipBoard) {
-        clipBoard.position.x += 70;
-        clipBoard.position.y -= 70;
-        setClipBoard(clipBoard);
-        setElements((els) => els.concat(clipBoard));
-        dispatch(addNodeToArray(clipBoard));
+        onPaste();
       }
     }
 
@@ -457,6 +478,7 @@ export function useReactFlowWrapper({
           onLoad={setRfInstance}
           onElementClick={onElementClick}
           snapToGrid
+          snapGrid={[15, 15]}
           key="floating"
           onConnectStart={onConnectStart}
           onConnectStop={onConnectStop}

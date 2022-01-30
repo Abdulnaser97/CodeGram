@@ -75,6 +75,7 @@ const CustomNodeComponent = (props) => {
       style={{
         "border-radius": borderRadius,
       }}
+      grid={[15, 15]}
     >
       {
         <Typography
@@ -209,6 +210,7 @@ const WrapperNodeComponent = (props) => {
         ref.className = `${props.data.type}`;
       }}
       style={{ "border-radius": borderRadius }}
+      grid={[15, 15]}
     >
       <div className="node-label corner">
         {props.data.label ? (
@@ -348,6 +350,7 @@ const FolderNodeComponent = (props) => {
         ref.className = `${props.data.type}`;
       }}
       style={{ "border-radius": borderRadius }}
+      grid={[15, 15]}
     >
       <div className="node-label corner">
         {props.data.label ? (
