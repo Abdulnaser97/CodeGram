@@ -42,11 +42,13 @@ import SourceDocButton from "./Media/SourceDocButton";
 import useToolBar from "./components/ToolBar.js";
 import {
   NotifDiagramLoaded,
+  NotifDiagramLoading,
   NotifError,
 } from "./components/NotificationsPopups";
 import {
   errorNotification,
   successNotification,
+  loadingNotification,
 } from "./Redux/actions/notification";
 
 const LogoTopNav = styled.div`
@@ -271,6 +273,9 @@ function App() {
       if (repo && repository && !repoFiles.isFetchingFiles && branch) {
         var homeDir = [];
 
+        dispatch(loadingNotification(repo + " is being loaded")); 
+        console.log("loading diagram!");
+
         // push home directory files into home path as array
         for (const [key, val] of Object.entries(repository)) {
           key.split("/").length === 1 && homeDir.push(val);
@@ -487,6 +492,7 @@ function App() {
               onChange={handleSearch}
               onKeyPress={handleSearch}
               style={{
+<<<<<<< HEAD
                 "z-index": 0,
                 border: "none",
                 backgroundColor: "rgb(247, 247, 247)",
@@ -498,6 +504,72 @@ function App() {
                 fontWeight: theme.typography.fontWeightMedium,
               }}
             />
+=======
+                display: "flex",
+                flexDirection: "row",
+                position: "fixed",
+                top: "8vh",
+                right: "2vw",
+                width: "40vw",
+              }}
+            >
+              <div className="SourceDocMinimize" />
+
+              <Typography
+                fontSize={"1vw"}
+                color={"primary.main"}
+                fontWeight={"medium"}
+                mx={1}
+                my={0}
+              >
+                Search 
+              </Typography>
+
+              <input
+                placeholder="Search Repo Content"
+                onChange={handleSearch}
+                onKeyPress={handleSearch}
+                style={{
+                  "z-index": 0,
+                  border: "none",
+                  backgroundColor: "rgb(247, 247, 247)",
+                  boxShadow: 6,
+                  color: "grey",
+                  fontSize: "1vw",
+                  outline: "none",
+                  width: "65%",
+                  fontWeight: theme.typography.fontWeightMedium,
+                }}
+              />
+            </div>
+            {toolBarRender}
+            <Container className="canvasContainer">{render}</Container>
+            <SourceDoc
+              functions={{
+                addNode: addNode,
+                deleteNode: onElementsRemove, //TODO: Add deleteNode function to DELETE NODE button(?)
+                printNodesArr: printNodesArr,
+                getPRContent: getPRContent,
+                handleName: handleName,
+                setSelectedEL: setSelectedEL,
+                setIsOpenSD: setIsOpenSD,
+                setElements: setElements,
+              }}
+              data={{
+                repo: repo,
+                repoData: repoData,
+                selectedEL: selectedEL,
+                isOpenSD: isOpenSD,
+                fuse: fuse,
+                repository: repository,
+                search: search,
+                homePath: homePath,
+                branch: branch,
+              }}
+            />
+            <NotifDiagramLoading/>
+            <NotifDiagramLoaded />
+>>>>>>> loadingNotification
           </div>
           {toolBarRender}
           <Container className="canvasContainer">{render}</Container>

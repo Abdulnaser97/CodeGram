@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   errorNotification,
   successNotification,
+  loadingNotification
 } from "../Redux/actions/notification";
 
 export function NotifDiagramLoaded() {
@@ -17,14 +18,38 @@ export function NotifDiagramLoaded() {
         position: "fixed",
         "max-height": "fit-content",
         "min-width": "15vw",
-        top: "5vh",
-        left: "30vw",
+        top: "90vh",
+        left: "1vw",
       }}
       open={message}
       autoHideDuration={4000}
       onClose={() => dispatch(successNotification(""))}
     >
       <Alert onClose={() => dispatch(successNotification(""))}>{message}</Alert>
+    </Snackbar>
+  );
+}
+
+export function NotifDiagramLoading() {
+  const message = useSelector((state) => {
+    return state.notifications.loadingNotificationMessage;
+  });
+  const dispatch = useDispatch();
+  
+  return (
+    <Snackbar
+      style={{
+        position: "fixed",
+        "max-height": "fit-content",
+        "min-width": "15vw",
+        top: "90vh",
+        left: "1vw",
+      }}
+      open={message}
+      autoHideDuration={4000}
+      onClose={() => dispatch(loadingNotification(""))}
+    >
+      <Alert onClose={() => dispatch(loadingNotification(""))}>{message}</Alert>
     </Snackbar>
   );
 }
@@ -41,8 +66,8 @@ export function NotifError() {
         position: "fixed",
         "max-height": "fit-content",
         "min-width": "15vw",
-        top: "5vh",
-        left: "30vw",
+        top: "90vh",
+        left: "1vw",
       }}
       open={message}
       autoHideDuration={4000}
