@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   errorNotification,
   successNotification,
-  loadingNotification
+  loadingNotification,
 } from "../Redux/actions/notification";
 
 export function NotifDiagramLoaded() {
@@ -18,8 +18,8 @@ export function NotifDiagramLoaded() {
         position: "fixed",
         "max-height": "fit-content",
         "min-width": "15vw",
-        top: "90vh",
-        left: "1vw",
+        top: "5vh",
+        left: "35vw",
       }}
       open={message}
       autoHideDuration={4000}
@@ -35,15 +35,15 @@ export function NotifDiagramLoading() {
     return state.notifications.loadingNotificationMessage;
   });
   const dispatch = useDispatch();
-  
+
   return (
     <Snackbar
       style={{
         position: "fixed",
         "max-height": "fit-content",
         "min-width": "15vw",
-        top: "90vh",
-        left: "1vw",
+        top: "5vh",
+        left: "35vw",
       }}
       open={message}
       autoHideDuration={4000}
@@ -66,8 +66,8 @@ export function NotifError() {
         position: "fixed",
         "max-height": "fit-content",
         "min-width": "15vw",
-        top: "90vh",
-        left: "1vw",
+        top: "5vh",
+        left: "35vw",
       }}
       open={message}
       autoHideDuration={4000}
