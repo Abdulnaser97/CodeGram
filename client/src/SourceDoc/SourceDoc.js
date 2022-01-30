@@ -63,7 +63,7 @@ function SourceDoc(props) {
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
 
-  const [curCode, setCurCode] = useState("Select a nnode to view file");
+  const [curCode, setCurCode] = useState("Select a node to view file");
 
   // state for selected file
   const [sourceFiles, setSourceFiles] = useState(null);
@@ -293,7 +293,7 @@ function SourceDoc(props) {
     ) {
       // calls node url to get file content
       axios
-        .get(selectedEL.data.url)
+        .get(props.data.openArtifact.url)
         .then(function (response) {
           // handle success
           setCurCode(response.data);
@@ -301,6 +301,7 @@ function SourceDoc(props) {
         .catch(function (error) {
           // handle error
           console.log(error);
+          dispatch(errorNotification(`Error retrieving file content`));
         });
     }
   }, [selectedEL]);

@@ -105,7 +105,7 @@ export function useReactFlowWrapper({
   function calculatePosition(event, rfInstance) {
     if (event) {
       if (rfInstance) {
-        return rfInstance.project({ x: event.clientX, y: event.clientY - 60 });
+        return rfInstance.project({ x: event.clientX, y: event.clientY });
       } else {
         return { x: event.clientX, y: event.clientY };
       }
@@ -121,6 +121,13 @@ export function useReactFlowWrapper({
       var label = nodeName;
       var position = calculatePosition(event, rfInstance);
 
+      let url =
+        file && file.download_url !== undefined
+          ? file.download_url
+          : file && file.url !== undefined
+          ? file.url
+          : null;
+
       const newNode = {
         id: getNodeId(),
         data: {
@@ -132,12 +139,7 @@ export function useReactFlowWrapper({
           parentNodes: ["pa", "pe"],
           documentation: ["url1", "url2"],
           description: "",
-          url:
-            file && file.download_url !== undefined
-              ? file.download_url
-              : file && file.url !== undefined
-              ? file.url
-              : null,
+          url: url,
           path: file && file.path ? file.path : "",
           floatTargetHandle: false,
 
