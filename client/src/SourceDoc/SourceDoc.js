@@ -20,6 +20,7 @@ import { connect } from "react-redux";
 import SourceDocFile from "./SourceDocFile";
 import TextEditor from "../components/TextEditor.js";
 import DocsTab from "./DocsTab";
+import CodeTab from "./CodeTab";
 
 import axios from "axios";
 import { Resizable } from "re-resizable";
@@ -300,6 +301,8 @@ function SourceDoc(props) {
             console.log(error);
             dispatch(errorNotification(`Error retrieving file content`));
           });
+      } else {
+        setCurCode("Select a nnode to view a file");
       }
     }
   }, [selectedEL]);
@@ -307,12 +310,11 @@ function SourceDoc(props) {
   // search method called whenevr search var changes
   useEffect(() => {
     props.functions.setOpenArtifact("");
-    console.log(search)
-    if (!search.length){
+    console.log(search);
+    if (!search.length) {
       props.functions.setOpenArtifact(homePath);
       setPath([homePath]);
-    }
-    else if (fuse && search) {
+    } else if (fuse && search) {
       var results = fuse.search(search);
       var newResults = results.map((result) => result.item);
       setSDContent(newResults);
@@ -390,7 +392,7 @@ function SourceDoc(props) {
         <TabPanel
           value={value}
           index={1}
-          style={{ height: "90%", overflow: "scroll" }}
+          style={{ height: "85%", overflowY: "scroll" }}
         >
           <Typography
             variant="h5"
@@ -402,7 +404,12 @@ function SourceDoc(props) {
           >
             {selectedEL && selectedEL.data ? selectedEL.data.label : selectedEL}
           </Typography>
-          <pre> {`${curCode}`} </pre>
+          <CodeTab
+            rawCode={curCode}
+            fileName={
+              selectedEL && selectedEL.data ? selectedEL.data.label : ""
+            }
+          />
         </TabPanel>
         <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
           <DocsTab
