@@ -124,7 +124,9 @@ function App() {
     selectedEL,
     rfInstance,
     setSelectedEL,
-    addFileToNode
+    addFileToNode,
+    isOpenCode, 
+    setIsOpenCode
   } = useReactFlowWrapper({
     dispatch,
     selectedShapeName,
@@ -521,7 +523,8 @@ function App() {
               setIsOpenSD: setIsOpenSD,
               setElements: setElements,
               setOpenArtifact: setOpenArtifact,
-              addFileToNode: addFileToNode
+              addFileToNode: addFileToNode, 
+              setIsOpenCode: setIsOpenCode
             }}
             data={{
               repo: repo,
@@ -534,6 +537,7 @@ function App() {
               homePath: homePath,
               branch: branch,
               openArtifact: openArtifact,
+              isOpenCode: isOpenCode, 
             }}
           />
           <NotifDiagramLoading />

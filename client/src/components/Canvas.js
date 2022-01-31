@@ -542,7 +542,6 @@ export function useReactFlowWrapper({
 
 
   function nodeInputHandler(event){
-
     if (event.key === 'Enter'){
         setSearch(event.target.value)
         setNameFlag(true)
@@ -550,6 +549,12 @@ export function useReactFlowWrapper({
         setSearch(event.target.value)
       }
     }
+
+  const [isOpenCode, setIsOpenCode] = useState(false)
+
+  function handleNodeDoubleClick(event, element){
+    setIsOpenCode(true)
+  }
 
   // for pop up later 
   // console.log(selectedEL)
@@ -596,6 +601,7 @@ export function useReactFlowWrapper({
           onPaneContextMenu={handlePaneContextMenu}
           minZoom={0.1}
           maxZoom={4}
+          onNodeDoubleClick={handleNodeDoubleClick}
           // search={search}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
@@ -684,7 +690,9 @@ export function useReactFlowWrapper({
     selectedEL: selectedEL,
     rfInstance: rfInstance,
     setSelectedEL: setSelectedEL,
-    addFileToNode: addFileToNode
+    addFileToNode: addFileToNode,
+    setIsOpenCode: setIsOpenCode, 
+    isOpenCode: isOpenCode
   };
 }
 

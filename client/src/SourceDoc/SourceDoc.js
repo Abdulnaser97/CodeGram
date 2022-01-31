@@ -307,6 +307,14 @@ function SourceDoc(props) {
     }
   }, [selectedEL]);
 
+  useEffect(() => {
+    if (props.data.isOpenCode){
+      setValue(1)
+      props.functions.setIsOpenCode(false)
+    }
+    
+  }, [props.data.isOpenCode])
+
   // search method called whenevr search var changes
   useEffect(() => {
     props.functions.setOpenArtifact("");
