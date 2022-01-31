@@ -16,7 +16,7 @@ import css from "react-syntax-highlighter/dist/esm/languages/hljs/css";
 import cpp from "react-syntax-highlighter/dist/esm/languages/hljs/cpp";
 import htmlbars from "react-syntax-highlighter/dist/esm/languages/hljs/htmlbars";
 
-import "../../node_modules/highlight.js/styles/a11y-light.css";
+import { a11yLight } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 SyntaxHighlighter.registerLanguage("javascript", js);
 SyntaxHighlighter.registerLanguage("apache", apache);
@@ -54,6 +54,8 @@ function getLangFromFilename(filename) {
       return "php";
     case "c":
       return "c";
+    case "h":
+        return "c";
     case "go":
       return "go";
     case "swift":
@@ -86,6 +88,7 @@ function CodeTab({ rawCode, fileName }) {
   return (
     <SyntaxHighlighter
       language={lang}
+      style={a11yLight}
       showLineNumbers={true}
       wrapLongLines={true}
     >
