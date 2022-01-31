@@ -301,22 +301,20 @@ function SourceDoc(props) {
             console.log(error);
             dispatch(errorNotification(`Error retrieving file content`));
           });
+      } else {
+        setCurCode("Select a nnode to view a file");
       }
-    }
-    else {
-      setCurCode("Select a nnode to view a file");
     }
   }, [selectedEL]);
 
   // search method called whenevr search var changes
   useEffect(() => {
     props.functions.setOpenArtifact("");
-    console.log(search)
-    if (!search.length){
+    console.log(search);
+    if (!search.length) {
       props.functions.setOpenArtifact(homePath);
       setPath([homePath]);
-    }
-    else if (fuse && search) {
+    } else if (fuse && search) {
       var results = fuse.search(search);
       var newResults = results.map((result) => result.item);
       setSDContent(newResults);
@@ -408,6 +406,9 @@ function SourceDoc(props) {
           </Typography>
           <CodeTab
             rawCode={curCode}
+            fileName={
+              selectedEL && selectedEL.data ? selectedEL.data.label : ""
+            }
           />
         </TabPanel>
         <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
