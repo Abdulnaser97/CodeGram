@@ -1,0 +1,746 @@
+{
+    "elements": [
+        {
+            "id": "1",
+            "type": "input",
+            "data": {
+                "label": "Project Root",
+                "url": "",
+                "width": 1,
+                "height": 1
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "animated": true,
+            "style": {
+                "borderColor": "transparent",
+                "color": "transparent",
+                "background": "transparent",
+                "height": "0px",
+                "width": "0px",
+                "display": "none",
+                "justifyContent": "center",
+                "alignItems": "center",
+                "zIndex": "11"
+            }
+        },
+        {
+            "id": "randomnode_1642555106668",
+            "data": {
+                "label": "Front End",
+                "name": "",
+                "linkedFiles": [
+                    "aa.py",
+                    "gg.py",
+                    "kookoo.py"
+                ],
+                "childNodes": [
+                    "da",
+                    "de",
+                    "do"
+                ],
+                "siblingNodes": [
+                    "ta",
+                    "te",
+                    "to"
+                ],
+                "parentNodes": [
+                    "pa",
+                    "pe"
+                ],
+                "documentation": [
+                    "url1",
+                    "url2"
+                ],
+                "description": "",
+                "url": null,
+                "path": "",
+                "floatTargetHandle": false,
+                "type": "DashedShape",
+                "width": 585,
+                "height": 165
+            },
+            "type": "DashedShape",
+            "width": 100,
+            "height": 70,
+            "position": {
+                "x": 158,
+                "y": 246
+            },
+            "animated": true,
+            "style": {
+                "zIndex": "10"
+            }
+        },
+        {
+            "id": "randomnode_1642555128888",
+            "data": {
+                "label": "Distribution",
+                "name": "",
+                "linkedFiles": [
+                    "aa.py",
+                    "gg.py",
+                    "kookoo.py"
+                ],
+                "childNodes": [
+                    "da",
+                    "de",
+                    "do"
+                ],
+                "siblingNodes": [
+                    "ta",
+                    "te",
+                    "to"
+                ],
+                "parentNodes": [
+                    "pa",
+                    "pe"
+                ],
+                "documentation": [
+                    "url1",
+                    "url2"
+                ],
+                "description": "",
+                "url": null,
+                "path": "",
+                "floatTargetHandle": false,
+                "type": "FileNode",
+                "width": 120,
+                "height": 90
+            },
+            "type": "FileNode",
+            "width": 100,
+            "height": 70,
+            "position": {
+                "x": 216.99999999999994,
+                "y": 282
+            },
+            "animated": true,
+            "style": {
+                "zIndex": "12"
+            }
+        },
+        {
+            "id": "randomnode_1643572180947",
+            "data": {
+                "label": "Back End",
+                "name": "",
+                "linkedFiles": [
+                    "aa.py",
+                    "gg.py",
+                    "kookoo.py"
+                ],
+                "childNodes": [
+                    "da",
+                    "de",
+                    "do"
+                ],
+                "siblingNodes": [
+                    "ta",
+                    "te",
+                    "to"
+                ],
+                "parentNodes": [
+                    "pa",
+                    "pe"
+                ],
+                "documentation": [
+                    "url1",
+                    "url2"
+                ],
+                "description": "",
+                "url": null,
+                "path": "",
+                "floatTargetHandle": false,
+                "type": "DashedShape",
+                "width": 600,
+                "height": 345
+            },
+            "type": "DashedShape",
+            "width": 90,
+            "height": 60,
+            "position": {
+                "x": 150,
+                "y": 464.99999999999994
+            },
+            "animated": true,
+            "style": {
+                "zIndex": "8"
+            }
+        },
+        {
+            "id": "randomnode_1643572424203",
+            "data": {
+                "label": "Get",
+                "name": "",
+                "linkedFiles": [
+                    "aa.py",
+                    "gg.py",
+                    "kookoo.py"
+                ],
+                "childNodes": [
+                    "da",
+                    "de",
+                    "do"
+                ],
+                "siblingNodes": [
+                    "ta",
+                    "te",
+                    "to"
+                ],
+                "parentNodes": [
+                    "pa",
+                    "pe"
+                ],
+                "documentation": [
+                    "url1",
+                    "url2"
+                ],
+                "description": "",
+                "url": null,
+                "path": "",
+                "floatTargetHandle": false,
+                "type": "FileNode",
+                "width": 90,
+                "height": 60
+            },
+            "type": "FileNode",
+            "width": 90,
+            "height": 60,
+            "position": {
+                "x": 180.00000000000003,
+                "y": 585
+            },
+            "animated": true,
+            "style": {
+                "zIndex": "14"
+            }
+        },
+        {
+            "id": "randomnode_1643572430780",
+            "data": {
+                "label": "List",
+                "name": "",
+                "linkedFiles": [
+                    "aa.py",
+                    "gg.py",
+                    "kookoo.py"
+                ],
+                "childNodes": [
+                    "da",
+                    "de",
+                    "do"
+                ],
+                "siblingNodes": [
+                    "ta",
+                    "te",
+                    "to"
+                ],
+                "parentNodes": [
+                    "pa",
+                    "pe"
+                ],
+                "documentation": [
+                    "url1",
+                    "url2"
+                ],
+                "description": "",
+                "url": null,
+                "path": "",
+                "floatTargetHandle": false,
+                "type": "FileNode",
+                "width": 90,
+                "height": 60
+            },
+            "type": "FileNode",
+            "width": 90,
+            "height": 60,
+            "position": {
+                "x": 285,
+                "y": 585
+            },
+            "animated": true,
+            "style": {
+                "zIndex": "15"
+            }
+        },
+        {
+            "id": "randomnode_1643572438432",
+            "data": {
+                "label": "Create",
+                "name": "",
+                "linkedFiles": [
+                    "aa.py",
+                    "gg.py",
+                    "kookoo.py"
+                ],
+                "childNodes": [
+                    "da",
+                    "de",
+                    "do"
+                ],
+                "siblingNodes": [
+                    "ta",
+                    "te",
+                    "to"
+                ],
+                "parentNodes": [
+                    "pa",
+                    "pe"
+                ],
+                "documentation": [
+                    "url1",
+                    "url2"
+                ],
+                "description": "",
+                "url": null,
+                "path": "",
+                "floatTargetHandle": false,
+                "type": "FileNode",
+                "width": 90,
+                "height": 60
+            },
+            "type": "FileNode",
+            "width": 90,
+            "height": 60,
+            "position": {
+                "x": 390,
+                "y": 585
+            },
+            "animated": true,
+            "style": {
+                "zIndex": "16"
+            }
+        },
+        {
+            "id": "randomnode_1643572451712",
+            "data": {
+                "label": "Update",
+                "name": "",
+                "linkedFiles": [
+                    "aa.py",
+                    "gg.py",
+                    "kookoo.py"
+                ],
+                "childNodes": [
+                    "da",
+                    "de",
+                    "do"
+                ],
+                "siblingNodes": [
+                    "ta",
+                    "te",
+                    "to"
+                ],
+                "parentNodes": [
+                    "pa",
+                    "pe"
+                ],
+                "documentation": [
+                    "url1",
+                    "url2"
+                ],
+                "description": "",
+                "url": null,
+                "path": "",
+                "floatTargetHandle": false,
+                "type": "FileNode",
+                "width": 90,
+                "height": 60
+            },
+            "type": "FileNode",
+            "width": 90,
+            "height": 60,
+            "position": {
+                "x": 495,
+                "y": 585
+            },
+            "animated": true,
+            "style": {
+                "zIndex": "17"
+            }
+        },
+        {
+            "id": "randomnode_1643572468127",
+            "data": {
+                "label": "Delete",
+                "name": "",
+                "linkedFiles": [
+                    "aa.py",
+                    "gg.py",
+                    "kookoo.py"
+                ],
+                "childNodes": [
+                    "da",
+                    "de",
+                    "do"
+                ],
+                "siblingNodes": [
+                    "ta",
+                    "te",
+                    "to"
+                ],
+                "parentNodes": [
+                    "pa",
+                    "pe"
+                ],
+                "documentation": [
+                    "url1",
+                    "url2"
+                ],
+                "description": "",
+                "url": null,
+                "path": "",
+                "floatTargetHandle": false,
+                "type": "FileNode",
+                "width": 90,
+                "height": 60
+            },
+            "type": "FileNode",
+            "width": 90,
+            "height": 60,
+            "position": {
+                "x": 600,
+                "y": 585
+            },
+            "animated": true,
+            "style": {
+                "zIndex": "18"
+            }
+        },
+        {
+            "id": "randomnode_1643572544313",
+            "data": {
+                "label": "API Endpoints",
+                "name": "",
+                "linkedFiles": [
+                    "aa.py",
+                    "gg.py",
+                    "kookoo.py"
+                ],
+                "childNodes": [
+                    "da",
+                    "de",
+                    "do"
+                ],
+                "siblingNodes": [
+                    "ta",
+                    "te",
+                    "to"
+                ],
+                "parentNodes": [
+                    "pa",
+                    "pe"
+                ],
+                "documentation": [
+                    "url1",
+                    "url2"
+                ],
+                "description": "",
+                "url": null,
+                "path": "",
+                "floatTargetHandle": false,
+                "type": "CircleShape",
+                "width": 555,
+                "height": 135
+            },
+            "type": "CircleShape",
+            "width": 90,
+            "height": 60,
+            "position": {
+                "x": 165,
+                "y": 540
+            },
+            "animated": true,
+            "style": {
+                "zIndex": "9"
+            }
+        },
+        {
+            "id": "randomnode_1643573133853",
+            "data": {
+                "label": "Authentication",
+                "name": "",
+                "linkedFiles": [
+                    "aa.py",
+                    "gg.py",
+                    "kookoo.py"
+                ],
+                "childNodes": [
+                    "da",
+                    "de",
+                    "do"
+                ],
+                "siblingNodes": [
+                    "ta",
+                    "te",
+                    "to"
+                ],
+                "parentNodes": [
+                    "pa",
+                    "pe"
+                ],
+                "documentation": [
+                    "url1",
+                    "url2"
+                ],
+                "description": "",
+                "url": null,
+                "path": "",
+                "floatTargetHandle": false,
+                "type": "FileNode",
+                "width": 120,
+                "height": 90
+            },
+            "type": "FileNode",
+            "width": 90,
+            "height": 60,
+            "position": {
+                "x": 555,
+                "y": 285
+            },
+            "animated": true,
+            "style": {
+                "zIndex": "19"
+            }
+        },
+        {
+            "id": "randomnode_1643639619838",
+            "data": {
+                "label": "Database",
+                "name": "",
+                "linkedFiles": [
+                    "aa.py",
+                    "gg.py",
+                    "kookoo.py"
+                ],
+                "childNodes": [
+                    "da",
+                    "de",
+                    "do"
+                ],
+                "siblingNodes": [
+                    "ta",
+                    "te",
+                    "to"
+                ],
+                "parentNodes": [
+                    "pa",
+                    "pe"
+                ],
+                "documentation": [
+                    "url1",
+                    "url2"
+                ],
+                "description": "",
+                "url": null,
+                "path": "",
+                "floatTargetHandle": false,
+                "type": "FileNode",
+                "width": 90,
+                "height": 60
+            },
+            "type": "FileNode",
+            "width": 90,
+            "height": 60,
+            "position": {
+                "x": 390,
+                "y": 735
+            },
+            "animated": true,
+            "style": {
+                "zIndex": "20"
+            }
+        },
+        {
+            "id": "randomnode_1643650412183",
+            "data": {
+                "label": "Web Asset Storage",
+                "name": "",
+                "linkedFiles": [
+                    "aa.py",
+                    "gg.py",
+                    "kookoo.py"
+                ],
+                "childNodes": [
+                    "da",
+                    "de",
+                    "do"
+                ],
+                "siblingNodes": [
+                    "ta",
+                    "te",
+                    "to"
+                ],
+                "parentNodes": [
+                    "pa",
+                    "pe"
+                ],
+                "documentation": [
+                    "url1",
+                    "url2"
+                ],
+                "description": "",
+                "url": null,
+                "path": "",
+                "floatTargetHandle": false,
+                "type": "FileNode",
+                "width": 90,
+                "height": 60
+            },
+            "type": "FileNode",
+            "width": 90,
+            "height": 60,
+            "position": {
+                "x": 405,
+                "y": 300
+            },
+            "animated": true,
+            "style": {
+                "zIndex": "21"
+            }
+        },
+        {
+            "source": "randomnode_1643572180947",
+            "sourceHandle": "top-handle-randomnode_1643572180947",
+            "target": "randomnode_1642555106668",
+            "targetHandle": "target-handle-randomnode_1642555106668",
+            "type": "floating",
+            "arrowHeadType": "arrow",
+            "data": {
+                "label": "",
+                "wiki": ""
+            },
+            "id": "reactflow__edge-randomnode_1643572180947top-handle-randomnode_1643572180947-randomnode_1642555106668target-handle-randomnode_1642555106668",
+            "style": {
+                "zIndex": "7"
+            }
+        },
+        {
+            "source": "randomnode_1643572180947",
+            "sourceHandle": "target-handle-randomnode_1643572180947",
+            "target": "randomnode_1643572180947",
+            "targetHandle": "target-handle-randomnode_1643572180947",
+            "type": "floating",
+            "arrowHeadType": "arrow",
+            "data": {
+                "label": "",
+                "wiki": ""
+            },
+            "id": "reactflow__edge-randomnode_1643572180947target-handle-randomnode_1643572180947-randomnode_1643572180947target-handle-randomnode_1643572180947"
+        },
+        {
+            "source": "randomnode_1643639619838",
+            "sourceHandle": "top-handle-randomnode_1643639619838",
+            "target": "randomnode_1643572424203",
+            "targetHandle": "target-handle-randomnode_1643572424203",
+            "type": "floating",
+            "arrowHeadType": "arrow",
+            "data": {
+                "label": "",
+                "wiki": ""
+            },
+            "id": "reactflow__edge-randomnode_1643639619838top-handle-randomnode_1643639619838-randomnode_1643572424203target-handle-randomnode_1643572424203"
+        },
+        {
+            "source": "randomnode_1643639619838",
+            "sourceHandle": "top-handle-randomnode_1643639619838",
+            "target": "randomnode_1643572430780",
+            "targetHandle": "target-handle-randomnode_1643572430780",
+            "type": "floating",
+            "arrowHeadType": "arrow",
+            "data": {
+                "label": "",
+                "wiki": ""
+            },
+            "id": "reactflow__edge-randomnode_1643639619838top-handle-randomnode_1643639619838-randomnode_1643572430780target-handle-randomnode_1643572430780"
+        },
+        {
+            "source": "randomnode_1643639619838",
+            "sourceHandle": "top-handle-randomnode_1643639619838",
+            "target": "randomnode_1643572438432",
+            "targetHandle": "target-handle-randomnode_1643572438432",
+            "type": "floating",
+            "arrowHeadType": "arrow",
+            "data": {
+                "label": "",
+                "wiki": ""
+            },
+            "id": "reactflow__edge-randomnode_1643639619838top-handle-randomnode_1643639619838-randomnode_1643572438432target-handle-randomnode_1643572438432"
+        },
+        {
+            "source": "randomnode_1643639619838",
+            "sourceHandle": "top-handle-randomnode_1643639619838",
+            "target": "randomnode_1643572451712",
+            "targetHandle": "target-handle-randomnode_1643572451712",
+            "type": "floating",
+            "arrowHeadType": "arrow",
+            "data": {
+                "label": "",
+                "wiki": ""
+            },
+            "id": "reactflow__edge-randomnode_1643639619838top-handle-randomnode_1643639619838-randomnode_1643572451712target-handle-randomnode_1643572451712"
+        },
+        {
+            "source": "randomnode_1643639619838",
+            "sourceHandle": "top-handle-randomnode_1643639619838",
+            "target": "randomnode_1643572468127",
+            "targetHandle": "target-handle-randomnode_1643572468127",
+            "type": "floating",
+            "arrowHeadType": "arrow",
+            "data": {
+                "label": "",
+                "wiki": ""
+            },
+            "id": "reactflow__edge-randomnode_1643639619838top-handle-randomnode_1643639619838-randomnode_1643572468127target-handle-randomnode_1643572468127"
+        },
+        {
+            "source": "randomnode_1643573133853",
+            "sourceHandle": "target-handle-randomnode_1643573133853",
+            "target": "randomnode_1643573133853",
+            "targetHandle": "target-handle-randomnode_1643573133853",
+            "type": "floating",
+            "arrowHeadType": "arrow",
+            "data": {
+                "label": "",
+                "wiki": ""
+            },
+            "id": "reactflow__edge-randomnode_1643573133853target-handle-randomnode_1643573133853-randomnode_1643573133853target-handle-randomnode_1643573133853"
+        },
+        {
+            "source": "randomnode_1643650412183",
+            "sourceHandle": "right-handle-randomnode_1643650412183",
+            "target": "randomnode_1643573133853",
+            "targetHandle": "target-handle-randomnode_1643573133853",
+            "type": "floating",
+            "arrowHeadType": "arrow",
+            "data": {
+                "label": "",
+                "wiki": ""
+            },
+            "id": "reactflow__edge-randomnode_1643650412183right-handle-randomnode_1643650412183-randomnode_1643573133853target-handle-randomnode_1643573133853"
+        },
+        {
+            "source": "randomnode_1643650412183",
+            "sourceHandle": "right-handle-randomnode_1643650412183",
+            "target": "randomnode_1642555128888",
+            "targetHandle": "target-handle-randomnode_1642555128888",
+            "type": "floating",
+            "arrowHeadType": "arrow",
+            "data": {
+                "label": "",
+                "wiki": ""
+            },
+            "id": "reactflow__edge-randomnode_1643650412183right-handle-randomnode_1643650412183-randomnode_1642555128888target-handle-randomnode_1642555128888"
+        }
+    ],
+    "position": [
+        170.15090524464972,
+        -47.28907617283579
+    ],
+    "zoom": 0.6399362069221587
+}
+
+
