@@ -106,7 +106,8 @@ export function useReactFlowWrapper({
   const [selectedNodeEvent, setSelectedNodeEvent] = useState(null);
   const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
   const { project } = useZoomPanHelper();
-
+  const [tabValue, setTabValue] = useState(0)
+  
   // Projects event click position to RF coordinates
   function calculatePosition(
     event = null,
@@ -549,7 +550,13 @@ export function useReactFlowWrapper({
     }
   }
 
-  // for pop up later
+
+
+  function handleNodeDoubleClick(event, element){
+    setTabValue(1)
+  }
+
+  // for pop up later 
   // console.log(selectedEL)
   // useEffect(() => {
   //   if (fuse && search) {
@@ -594,6 +601,7 @@ export function useReactFlowWrapper({
           onPaneContextMenu={handlePaneContextMenu}
           minZoom={0.1}
           maxZoom={4}
+          onNodeDoubleClick={handleNodeDoubleClick}
           // search={search}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
@@ -683,6 +691,8 @@ export function useReactFlowWrapper({
     rfInstance: rfInstance,
     setSelectedEL: setSelectedEL,
     addFileToNode: addFileToNode,
+    setTabValue: setTabValue, 
+    tabValue: tabValue
   };
 }
 

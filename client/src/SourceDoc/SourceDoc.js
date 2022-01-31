@@ -280,13 +280,18 @@ function SourceDoc(props) {
   // Tabs: handlers for state of tabs
   const handleChange = (event, newValue) => {
     setValue(newValue);
+
   };
 
   useEffect(() => {
     if (!selectedEL) {
       console.log(`noELementSelected`);
       setValue(0);
-    } else {
+    } 
+    else if (!selectedEL.data.label){
+      setValue(0);
+    }
+    else {
       setValue(2);
       if (props.data.openArtifact.url) {
         // calls node url to get file content
@@ -307,10 +312,20 @@ function SourceDoc(props) {
     }
   }, [selectedEL]);
 
+  useEffect(() => {
+    props.functions.setTabValue(value)
+  }, [value]) 
+
+  useEffect(() => {
+    if (props.data.tabValue != value)
+      setValue(props.data.tabValue)    
+  }, [props.data.tabValue])
+
   // search method called whenevr search var changes
   useEffect(() => {
     props.functions.setOpenArtifact("");
     console.log(search);
+    console.log(search.length)
     if (!search.length) {
       props.functions.setOpenArtifact(homePath);
       setPath([homePath]);

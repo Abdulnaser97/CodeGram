@@ -124,7 +124,9 @@ function App() {
     selectedEL,
     rfInstance,
     setSelectedEL,
-    addFileToNode
+    addFileToNode,
+    tabValue, 
+    setTabValue
   } = useReactFlowWrapper({
     dispatch,
     selectedShapeName,
@@ -495,6 +497,7 @@ function App() {
               placeholder="Search Repo Content"
               onChange={handleSearch}
               onKeyPress={handleSearch}
+              onClick={() => setTabValue(0)}
               style={{
                 "z-index": 0,
                 border: "none",
@@ -521,7 +524,8 @@ function App() {
               setIsOpenSD: setIsOpenSD,
               setElements: setElements,
               setOpenArtifact: setOpenArtifact,
-              addFileToNode: addFileToNode
+              addFileToNode: addFileToNode, 
+              setTabValue: setTabValue
             }}
             data={{
               repo: repo,
@@ -534,6 +538,7 @@ function App() {
               homePath: homePath,
               branch: branch,
               openArtifact: openArtifact,
+              tabValue: tabValue, 
             }}
           />
           <NotifDiagramLoading />
