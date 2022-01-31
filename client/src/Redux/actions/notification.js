@@ -1,4 +1,8 @@
-import { ERROR_NOTIFICATION, SUCCESS_NOTIFICATION } from "../constants";
+import { 
+  ERROR_NOTIFICATION, 
+  SUCCESS_NOTIFICATION, 
+  LOADING_NOTIFICATION 
+} from "../constants";
 
 export function successNotification(message) {
   return {
@@ -13,3 +17,12 @@ export function errorNotification(message) {
     payload: message,
   };
 }
+
+//Add in loading notification
+export function loadingNotification(message) {
+  return {
+    type: LOADING_NOTIFICATION,
+    payload: message,
+  };
+}
+

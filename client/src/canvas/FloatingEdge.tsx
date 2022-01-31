@@ -45,6 +45,7 @@ const FloatingEdge: FC<EdgeProps> = ({
     targetPosition: targetPos,
     targetX: tx,
     targetY: ty,
+    borderRadius: 20,
   });
 
   return (

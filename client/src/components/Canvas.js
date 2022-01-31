@@ -22,6 +22,10 @@ import {
   sendToBack,
 } from "../Redux/actions/nodes";
 
+import {
+  updateRepoFile
+} from "../Redux/actions/repoFiles";
+
 import FloatingEdge from "../canvas/FloatingEdge.tsx";
 import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
 
@@ -82,6 +86,9 @@ export function useReactFlowWrapper({
   activeToolBarButton,
   setActiveToolBarButton,
   setOpenArtifact,
+  search,
+  setSearch, 
+  fuse
 }) {
   const { RFState, nodesZIndex } = useSelector((state) => {
     return { RFState: state.RFState, nodesZIndex: state.nodes.nodesZIndex };
@@ -102,24 +109,43 @@ export function useReactFlowWrapper({
   const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
 
   // Projects event click position to RF coordinates
-  function calculatePosition(event, rfInstance) {
+  function calculatePosition(
+    event = null,
+    rfInstance = null,
+    oldPosition = null
+  ) {
+    let position = null;
     if (event) {
       if (rfInstance) {
-        return rfInstance.project({ x: event.clientX, y: event.clientY - 60 });
+        position = rfInstance.project({ x: event.clientX, y: event.clientY });
       } else {
-        return { x: event.clientX, y: event.clientY };
+        position = { x: event.clientX, y: event.clientY };
       }
+    } else if (oldPosition) {
+      position = { x: oldPosition.x + 30, y: oldPosition.y + 30 };
     } else {
-      return { x: 500, y: 400 };
+      position = { x: 500, y: 400 };
     }
+
+    // Make coordinate a multiple of 15 so it snaps to grid
+    position.x = Math.floor(position.x / 15) * 15;
+    position.y = Math.floor(position.y / 15) * 15;
+    return position;
   }
   // Add node function
   const addNode = useCallback(
     (props) => {
       var file = props.file ? props.file : null;
       var event = props.event ? props.event : null;
-      var label = nodeName;
+      var label = '';
       var position = calculatePosition(event, rfInstance);
+
+      let url =
+        file && file.download_url !== undefined
+          ? file.download_url
+          : file && file.url !== undefined
+          ? file.url
+          : null;
 
       const newNode = {
         id: getNodeId(),
@@ -132,12 +158,7 @@ export function useReactFlowWrapper({
           parentNodes: ["pa", "pe"],
           documentation: ["url1", "url2"],
           description: "",
-          url:
-            file && file.download_url !== undefined
-              ? file.download_url
-              : file && file.url !== undefined
-              ? file.url
-              : null,
+          url: url,
           path: file && file.path ? file.path : "",
           floatTargetHandle: false,
 
@@ -145,15 +166,26 @@ export function useReactFlowWrapper({
           // but the type will probably be set from a few different places
           type: file ? "FileNode" : selectedShapeName.current,
           width:
-            selectedShapeName.current && !file === "DashedShape" ? 300 : 100,
+            selectedShapeName.current && !file === "DashedShape"
+              ? Math.floor(300 / 15) * 15
+              : Math.floor(100 / 15) * 15,
           height:
-            selectedShapeName.current && !file === "DashedShape" ? 150 : 70,
+            selectedShapeName.current && !file === "DashedShape"
+              ? Math.floor(150 / 15) * 15
+              : Math.floor(70 / 15) * 15,
           // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
           //file: file
+          nodeInputHandler:nodeInputHandler
         },
         type: file ? "FileNode" : selectedShapeName.current,
-        width: selectedShapeName.current && !file === "DashedShape" ? 300 : 100,
-        height: selectedShapeName.current && !file === "DashedShape" ? 150 : 70,
+        width:
+          selectedShapeName.current && !file === "DashedShape"
+            ? Math.floor(300 / 15) * 15
+            : Math.floor(100 / 15) * 15,
+        height:
+          selectedShapeName.current && !file === "DashedShape"
+            ? Math.floor(150 / 15) * 15
+            : Math.floor(70 / 15) * 15,
         position: {
           x: position.x,
           y: position.y,
@@ -238,6 +270,8 @@ export function useReactFlowWrapper({
     if (activeToolBarButton === "selectShape") {
       await addNode({ event: event });
       setActiveToolBarButton("cursor");
+    } else {
+      setSelectedEL(null);
     }
   };
 
@@ -351,45 +385,52 @@ export function useReactFlowWrapper({
     handleContextMenuClose();
   };
 
-  const onCopy = (event) => {
-    event.preventDefault();
-    let copyEl = JSON.parse(JSON.stringify(selectedEL));
-    copyEl.id = getNodeId();
-    setClipBoard(copyEl);
-    handleContextMenuClose();
+  const onCopy = (event = null) => {
+    if (
+      selectedEL &&
+      document.activeElement.tagName !== "INPUT" &&
+      document.activeElement.tagName !== "DIV"
+    ) {
+      if (event) {
+        event.preventDefault();
+      }
+
+      let copyEl = JSON.parse(JSON.stringify(selectedEL));
+      setClipBoard(copyEl);
+
+      if (event) {
+        handleContextMenuClose();
+      }
+    }
   };
 
-  const onPaste = (event) => {
-    event.preventDefault();
-    if (clipBoard) {
-      setElements((els) => els.concat(clipBoard));
-      dispatch(addNodeToArray(clipBoard));
+  const onPaste = (event = null) => {
+    if (event) {
+      event.preventDefault();
     }
-    handleContextMenuClose();
+    if (clipBoard) {
+      let newNode = clipBoard;
+      newNode.id = getNodeId();
+      newNode.position = calculatePosition(event, rfInstance, newNode.position);
+      console.log("newNode is: ", newNode);
+      setElements((els) => els.concat(newNode));
+      dispatch(addNodeToArray(newNode));
+    }
+    if (event) {
+      handleContextMenuClose();
+    }
   };
 
   const keydownHandler = (e) => {
     // Ctrl + C (Cmd + C) for copy
     if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
-      if (
-        selectedEL &&
-        document.activeElement.tagName !== "INPUT" &&
-        document.activeElement.tagName !== "DIV"
-      ) {
-        let copyEl = JSON.parse(JSON.stringify(selectedEL));
-        copyEl.id = getNodeId();
-        setClipBoard(copyEl);
-      }
+      onCopy();
     }
 
     // Ctrl + V (Cmd + V) for paste
     if (e.keyCode === 86 && (e.ctrlKey || e.metaKey)) {
       if (clipBoard) {
-        clipBoard.position.x += 70;
-        clipBoard.position.y -= 70;
-        setClipBoard(clipBoard);
-        setElements((els) => els.concat(clipBoard));
-        dispatch(addNodeToArray(clipBoard));
+        onPaste();
       }
     }
 
@@ -428,6 +469,7 @@ export function useReactFlowWrapper({
       }
     }
   };
+
   useEffect(() => {
     document.addEventListener("keydown", keydownHandler);
 
@@ -435,6 +477,89 @@ export function useReactFlowWrapper({
       document.removeEventListener("keydown", keydownHandler);
     };
   });
+
+  const addFileToNode = (file) => {
+    console.log(selectedEL)
+    var selEl = null;
+    setElements((els) =>
+      els.map((el) => {
+        if (el.id === selectedEL.id) {
+          // it's important that you create a new object here
+          // in order to notify react flow about the change
+          el.data = {
+            ...el.data,
+            label: file.name,
+            url:
+            file && file.download_url !== undefined
+              ? file.download_url
+              : file && file.url !== undefined
+              ? file.url
+              : null,
+          path: file && file.path ? file.path : "",
+          floatTargetHandle: false,
+
+          // can set this type to whatever is selected in the tool bar for now
+          // but the type will probably be set from a few different places
+          type: file ? "FileNode" : selectedShapeName.current,
+          };
+          selEl = el;
+        }
+
+        return el;
+      })
+    );
+    setSelectedEL(selEl);
+    dispatch(updateRepoFile(selEl));
+  }
+
+  const [nameFlag, setNameFlag] = useState(false)
+
+  const setter = (value) => {
+    setElements((els) =>
+      els.map((el) => {
+        if (el.id === selectedEL.id) {
+          el.data = {
+            ...el.data, 
+            label: value
+          };
+          setSelectedEL(el)
+          setSearch('')
+        }
+        return el;
+      })
+    );
+  }
+
+  useEffect (() => { 
+    // console.log(selectedEL)
+    if (nameFlag){
+      setter(search) 
+      setNameFlag(false)
+    }
+
+  }, [nameFlag])
+
+
+
+  function nodeInputHandler(event){
+
+    if (event.key === 'Enter'){
+        setSearch(event.target.value)
+        setNameFlag(true)
+      } else {
+        setSearch(event.target.value)
+      }
+    }
+
+  // for pop up later 
+  // console.log(selectedEL)
+  // useEffect(() => {
+  //   if (fuse && search) {
+  //     var results = fuse.search(search);
+  //     var newResults = results.map((result) => result.item);
+  //     setFileResults(newResults);
+  //   }
+  // }, [search])
 
   return {
     render: (
@@ -455,6 +580,7 @@ export function useReactFlowWrapper({
           onLoad={setRfInstance}
           onElementClick={onElementClick}
           snapToGrid
+          snapGrid={[15, 15]}
           key="floating"
           onConnectStart={onConnectStart}
           onConnectStop={onConnectStop}
@@ -468,6 +594,9 @@ export function useReactFlowWrapper({
           onNodeContextMenu={handleContextMenu}
           onEdgeContextMenu={handleEdgeContextMenu}
           onPaneContextMenu={handlePaneContextMenu}
+          minZoom={0.1}
+          maxZoom={4}
+          // search={search}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>
@@ -527,6 +656,22 @@ export function useReactFlowWrapper({
               </div>
             </MenuItem>
           )}
+          {/* {search !== null && contextMenu === null  && (
+            <MenuItem
+              style={{ position: "relative", width: "15vw", backgroundClolor:'red' }}
+            >
+               <div className="menu-item">
+                <h1>HELLO!</h1>
+              {
+                fileResults && fileResults.map((file) => {
+                  <div className="menu-text">
+                    {file.name}
+                  </div> 
+                })
+              }          
+               </div>
+            </MenuItem> */}
+          {/* )} */}
         </Menu>
       </div>
     ),
@@ -539,6 +684,7 @@ export function useReactFlowWrapper({
     selectedEL: selectedEL,
     rfInstance: rfInstance,
     setSelectedEL: setSelectedEL,
+    addFileToNode: addFileToNode
   };
 }
 
