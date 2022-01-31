@@ -42,11 +42,13 @@ import SourceDocButton from "./Media/SourceDocButton";
 import useToolBar from "./components/ToolBar.js";
 import {
   NotifDiagramLoaded,
+  NotifDiagramLoading,
   NotifError,
 } from "./components/NotificationsPopups";
 import {
   errorNotification,
   successNotification,
+  loadingNotification,
 } from "./Redux/actions/notification";
 
 const LogoTopNav = styled.div`
@@ -274,6 +276,9 @@ function App() {
     try {
       if (repo && repository && !repoFiles.isFetchingFiles && branch) {
         var homeDir = [];
+
+        dispatch(loadingNotification(repo + " is being loaded"));
+        console.log("Loading Diagram!");
 
         // push home directory files into home path as array
         for (const [key, val] of Object.entries(repository)) {
@@ -531,6 +536,7 @@ function App() {
               openArtifact: openArtifact,
             }}
           />
+          <NotifDiagramLoading />
 
           <NotifDiagramLoaded />
         </div>

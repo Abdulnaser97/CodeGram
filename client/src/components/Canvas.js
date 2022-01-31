@@ -109,16 +109,28 @@ export function useReactFlowWrapper({
   const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
 
   // Projects event click position to RF coordinates
-  function calculatePosition(event, rfInstance) {
+  function calculatePosition(
+    event = null,
+    rfInstance = null,
+    oldPosition = null
+  ) {
+    let position = null;
     if (event) {
       if (rfInstance) {
-        return rfInstance.project({ x: event.clientX, y: event.clientY - 60 });
+        position = rfInstance.project({ x: event.clientX, y: event.clientY });
       } else {
-        return { x: event.clientX, y: event.clientY };
+        position = { x: event.clientX, y: event.clientY };
       }
+    } else if (oldPosition) {
+      position = { x: oldPosition.x + 30, y: oldPosition.y + 30 };
     } else {
-      return { x: 500, y: 400 };
+      position = { x: 500, y: 400 };
     }
+
+    // Make coordinate a multiple of 15 so it snaps to grid
+    position.x = Math.floor(position.x / 15) * 15;
+    position.y = Math.floor(position.y / 15) * 15;
+    return position;
   }
   // Add node function
   const addNode = useCallback(
@@ -127,6 +139,13 @@ export function useReactFlowWrapper({
       var event = props.event ? props.event : null;
       var label = '';
       var position = calculatePosition(event, rfInstance);
+
+      let url =
+        file && file.download_url !== undefined
+          ? file.download_url
+          : file && file.url !== undefined
+          ? file.url
+          : null;
 
       const newNode = {
         id: getNodeId(),
@@ -139,12 +158,7 @@ export function useReactFlowWrapper({
           parentNodes: ["pa", "pe"],
           documentation: ["url1", "url2"],
           description: "",
-          url:
-            file && file.download_url !== undefined
-              ? file.download_url
-              : file && file.url !== undefined
-              ? file.url
-              : null,
+          url: url,
           path: file && file.path ? file.path : "",
           floatTargetHandle: false,
 
@@ -152,16 +166,26 @@ export function useReactFlowWrapper({
           // but the type will probably be set from a few different places
           type: file ? "FileNode" : selectedShapeName.current,
           width:
-            selectedShapeName.current && !file === "DashedShape" ? 300 : 100,
+            selectedShapeName.current && !file === "DashedShape"
+              ? Math.floor(300 / 15) * 15
+              : Math.floor(100 / 15) * 15,
           height:
-            selectedShapeName.current && !file === "DashedShape" ? 150 : 70,
+            selectedShapeName.current && !file === "DashedShape"
+              ? Math.floor(150 / 15) * 15
+              : Math.floor(70 / 15) * 15,
           // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
           //file: file
           nodeInputHandler:nodeInputHandler
         },
         type: file ? "FileNode" : selectedShapeName.current,
-        width: selectedShapeName.current && !file === "DashedShape" ? 300 : 100,
-        height: selectedShapeName.current && !file === "DashedShape" ? 150 : 70,
+        width:
+          selectedShapeName.current && !file === "DashedShape"
+            ? Math.floor(300 / 15) * 15
+            : Math.floor(100 / 15) * 15,
+        height:
+          selectedShapeName.current && !file === "DashedShape"
+            ? Math.floor(150 / 15) * 15
+            : Math.floor(70 / 15) * 15,
         position: {
           x: position.x,
           y: position.y,
@@ -246,6 +270,8 @@ export function useReactFlowWrapper({
     if (activeToolBarButton === "selectShape") {
       await addNode({ event: event });
       setActiveToolBarButton("cursor");
+    } else {
+      setSelectedEL(null);
     }
   };
 
@@ -359,45 +385,52 @@ export function useReactFlowWrapper({
     handleContextMenuClose();
   };
 
-  const onCopy = (event) => {
-    event.preventDefault();
-    let copyEl = JSON.parse(JSON.stringify(selectedEL));
-    copyEl.id = getNodeId();
-    setClipBoard(copyEl);
-    handleContextMenuClose();
+  const onCopy = (event = null) => {
+    if (
+      selectedEL &&
+      document.activeElement.tagName !== "INPUT" &&
+      document.activeElement.tagName !== "DIV"
+    ) {
+      if (event) {
+        event.preventDefault();
+      }
+
+      let copyEl = JSON.parse(JSON.stringify(selectedEL));
+      setClipBoard(copyEl);
+
+      if (event) {
+        handleContextMenuClose();
+      }
+    }
   };
 
-  const onPaste = (event) => {
-    event.preventDefault();
-    if (clipBoard) {
-      setElements((els) => els.concat(clipBoard));
-      dispatch(addNodeToArray(clipBoard));
+  const onPaste = (event = null) => {
+    if (event) {
+      event.preventDefault();
     }
-    handleContextMenuClose();
+    if (clipBoard) {
+      let newNode = clipBoard;
+      newNode.id = getNodeId();
+      newNode.position = calculatePosition(event, rfInstance, newNode.position);
+      console.log("newNode is: ", newNode);
+      setElements((els) => els.concat(newNode));
+      dispatch(addNodeToArray(newNode));
+    }
+    if (event) {
+      handleContextMenuClose();
+    }
   };
 
   const keydownHandler = (e) => {
     // Ctrl + C (Cmd + C) for copy
     if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
-      if (
-        selectedEL &&
-        document.activeElement.tagName !== "INPUT" &&
-        document.activeElement.tagName !== "DIV"
-      ) {
-        let copyEl = JSON.parse(JSON.stringify(selectedEL));
-        copyEl.id = getNodeId();
-        setClipBoard(copyEl);
-      }
+      onCopy();
     }
 
     // Ctrl + V (Cmd + V) for paste
     if (e.keyCode === 86 && (e.ctrlKey || e.metaKey)) {
       if (clipBoard) {
-        clipBoard.position.x += 70;
-        clipBoard.position.y -= 70;
-        setClipBoard(clipBoard);
-        setElements((els) => els.concat(clipBoard));
-        dispatch(addNodeToArray(clipBoard));
+        onPaste();
       }
     }
 
@@ -547,6 +580,7 @@ export function useReactFlowWrapper({
           onLoad={setRfInstance}
           onElementClick={onElementClick}
           snapToGrid
+          snapGrid={[15, 15]}
           key="floating"
           onConnectStart={onConnectStart}
           onConnectStop={onConnectStop}
@@ -560,7 +594,9 @@ export function useReactFlowWrapper({
           onNodeContextMenu={handleContextMenu}
           onEdgeContextMenu={handleEdgeContextMenu}
           onPaneContextMenu={handlePaneContextMenu}
-          search={search}
+          minZoom={0.1}
+          maxZoom={4}
+          // search={search}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>

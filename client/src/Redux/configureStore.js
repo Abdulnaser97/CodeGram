@@ -17,7 +17,7 @@ import thunk from "redux-thunk";
 import repoReducer from "./reducers/repoReducer";
 import { loadDiagramToStore } from "./actions/loadDiagram";
 import { notificationReducer } from "./reducers/notificationReducer";
-import { successNotification, errorNotification } from "./actions/notification";
+import { successNotification, errorNotification, loadingNotification } from "./actions/notification";
 
 const rootReducer = combineReducers({
   nodes: nodesReducer,
@@ -44,7 +44,8 @@ const ActionCreators = Object.assign(
   storeRepoFiles,
   loadDiagramToStore,
   successNotification,
-  errorNotification
+  errorNotification, 
+  loadingNotification,
 );
 export const mapStateToProps = (state) => ({
   nodes: state.nodes,
@@ -53,6 +54,7 @@ export const mapStateToProps = (state) => ({
   notifications: {
     successNotificationMessage: state.successNotificationMessage,
     errorNotificationMessage: state.errorNotificationMessage,
+    loadingNotificationMessage: state.loadingNotificationMessage,
   },
 });
 export const mapDispatchToProps = (dispatch) => ({

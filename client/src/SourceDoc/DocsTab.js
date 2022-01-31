@@ -19,18 +19,22 @@ export default function DocsTab(props) {
     setSelectedEL,
   } = props;
 
-  const [wiki, setWiki] = useState(selectedEL.data.wiki);
-  const [newLabel, setNewLabel] = useState(selectedEL.data.label);
+  const [wiki, setWiki] = useState(selectedEL ? selectedEL.data.wiki : "");
+  const [newLabel, setNewLabel] = useState(
+    selectedEL ? selectedEL.data.label : ""
+  );
   useEffect(() => {
-    setWiki(selectedEL.data.wiki);
-    setNewLabel(selectedEL.data.label);
+    if (selectedEL) {
+      setWiki(selectedEL.data.wiki);
+      setNewLabel(selectedEL.data.label);
+    }
   }, [selectedEL]);
 
   const saveWikiToNode = () => {
     var selEl = null;
     setElements((els) =>
       els.map((el) => {
-        if (el.id === selectedEL.id) {
+        if (selectedEL && el.id === selectedEL.id) {
           // it's important that you create a new object here
           // in order to notify react flow about the change
           el.data = {
@@ -104,9 +108,9 @@ export default function DocsTab(props) {
           </Box>
         </div>
       )}
-      {selectedEL.data.label && !isEditing ? (
+      {selectedEL && selectedEL.data.label && !isEditing ? (
         <Typography variant="h5" fontWeight="bold">
-          {selectedEL.data.label}
+          {selectedEL && selectedEL.data.label}
         </Typography>
       ) : (
         <input
@@ -131,14 +135,16 @@ export default function DocsTab(props) {
       )}
 
       <Typography variant="h6">
-        <a href={selectedEL.data.url}> source code link </a>
+        <a href={selectedEL && selectedEL.data.url}> source code link </a>
       </Typography>
       <Typography my={1} variant="h6">
         Wiki
       </Typography>
       {isEditing ? (
         <TextEditor
-          content={selectedEL.data.wiki ? selectedEL.data.wiki : ""}
+          content={
+            selectedEL && selectedEL.data.wiki ? selectedEL.data.wiki : ""
+          }
           onChange={handleWikiChange}
         />
       ) : (
@@ -148,23 +154,6 @@ export default function DocsTab(props) {
           }}
         />
       )}
-      {/* <Typography variant="h7" mt={2}>
-        Parent Nodes <br />
-        <Typography> {selectedEL.data.parentNodes} </Typography>
-      </Typography>
-      <Typography variant="h7" mt={2}>
-        Child Nodes <br />
-        <Typography> {selectedEL.data.childNodes} </Typography>
-      </Typography>
-      <Typography variant="h7" mt={2}>
-        Configuration Files <br />
-        <Typography> {selectedEL.data.parentNodes} </Typography>
-      </Typography>
-      <Typography variant="h7" mt={2}>
-        Reference Docs <br />
-        {renderFiles()}
-        <Typography> {selectedEL.data.documentation}</Typography>
-      </Typography> */}
     </Box>
   );
 }

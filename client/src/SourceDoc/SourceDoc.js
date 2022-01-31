@@ -63,7 +63,7 @@ function SourceDoc(props) {
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
 
-  const [curCode, setCurCode] = useState("Select a nnode to view file");
+  const [curCode, setCurCode] = useState("Select a node to view file");
 
   // state for selected file
   const [sourceFiles, setSourceFiles] = useState(null);
@@ -98,14 +98,8 @@ function SourceDoc(props) {
 
   // change open artifact to be the file from react flow
   useEffect(() => {
-    if (
-      repository &&
-      props.data.selectedEL.data &&
-      props.data.selectedEL.data.path
-    ) {
-      props.functions.setOpenArtifact(
-        repository[props.data.selectedEL.data.path]
-      );
+    if (repository && selectedEL && selectedEL.data && selectedEL.data.path) {
+      props.functions.setOpenArtifact(repository[selectedEL.data.path]);
     }
   }, [selectedEL]);
 
@@ -166,7 +160,7 @@ function SourceDoc(props) {
       }
       setSourceFiles(repoList);
     }
-  }, [SDContent, props.data.selectedEL, props.data.openArtifact, repository]);
+  }, [SDContent, selectedEL, props.data.openArtifact, repository]);
 
   useEffect(() => {
     if (repository && homePath) {
@@ -274,8 +268,8 @@ function SourceDoc(props) {
   //
   function renderFiles() {
     var files = [];
-    if (props.data.selectedEL.data && props.data.selectedEL.data.parentNodes) {
-      const f = props.data.selectedEL.data.parentNodes.map((pNode) => {
+    if (selectedEL && selectedEL.data && selectedEL.data.parentNodes) {
+      const f = selectedEL.data.parentNodes.map((pNode) => {
         <li className="SourceDocFile foldertype">hello</li>;
       });
     }
@@ -288,22 +282,25 @@ function SourceDoc(props) {
   };
 
   useEffect(() => {
-    if (
-      props.data.selectedEL.data &&
-      props.data.selectedEL.data.url &&
-      props.data.selectedEL.data.url !== undefined
-    ) {
-      // calls node url to get file content
-      axios
-        .get(selectedEL.data.url)
-        .then(function (response) {
-          // handle success
-          setCurCode(response.data);
-        })
-        .catch(function (error) {
-          // handle error
-          console.log(error);
-        });
+    if (!selectedEL) {
+      console.log(`noELementSelected`);
+      setValue(0);
+    } else {
+      setValue(2);
+      if (props.data.openArtifact.url) {
+        // calls node url to get file content
+        axios
+          .get(props.data.openArtifact.url)
+          .then(function (response) {
+            // handle success
+            setCurCode(response.data);
+          })
+          .catch(function (error) {
+            // handle error
+            console.log(error);
+            dispatch(errorNotification(`Error retrieving file content`));
+          });
+      }
     }
   }, [selectedEL]);
 
@@ -403,9 +400,7 @@ function SourceDoc(props) {
               zIndex: 1,
             }}
           >
-            {props.data.selectedEL.data
-              ? props.data.selectedEL.data.label
-              : props.data.selectedEL}
+            {selectedEL && selectedEL.data ? selectedEL.data.label : selectedEL}
           </Typography>
           <pre> {`${curCode}`} </pre>
         </TabPanel>
