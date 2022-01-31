@@ -124,12 +124,16 @@ function App() {
     selectedEL,
     rfInstance,
     setSelectedEL,
+    addFileToNode
   } = useReactFlowWrapper({
     dispatch,
     selectedShapeName,
     activeToolBarButton,
     setActiveToolBarButton,
     setOpenArtifact,
+    search, 
+    setSearch, 
+    fuse
   });
 
   // change cursor to be opposite as previous
@@ -517,6 +521,7 @@ function App() {
               setIsOpenSD: setIsOpenSD,
               setElements: setElements,
               setOpenArtifact: setOpenArtifact,
+              addFileToNode: addFileToNode
             }}
             data={{
               repo: repo,

@@ -69,10 +69,9 @@ export function storeRepoFiles(repoFiles) {
 }
 
 // unused but leaving as example for now
-export function updateRepoFile(path) {
+export function updateRepoFile(node){ 
   return {
     type: UPDATE_REPO_FILE,
-    id: path,
-    payload: { data: { linked: true } },
+    payload: node,
   };
 }
