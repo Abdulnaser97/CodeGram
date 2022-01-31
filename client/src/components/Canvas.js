@@ -107,6 +107,7 @@ export function useReactFlowWrapper({
   const [clipBoard, setClipBoard] = useState(null);
   const [selectedNodeEvent, setSelectedNodeEvent] = useState(null);
   const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
+  const { project } = useZoomPanHelper();
 
   // Projects event click position to RF coordinates
   function calculatePosition(
@@ -186,16 +187,16 @@ export function useReactFlowWrapper({
           selectedShapeName.current && !file === "DashedShape"
             ? Math.floor(150 / 15) * 15
             : Math.floor(70 / 15) * 15,
-        position: {
+        position: project({
           x: position.x,
           y: position.y,
-        },
+        }),
         animated: true,
       };
       dispatch(addNodeToArray(newNode));
       setElements((els) => els.concat(newNode));
     },
-    [setElements, nodeName, dispatch]
+    [setElements, nodeName, dispatch, project]
   );
 
   const handleContextMenu = (event, node) => {
@@ -542,7 +543,6 @@ export function useReactFlowWrapper({
 
 
   function nodeInputHandler(event){
-
     if (event.key === 'Enter'){
         setSearch(event.target.value)
         setNameFlag(true)
