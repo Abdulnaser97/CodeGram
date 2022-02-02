@@ -26,13 +26,19 @@
   stroke: #ffaea6;
 }
 
+.ToolBarButton:hover .ShadowBoxShape,
+.PopupButton:hover .ShadowBoxShape {
+  stroke: #ffaea6;
+  fill: #ffaea6;
+}
+
 .ShapesGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   grid-gap: 1vw;
   padding-left: 1vw;
   padding-right: 1vw;
-  height: 2vw;
-  align-items: center;
+  /* height: 2vw;
+  align-items: center; */
   justify-content: center;
 }

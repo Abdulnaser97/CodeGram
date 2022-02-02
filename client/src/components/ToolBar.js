@@ -9,6 +9,7 @@ import {
   Options,
   Rectangle,
   Text,
+  ShadowBoxShape,
 } from "../Media/ToolBar/ToolBarIcons";
 import "./ToolBar.css";
 
@@ -47,6 +48,7 @@ const ToolBarButton = styled(ToolBarButtonStyle)`
     path{   fill: #ffaea6;}
     .CircleShape{   stroke: #ffaea6;}
     .DashedShape{   stroke: #ffaea6;}
+    .ShadowBoxShape{  stroke: #ffaea6; fill: #ffaea6;}
 
   `}
 `;
@@ -138,7 +140,7 @@ export function useToolBar(props) {
           PaperProps={{
             style: {
               position: "relative",
-              width: "7vw",
+              width: "fit-content",
               marginLeft: "1.3vw",
               marginTop: "-1vw",
               borderRadius: "7px",
@@ -173,6 +175,16 @@ export function useToolBar(props) {
             <PopupButton
               className="PopupButton"
               key="PopupButton3"
+              active={
+                selectedShapeName.current === "ShadowBoxShape" ? true : false
+              }
+              onClick={() => shapeSelect(<ShadowBoxShape />, "ShadowBoxShape")}
+            >
+              <ShadowBoxShape />
+            </PopupButton>
+            <PopupButton
+              className="PopupButton"
+              key="PopupButton4"
               active={
                 selectedShapeName.current === "CircleShape" ? true : false
               }

@@ -575,6 +575,7 @@ export function useReactFlowWrapper({
             FileNode: CustomNodeComponent,
             DashedShape: WrapperNodeComponent,
             CircleShape: FolderNodeComponent,
+            ShadowBoxShape: FolderNodeComponent,
             circle: CustomNodeComponent,
           }}
           elements={elements}

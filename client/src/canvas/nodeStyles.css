@@ -86,6 +86,11 @@
   box-shadow: -2px 4px 5px #dadadacd;
 }
 
+.ShadowBoxShape {
+  border-radius: 5%;
+  background-color: rgba(255, 255, 255);
+  box-shadow: -2px 4px 5px #dadadacd;
+}
 
 .react-flow__node {
   border-width: 2px;
