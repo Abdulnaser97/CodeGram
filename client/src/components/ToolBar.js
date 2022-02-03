@@ -17,7 +17,7 @@ const ToolBarBox = styled.div`
   position: fixed;
   top: 30vh;
   left: 1.5vw;
-  width: 3vw;
+  width: 40px;
   height: 17vw;
   display: flex;
   flex-direction: column;
@@ -142,7 +142,7 @@ export function useToolBar(props) {
               position: "relative",
               width: "fit-content",
               marginLeft: "1.3vw",
-              marginTop: "-1vw",
+              marginTop: "-1.3vw",
               borderRadius: "7px",
               boxShadow: "0px 4px 10px rgba(5, 0, 56, 0.1)",
             },
@@ -195,7 +195,8 @@ export function useToolBar(props) {
             </PopupButton> */}
           </div>
         </Menu>
-        <ToolBarButton
+        {/* TODO: Re-add these back in when we have use for them */}
+        {/* <ToolBarButton
           className="ToolBarButton"
           active={active === "arrow" ? true : false}
           onClick={() => setActive("arrow")}
@@ -209,7 +210,7 @@ export function useToolBar(props) {
           onClick={() => setActive("options")}
         >
           <Options />
-        </ToolBarButton>
+        </ToolBarButton> */}
       </ToolBarBox>
     ),
     selectedShape: selectedShape,
