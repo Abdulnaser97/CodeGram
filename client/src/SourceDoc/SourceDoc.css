@@ -59,3 +59,34 @@
   background-color: #ffaea6;
 }
 
+/* .search-bar {
+  display: flex;
+} */
+
+.search-bar img {
+  position: absolute;
+}
+
+.search-bar {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.search-icon {
+  padding: 10px;
+  width: 15px;
+  text-align: center;
+}
+
+.search-input {
+  width: -webkit-fill-available;
+  padding: 10px;
+  padding-left: 33px;
+  border-radius: 1vw;
+  color: black;
+}
+
+.search-input::placeholder {
+  color: grey;
+}
+
