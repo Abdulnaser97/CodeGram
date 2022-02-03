@@ -21,6 +21,7 @@ import SourceDocFile from "./SourceDocFile";
 import TextEditor from "../components/TextEditor.js";
 import DocsTab from "./DocsTab";
 import CodeTab from "./CodeTab";
+import SearchBar from "./SearchBar";
 
 import axios from "axios";
 import { Resizable } from "re-resizable";
@@ -381,6 +382,10 @@ function SourceDoc(props) {
           index={0}
           sx={{ display: "flex", flexDirection: "column" }}
         >
+          <SearchBar
+              handleSearch={props.functions.handleSearch}
+              setTabValue={props.functions.setTabValue}
+            />
           <Box>
             <div className="pathContainer">
               {path.length ? pathComponent : "Root"}
