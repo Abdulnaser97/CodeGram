@@ -471,46 +471,6 @@ function App() {
           >
             Welcome to CodeGram demo {user.username}!
           </Typography>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              position: "fixed",
-              top: "8vh",
-              right: "2vw",
-              width: "40vw",
-            }}
-          >
-            <div className="SourceDocMinimize" />
-
-            <Typography
-              fontSize={"1vw"}
-              color={"primary.main"}
-              fontWeight={"medium"}
-              mx={1}
-              my={0}
-            >
-              Search >
-            </Typography>
-
-            <input
-              placeholder="Search Repo Content"
-              onChange={handleSearch}
-              onKeyPress={handleSearch}
-              onClick={() => setTabValue(0)}
-              style={{
-                "z-index": 0,
-                border: "none",
-                backgroundColor: "rgb(247, 247, 247)",
-                boxShadow: 6,
-                color: "grey",
-                fontSize: "1vw",
-                outline: "none",
-                width: "65%",
-                fontWeight: theme.typography.fontWeightMedium,
-              }}
-            />
-          </div>
           {toolBarRender}
           <Container className="canvasContainer">{render}</Container>
           <SourceDoc
@@ -525,7 +485,8 @@ function App() {
               setElements: setElements,
               setOpenArtifact: setOpenArtifact,
               addFileToNode: addFileToNode, 
-              setTabValue: setTabValue
+              setTabValue: setTabValue,
+              handleSearch: handleSearch,
             }}
             data={{
               repo: repo,
