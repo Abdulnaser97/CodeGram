@@ -34,7 +34,7 @@
 
 .ShapesGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   grid-gap: 1vw;
   padding-left: 1vw;
   padding-right: 1vw;

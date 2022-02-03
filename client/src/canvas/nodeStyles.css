@@ -81,9 +81,9 @@
 }
 
 .CircleShape {
-  border-radius: 5%;
+  border-radius: 50%;
   background-color: rgba(255, 255, 255);
-  box-shadow: -2px 4px 5px #dadadacd;
+  border: 1px solid #adadad;
 }
 
 .ShadowBoxShape {

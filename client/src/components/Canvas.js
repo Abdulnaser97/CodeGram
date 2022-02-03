@@ -3,6 +3,7 @@ import {
   CustomNodeComponent,
   WrapperNodeComponent,
   FolderNodeComponent,
+  CircleNodeComponent,
 } from "../canvas/custom_node";
 import ReactFlow, {
   addEdge,
@@ -143,6 +144,11 @@ export function useReactFlowWrapper({
       var label = "";
       var position = calculatePosition(event, rfInstance);
 
+      var shapeType = selectedShapeName.current;
+      if (file) {
+        shapeType = (file.type == "dir") ? "DashedShape" : "FileNode";
+      }
+
       let url =
         file && file.download_url !== undefined
           ? file.download_url
@@ -167,27 +173,25 @@ export function useReactFlowWrapper({
 
           // can set this type to whatever is selected in the tool bar for now
           // but the type will probably be set from a few different places
-          type: file ? "FileNode" : selectedShapeName.current,
+          type: shapeType,
           width:
-            selectedShapeName.current && !file === "DashedShape"
-              ? Math.floor(300 / 15) * 15
+            selectedShapeName.current && selectedShapeName.current === "CircleShape"
+              ? 100
               : Math.floor(100 / 15) * 15,
           height:
-            selectedShapeName.current && !file === "DashedShape"
-              ? Math.floor(150 / 15) * 15
+            selectedShapeName.current && selectedShapeName.current === "CircleShape"
+              ? 100
               : Math.floor(70 / 15) * 15,
-          // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
-          //file: file
           nodeInputHandler: nodeInputHandler,
         },
-        type: file ? "FileNode" : selectedShapeName.current,
+        type: shapeType,
         width:
-          selectedShapeName.current && !file === "DashedShape"
-            ? Math.floor(300 / 15) * 15
+          selectedShapeName.current && selectedShapeName.current === "CircleShape"
+            ? 100
             : Math.floor(100 / 15) * 15,
         height:
-          selectedShapeName.current && !file === "DashedShape"
-            ? Math.floor(150 / 15) * 15
+          selectedShapeName.current && selectedShapeName.current === "CircleShape"
+            ? 100
             : Math.floor(70 / 15) * 15,
         position: project({
           x: position.x,
@@ -574,7 +578,8 @@ export function useReactFlowWrapper({
             default: CustomNodeComponent,
             FileNode: CustomNodeComponent,
             DashedShape: WrapperNodeComponent,
-            CircleShape: FolderNodeComponent,
+            // CircleShape: FolderNodeComponent,
+            CircleShape: CircleNodeComponent,
             ShadowBoxShape: FolderNodeComponent,
             circle: CustomNodeComponent,
           }}

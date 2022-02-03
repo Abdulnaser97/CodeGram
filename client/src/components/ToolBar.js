@@ -182,7 +182,8 @@ export function useToolBar(props) {
             >
               <ShadowBoxShape />
             </PopupButton>
-            <PopupButton
+            {/* TODO: Comment this back in when we want circle nodes again */}
+            {/* <PopupButton
               className="PopupButton"
               key="PopupButton4"
               active={
@@ -191,7 +192,7 @@ export function useToolBar(props) {
               onClick={() => shapeSelect(<CircleShape />, "CircleShape")}
             >
               <CircleShape />
-            </PopupButton>
+            </PopupButton> */}
           </div>
         </Menu>
         <ToolBarButton
