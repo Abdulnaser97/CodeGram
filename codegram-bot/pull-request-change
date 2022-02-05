@@ -3,6 +3,7 @@ async function handlePullRequestChange(context) {
   if (!pr || pr.state !== "open") return;
   const org = pr.base.repo.owner.login;
   const repo = pr.base.repo.name;
+  const sourceBrance = pr.head.ref;
 
   const files = await context.octokit.rest.pulls.listFiles({
     pull_number: pr.number,
@@ -35,7 +36,9 @@ async function handlePullRequestChange(context) {
     }
 
     summary +=
-      "\n\n ## [Click Here to Update Diagram](" + "code-gram.com" + ")";
+      "\n\n ## [Click Here to Update Diagram](" +
+      `https://code-gram.com?pr=${pr.number}&repo=${repo}&branch=${sourceBrance}` +
+      ")";
   }
 
   return context.octokit.rest.checks.create({
