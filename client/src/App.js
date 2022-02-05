@@ -125,17 +125,17 @@ function App() {
     rfInstance,
     setSelectedEL,
     addFileToNode,
-    tabValue, 
-    setTabValue
+    tabValue,
+    setTabValue,
   } = useReactFlowWrapper({
     dispatch,
     selectedShapeName,
     activeToolBarButton,
     setActiveToolBarButton,
     setOpenArtifact,
-    search, 
-    setSearch, 
-    fuse
+    search,
+    setSearch,
+    fuse,
   });
 
   // change cursor to be opposite as previous
@@ -259,7 +259,7 @@ function App() {
     }
   }, [repo, rfInstance, branch]);
 
-  /** useEffect Hools ************************************************* useEffect Hooks *****************************************************************/
+  //** useEffect Hools ************************************************* useEffect Hooks *****************************************************************/
 
   // // Load saved diagram when new repo is selected
   // useEffect(() => {
@@ -524,8 +524,8 @@ function App() {
               setIsOpenSD: setIsOpenSD,
               setElements: setElements,
               setOpenArtifact: setOpenArtifact,
-              addFileToNode: addFileToNode, 
-              setTabValue: setTabValue
+              addFileToNode: addFileToNode,
+              setTabValue: setTabValue,
             }}
             data={{
               repo: repo,
@@ -538,7 +538,7 @@ function App() {
               homePath: homePath,
               branch: branch,
               openArtifact: openArtifact,
-              tabValue: tabValue, 
+              tabValue: tabValue,
             }}
           />
           <NotifDiagramLoading />
