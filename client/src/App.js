@@ -10,6 +10,7 @@ import {
   save,
   getUser,
   getBranches,
+  getCheckRunResult,
 } from "./api/apiClient";
 import { connect, useSelector } from "react-redux";
 import {
@@ -98,6 +99,7 @@ function App() {
   const [cursor, setCursor] = useState("default");
   const [branch, setBranch] = useState("");
   const [repoBranches, setRepoBranches] = useState([]);
+  const [checkRunFiles, setCheckRunFiles] = useState([]);
   // redux
   const dispatch = useDispatch();
 
@@ -160,6 +162,33 @@ function App() {
   const getBranchesList = async (repo) => {
     const repoBranches = await getBranches(repo);
     setRepoBranches(repoBranches.data);
+  };
+
+  // get codegram scanner result
+  const getCheckRunFiles = async (repo, sha) => {
+    try {
+      let checkRuns = await getCheckRunResult(repo, sha);
+      if (!checkRuns || !checkRuns.data || !checkRuns.data.check_runs) {
+        throw new Error("Could not Retrieve CheckRuns");
+      }
+      checkRuns = checkRuns.data.check_runs;
+
+      // retrieve checrun with name CodeGram Scanner
+      const codeGramScanner = checkRuns.find(
+        (checkRun) => checkRun.name === "CodeGram Scanner"
+      );
+      if (!codeGramScanner) {
+        throw new Error("CodeGram Scanner CheckRun not found");
+      }
+      setCheckRunFiles(codeGramScanner);
+    } catch (err) {
+      console.log("Error: Failed To Retrieve CheckRun Files", err);
+      dispatch(
+        errorNotification(
+          `Failed To Retrieve PR Files, you can still link the PR files from the Repo tab in SourceDoc`
+        )
+      );
+    }
   };
 
   // set new repo from drop down menu
@@ -265,7 +294,7 @@ function App() {
 
   // If redirect from github Checks, get the repo from the url params
   useEffect(() => {
-    if (!repo && params.repo && params.branch) {
+    if (!repo && params.repo && params.branch && params.sha) {
       getBranchesList(params.repo);
       setRepo(params.repo);
 
@@ -292,8 +321,9 @@ function App() {
   useEffect(() => {
     if (repo && !repoFiles.isFetchingFiles && repoFiles.repoFiles && branch) {
       dispatch(loadDiagram(repoFiles.repoFiles));
+      getCheckRunFiles(repo, params.sha);
     }
-  }, [repo, dispatch, repoFiles.isFetchingFiles, branch]);
+  }, [repo, dispatch, repoFiles.isFetchingFiles, branch, params.sha]);
 
   // create home path, and search engine after all loads
   useEffect(() => {
