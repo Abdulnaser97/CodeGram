@@ -125,8 +125,8 @@ function App() {
     rfInstance,
     setSelectedEL,
     addFileToNode,
-    isOpenCode, 
-    setIsOpenCode
+    tabValue, 
+    setTabValue
   } = useReactFlowWrapper({
     dispatch,
     selectedShapeName,
@@ -485,7 +485,6 @@ function App() {
               setElements: setElements,
               setOpenArtifact: setOpenArtifact,
               addFileToNode: addFileToNode, 
-              setIsOpenCode: setIsOpenCode,
               setTabValue: setTabValue,
               handleSearch: handleSearch,
             }}
@@ -500,7 +499,7 @@ function App() {
               homePath: homePath,
               branch: branch,
               openArtifact: openArtifact,
-              isOpenCode: isOpenCode, 
+              tabValue: tabValue, 
             }}
           />
           <NotifDiagramLoading />
