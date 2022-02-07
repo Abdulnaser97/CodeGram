@@ -512,9 +512,8 @@ function App() {
               setIsOpenSD: setIsOpenSD,
               setElements: setElements,
               setOpenArtifact: setOpenArtifact,
-              addFileToNode: addFileToNode, 
+              addFileToNode: addFileToNode,
               setTabValue: setTabValue,
-              handleSearch: handleSearch,
             }}
             data={{
               repo: repo,
