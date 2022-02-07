@@ -121,6 +121,34 @@ export const DashedShape = () => {
   );
 };
 
+export const ShadowBoxShape = () => {
+  return (
+    <ButtonWrapper className="buttonWrapper">
+      <svg
+        width="100%"
+        height="100%"
+        viewBox="0 0 17 17"
+        fill="#353535"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g id="ShadowBoxShape">
+          git
+          <rect
+            className="ShadowBoxShape"
+            x="1"
+            y="1"
+            width="15"
+            height="15"
+            rx="2"
+            stroke="#353535"
+            strokeWidth="1"
+          />
+        </g>
+      </svg>
+    </ButtonWrapper>
+  );
+};
+
 export const CircleShape = () => {
   return (
     <ButtonWrapper className="buttonWrapper">
