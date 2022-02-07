@@ -84,8 +84,6 @@ function App() {
     }
   );
 
-  //  console.log(nodesArr)
-
   const [user, setUser] = useState([]);
   const [content, setContent] = useState([]);
   const [repos, setRepos] = useState([]);
@@ -102,6 +100,10 @@ function App() {
   const [repoBranches, setRepoBranches] = useState([]);
   // redux
   const dispatch = useDispatch();
+
+  const params = new Proxy(new URLSearchParams(window.location.search), {
+    get: (searchParams, prop) => searchParams.get(prop),
+  });
 
   const options = {
     keys: ["name"],
@@ -125,17 +127,17 @@ function App() {
     rfInstance,
     setSelectedEL,
     addFileToNode,
-    tabValue, 
-    setTabValue
+    tabValue,
+    setTabValue,
   } = useReactFlowWrapper({
     dispatch,
     selectedShapeName,
     activeToolBarButton,
     setActiveToolBarButton,
     setOpenArtifact,
-    search, 
-    setSearch, 
-    fuse
+    search,
+    setSearch,
+    fuse,
   });
 
   // change cursor to be opposite as previous
@@ -261,10 +263,30 @@ function App() {
 
   /** useEffect Hools ************************************************* useEffect Hooks *****************************************************************/
 
-  // // Load saved diagram when new repo is selected
-  // useEffect(() => {
-  //   repo && getBranchesList(repo)
-  // }, [repo]);
+  // If redirect from github Checks, get the repo from the url params
+  useEffect(() => {
+    if (!repo && params.repo && params.branch) {
+      getBranchesList(params.repo);
+      setRepo(params.repo);
+
+      //dispatch(getRepoFiles(params.get("repo"), params.get("branch")));
+    }
+  }, [repo, params]);
+
+  // If redirect from github Checks, get the branch from the url params
+  useEffect(() => {
+    if (
+      repo &&
+      params.branch &&
+      repoBranches != undefined &&
+      repoBranches.length !== 0
+    ) {
+      setElements(initialElements);
+      setBranch(params.branch);
+      dispatch(getRepoFiles(repo, params.branch));
+      setSelectedEL(initialElements[0]);
+    }
+  }, [repoBranches, params.branch, repo]);
 
   // Load saved diagram when new repo is selected
   useEffect(() => {
@@ -318,10 +340,16 @@ function App() {
 
   // Retrieves user details once authenticated
   useEffect(() => {
-    getUser().then((userDetails) => {
-      setUser(userDetails.user);
-      setLoggedIn(true);
-    });
+    try {
+      getUser().then((userDetails) => {
+        if (userDetails) {
+          setUser(userDetails.user);
+          setLoggedIn(true);
+        }
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
 
   // Stores Access token in session storage, Not very secure, but good for now
@@ -471,46 +499,6 @@ function App() {
           >
             Welcome to CodeGram demo {user.username}!
           </Typography>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              position: "fixed",
-              top: "8vh",
-              right: "2vw",
-              width: "40vw",
-            }}
-          >
-            <div className="SourceDocMinimize" />
-
-            <Typography
-              fontSize={"1vw"}
-              color={"primary.main"}
-              fontWeight={"medium"}
-              mx={1}
-              my={0}
-            >
-              Search >
-            </Typography>
-
-            <input
-              placeholder="Search Repo Content"
-              onChange={handleSearch}
-              onKeyPress={handleSearch}
-              onClick={() => setTabValue(0)}
-              style={{
-                "z-index": 0,
-                border: "none",
-                backgroundColor: "rgb(247, 247, 247)",
-                boxShadow: 6,
-                color: "grey",
-                fontSize: "1vw",
-                outline: "none",
-                width: "65%",
-                fontWeight: theme.typography.fontWeightMedium,
-              }}
-            />
-          </div>
           {toolBarRender}
           <Container className="canvasContainer">{render}</Container>
           <SourceDoc
@@ -524,8 +512,9 @@ function App() {
               setIsOpenSD: setIsOpenSD,
               setElements: setElements,
               setOpenArtifact: setOpenArtifact,
-              addFileToNode: addFileToNode, 
-              setTabValue: setTabValue
+              addFileToNode: addFileToNode,
+              setTabValue: setTabValue,
+              handleSearch: handleSearch,
             }}
             data={{
               repo: repo,
@@ -538,7 +527,7 @@ function App() {
               homePath: homePath,
               branch: branch,
               openArtifact: openArtifact,
-              tabValue: tabValue, 
+              tabValue: tabValue,
             }}
           />
           <NotifDiagramLoading />

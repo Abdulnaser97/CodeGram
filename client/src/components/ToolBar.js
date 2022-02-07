@@ -9,6 +9,7 @@ import {
   Options,
   Rectangle,
   Text,
+  ShadowBoxShape,
 } from "../Media/ToolBar/ToolBarIcons";
 import "./ToolBar.css";
 
@@ -17,10 +18,10 @@ const ToolBarBox = styled.div`
   top: 30vh;
   left: 1.5vw;
   width: 3vw;
-  height: 17vw;
+  height: 11vw;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
   border-radius: 7px;
   box-shadow: 0px 4px 10px rgba(5, 0, 56, 0.1);
@@ -30,10 +31,8 @@ const ToolBarBox = styled.div`
 
 const ToolBarButtonStyle = styled.div`
   position: relative;
-  height: 2.5vw;
   width: 36%;
   z-index: 1001;
-  margin: 0.05vw 0.5vw 0.05vw 0.5vw;
   cursor: pointer;
 `;
 
@@ -47,6 +46,7 @@ const ToolBarButton = styled(ToolBarButtonStyle)`
     path{   fill: #ffaea6;}
     .CircleShape{   stroke: #ffaea6;}
     .DashedShape{   stroke: #ffaea6;}
+    .ShadowBoxShape{  stroke: #ffaea6; fill: #ffaea6;}
 
   `}
 `;
@@ -84,7 +84,6 @@ export function useToolBar(props) {
 
   //handles user's choice of shape
   const shapeSelect = (shape, name) => {
-    console.log(shape);
     setAnchorEl(null);
     setSelectedShape(shape);
     selectedShapeName.current = name;
@@ -102,7 +101,7 @@ export function useToolBar(props) {
       <ToolBarBox>
         <ToolBarButton
           className="ToolBarButton"
-          style={{ "margin-top": "1vw" }}
+          // style={{ "margin-top": "1vw" }}
           active={active === "cursor" ? true : false}
           onClick={() => setActive("cursor")}
         >
@@ -138,9 +137,9 @@ export function useToolBar(props) {
           PaperProps={{
             style: {
               position: "relative",
-              width: "7vw",
+              width: "fit-content",
               marginLeft: "1.3vw",
-              marginTop: "-1vw",
+              marginTop: "-0.8vw",
               borderRadius: "7px",
               boxShadow: "0px 4px 10px rgba(5, 0, 56, 0.1)",
             },
@@ -174,15 +173,27 @@ export function useToolBar(props) {
               className="PopupButton"
               key="PopupButton3"
               active={
+                selectedShapeName.current === "ShadowBoxShape" ? true : false
+              }
+              onClick={() => shapeSelect(<ShadowBoxShape />, "ShadowBoxShape")}
+            >
+              <ShadowBoxShape />
+            </PopupButton>
+            {/* TODO: Comment this back in when we want circle nodes again */}
+            {/* <PopupButton
+              className="PopupButton"
+              key="PopupButton4"
+              active={
                 selectedShapeName.current === "CircleShape" ? true : false
               }
               onClick={() => shapeSelect(<CircleShape />, "CircleShape")}
             >
               <CircleShape />
-            </PopupButton>
+            </PopupButton> */}
           </div>
         </Menu>
-        <ToolBarButton
+        {/* TODO: Re-add these back in when we have use for them */}
+        {/* <ToolBarButton
           className="ToolBarButton"
           active={active === "arrow" ? true : false}
           onClick={() => setActive("arrow")}
@@ -196,7 +207,7 @@ export function useToolBar(props) {
           onClick={() => setActive("options")}
         >
           <Options />
-        </ToolBarButton>
+        </ToolBarButton> */}
       </ToolBarBox>
     ),
     selectedShape: selectedShape,
