@@ -514,6 +514,7 @@ function App() {
               setOpenArtifact: setOpenArtifact,
               addFileToNode: addFileToNode,
               setTabValue: setTabValue,
+              handleSearch: handleSearch,
             }}
             data={{
               repo: repo,

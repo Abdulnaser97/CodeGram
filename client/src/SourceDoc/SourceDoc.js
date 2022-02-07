@@ -281,18 +281,15 @@ function SourceDoc(props) {
   // Tabs: handlers for state of tabs
   const handleChange = (event, newValue) => {
     setValue(newValue);
-
   };
 
   useEffect(() => {
     if (!selectedEL) {
       console.log(`noELementSelected`);
       setValue(0);
-    } 
-    else if (!selectedEL.data.label){
+    } else if (!selectedEL.data.label) {
       setValue(0);
-    }
-    else {
+    } else {
       setValue(2);
       if (props.data.openArtifact.url) {
         // calls node url to get file content
@@ -314,19 +311,16 @@ function SourceDoc(props) {
   }, [selectedEL]);
 
   useEffect(() => {
-    props.functions.setTabValue(value)
-  }, [value]) 
+    props.functions.setTabValue(value);
+  }, [value]);
 
   useEffect(() => {
-    if (props.data.tabValue != value)
-      setValue(props.data.tabValue)    
-  }, [props.data.tabValue])
+    if (props.data.tabValue != value) setValue(props.data.tabValue);
+  }, [props.data.tabValue]);
 
   // search method called whenevr search var changes
   useEffect(() => {
     props.functions.setOpenArtifact("");
-    console.log(search);
-    console.log(search.length)
     if (!search.length) {
       props.functions.setOpenArtifact(homePath);
       setPath([homePath]);
@@ -390,9 +384,9 @@ function SourceDoc(props) {
           sx={{ display: "flex", flexDirection: "column" }}
         >
           <SearchBar
-              handleSearch={props.functions.handleSearch}
-              setTabValue={props.functions.setTabValue}
-            />
+            handleSearch={props.functions.handleSearch}
+            setTabValue={props.functions.setTabValue}
+          />
           <Box>
             <div className="pathContainer">
               {path.length ? pathComponent : "Root"}

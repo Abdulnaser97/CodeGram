@@ -84,7 +84,6 @@ export function useToolBar(props) {
 
   //handles user's choice of shape
   const shapeSelect = (shape, name) => {
-    console.log(shape);
     setAnchorEl(null);
     setSelectedShape(shape);
     selectedShapeName.current = name;
