@@ -18,10 +18,10 @@ const ToolBarBox = styled.div`
   top: 30vh;
   left: 1.5vw;
   width: 40px;
-  height: 17vw;
+  height: 190px;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
   border-radius: 7px;
   box-shadow: 0px 4px 10px rgba(5, 0, 56, 0.1);
@@ -31,10 +31,8 @@ const ToolBarBox = styled.div`
 
 const ToolBarButtonStyle = styled.div`
   position: relative;
-  height: 2.5vw;
   width: 36%;
   z-index: 1001;
-  margin: 0.05vw 0.5vw 0.05vw 0.5vw;
   cursor: pointer;
 `;
 
@@ -55,7 +53,7 @@ const ToolBarButton = styled(ToolBarButtonStyle)`
 
 const PopupButtonStyle = styled.div`
   position: relative;
-  width: 1vw;
+  width: 15px;
   z-index: 1001;
   cursor: pointer;
 `;
@@ -104,7 +102,7 @@ export function useToolBar(props) {
       <ToolBarBox>
         <ToolBarButton
           className="ToolBarButton"
-          style={{ "margin-top": "1vw" }}
+          // style={{ "margin-top": "1vw" }}
           active={active === "cursor" ? true : false}
           onClick={() => setActive("cursor")}
         >
@@ -141,8 +139,8 @@ export function useToolBar(props) {
             style: {
               position: "relative",
               width: "fit-content",
-              marginLeft: "1.3vw",
-              marginTop: "-1.3vw",
+              marginLeft: "17px",
+              marginTop: "-12px",
               borderRadius: "7px",
               boxShadow: "0px 4px 10px rgba(5, 0, 56, 0.1)",
             },
