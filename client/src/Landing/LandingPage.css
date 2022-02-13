@@ -1,0 +1,55 @@
+.SubmitButton {
+  font-size: 1vw;
+  width: 11vw;
+  border-radius: 3vw;
+  border: 1px solid #ffaea6;
+  background-color: transparent;
+  color: #ffaea6;
+  font-family: "Poppins-Light";
+}
+
+.SubmitButton:hover {
+  background-color: #ffaea6;
+  color: #fff;
+  font-family: "Poppins-Medium";
+  cursor: pointer;
+}
+
+.EmailInput {
+  font-size: 1vw;
+  width: 30vw;
+  height: 2vh;
+  padding: 14px 14px 14px 14px;
+  border-radius: 3vw;
+  margin-right: 30px;
+  margin-left: 11vw;
+  border: 1px solid #ffaea6;
+  -webkit-transition: 0.1s;
+  transition: 0.1s;
+  outline: none;
+  font-size: 1vw;
+  font-family: "Poppins-Light";
+  letter-spacing: 0.02em;
+  line-height: 1em;
+  padding-left: 2vw;
+  color: #8f8f8f;
+}
+
+.EmailInput:focus {
+  border: 2px solid #ffaea6;
+}
+
+.SubscribeMessage {
+  font-family: "Poppins-Medium";
+  padding-bottom: 10px;
+  color: #ffaea6;
+}
+
+.SubscribeWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  padding-top: 1vw;
+}

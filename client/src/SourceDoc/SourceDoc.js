@@ -20,6 +20,8 @@ import { connect } from "react-redux";
 import SourceDocFile from "./SourceDocFile";
 import TextEditor from "../components/TextEditor.js";
 import DocsTab from "./DocsTab";
+import CodeTab from "./CodeTab";
+import SearchBar from "./SearchBar";
 
 import axios from "axios";
 import { Resizable } from "re-resizable";
@@ -285,6 +287,8 @@ function SourceDoc(props) {
     if (!selectedEL) {
       console.log(`noELementSelected`);
       setValue(0);
+    } else if (!selectedEL.data.label) {
+      setValue(0);
     } else {
       setValue(2);
       if (props.data.openArtifact.url) {
@@ -300,19 +304,27 @@ function SourceDoc(props) {
             console.log(error);
             dispatch(errorNotification(`Error retrieving file content`));
           });
+      } else {
+        setCurCode("Select a nnode to view a file");
       }
     }
   }, [selectedEL]);
 
+  useEffect(() => {
+    props.functions.setTabValue(value);
+  }, [value]);
+
+  useEffect(() => {
+    if (props.data.tabValue != value) setValue(props.data.tabValue);
+  }, [props.data.tabValue]);
+
   // search method called whenevr search var changes
   useEffect(() => {
     props.functions.setOpenArtifact("");
-    console.log(search)
-    if (!search.length){
+    if (!search.length) {
       props.functions.setOpenArtifact(homePath);
       setPath([homePath]);
-    }
-    else if (fuse && search) {
+    } else if (fuse && search) {
       var results = fuse.search(search);
       var newResults = results.map((result) => result.item);
       setSDContent(newResults);
@@ -371,6 +383,10 @@ function SourceDoc(props) {
           index={0}
           sx={{ display: "flex", flexDirection: "column" }}
         >
+          <SearchBar
+            handleSearch={props.functions.handleSearch}
+            setTabValue={props.functions.setTabValue}
+          />
           <Box>
             <div className="pathContainer">
               {path.length ? pathComponent : "Root"}
@@ -390,7 +406,7 @@ function SourceDoc(props) {
         <TabPanel
           value={value}
           index={1}
-          style={{ height: "90%", overflow: "scroll" }}
+          style={{ height: "85%", overflowY: "scroll" }}
         >
           <Typography
             variant="h5"
@@ -402,7 +418,12 @@ function SourceDoc(props) {
           >
             {selectedEL && selectedEL.data ? selectedEL.data.label : selectedEL}
           </Typography>
-          <pre> {`${curCode}`} </pre>
+          <CodeTab
+            rawCode={curCode}
+            fileName={
+              selectedEL && selectedEL.data ? selectedEL.data.label : ""
+            }
+          />
         </TabPanel>
         <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
           <DocsTab

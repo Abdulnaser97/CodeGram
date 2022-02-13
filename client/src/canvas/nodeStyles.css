@@ -81,11 +81,16 @@
 }
 
 .CircleShape {
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255);
+  border: 1px solid #adadad;
+}
+
+.ShadowBoxShape {
   border-radius: 5%;
   background-color: rgba(255, 255, 255);
   box-shadow: -2px 4px 5px #dadadacd;
 }
-
 
 .react-flow__node {
   border-width: 2px;
