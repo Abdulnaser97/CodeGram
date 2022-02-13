@@ -515,6 +515,7 @@ function App() {
               addFileToNode: addFileToNode,
               setTabValue: setTabValue,
               handleSearch: handleSearch,
+              getRepoFiles: getRepoFiles,
             }}
             data={{
               repo: repo,

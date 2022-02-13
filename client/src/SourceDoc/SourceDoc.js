@@ -26,6 +26,7 @@ import SearchBar from "./SearchBar";
 import axios from "axios";
 import { Resizable } from "re-resizable";
 import { errorNotification } from "../Redux/actions/notification";
+import { getRepo } from "../api/apiClient";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -293,17 +294,27 @@ function SourceDoc(props) {
       setValue(2);
       if (props.data.openArtifact.url) {
         // calls node url to get file content
-        axios
-          .get(props.data.openArtifact.url)
+        console.log("selectedEl, props.data",props.data);
+        Promise.resolve(
+          getRepo(props.data.repo, props.data.openArtifact.path, props.data.branch))
+        .then(response => {
+          console.log("GET file contents response", response);
+          const download_url = response.data.download_url;
+          axios.get(download_url)
           .then(function (response) {
             // handle success
+            // populate repoFile.data[path].code with response.data, so don't have to do multiple GET requests again
             setCurCode(response.data);
           })
-          .catch(function (error) {
-            // handle error
+          .catch(error => {
             console.log(error);
-            dispatch(errorNotification(`Error retrieving file content`));
-          });
+            dispatch(errorNotification(`Github error retrieving file content`));
+          })
+        })
+        .catch(error => {
+          console.log("GET file contents on select error", error);
+          dispatch(errorNotification(`Error retrieving file content`));
+        })
       } else {
         setCurCode("Select a nnode to view a file");
       }
