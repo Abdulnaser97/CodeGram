@@ -301,8 +301,9 @@ function SourceDoc(props) {
 
       // only set code in Code Tab if openArtifact is a file
       if (props.data.openArtifact.type == "file") {
+
         // do GET request if file code hasn't been retrieved yet
-        if (!(state.repoFiles.repoFiles[path].code)) {
+        if (!(state.repoFiles.repoFiles[path].code) && state.repoFiles.repoFiles[path].url.includes("?token")) {
           // calls node url to get file content
           Promise.resolve(
             getRepo(props.data.repo, path, props.data.branch))
@@ -325,6 +326,20 @@ function SourceDoc(props) {
             console.log("GET file contents on select error", error);
             dispatch(errorNotification(`Error retrieving file content`));
           });
+        }
+        // public repos
+        else if (!(state.repoFiles.repoFiles[path].code) && !(state.repoFiles.repoFiles[path].url.includes("?token"))) {
+          axios.get(props.data.openArtifact.url)
+            .then(function (response) {
+              // handle success
+              // populate repoFile.data[path].code with response.data, so don't have to do multiple GET requests again
+              dispatch(updateRepoFileCodeContent(path, response.data));
+              setCurCode(response.data);
+            })
+            .catch(error => {
+              console.log(error);
+              dispatch(errorNotification(`Github error retrieving file content`));
+            })
         }
         else {
           console.log("Already retrieved file code contents, calling from store");
@@ -456,6 +471,7 @@ function SourceDoc(props) {
           <DocsTab
             isEditing={isEditing}
             selectedEL={selectedEL}
+            openArtifact={props.data.openArtifact}
             setIsEditing={setIsEditing}
             renderFiles={renderFiles}
             setElements={props.functions.setElements}

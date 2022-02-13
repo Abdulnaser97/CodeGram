@@ -27,6 +27,7 @@ async function recursiveRepoBuilder(
         type: file.type,
         path: file.path,
         url: file.download_url,
+        html_url: file.html_url,
         linked: false,
       };
     } else {
@@ -35,6 +36,7 @@ async function recursiveRepoBuilder(
         type: file.type,
         path: file.path,
         url: file.download_url,
+        html_url: file.html_url,
         linked: false,
       };
     }
