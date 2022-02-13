@@ -31,7 +31,6 @@ import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 
-//Template
 import template from '../Templates/FullStackTemplate.json';
 
 
