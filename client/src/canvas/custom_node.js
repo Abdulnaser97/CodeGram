@@ -7,6 +7,8 @@ import { useEffect } from "react";
 import { Typography } from "@mui/material";
 import { theme } from "../Themes";
 
+import PlusSign from "../Media/PlusSign";
+
 const targetHandleStyle = {
   borderRadius: 5,
   background: "transparent",
@@ -39,13 +41,19 @@ const CustomNodeComponent = (props) => {
     `${Math.min(width, height) / 12}px`
   );
   const [selected, setSelected] = useState("");
-  const [newNodeName, setNewNodeName] = useState(''); 
+  const [isEditing, setIsEditing] = useState();
 
+  const [newNodeName, setNewNodeName] = useState("");
+  const [style, setStyle] = useState({ display: "none" });
   useEffect(() => {
     if (props.selected) {
       if (props.data.type === "FileNode") setSelected("highlightedNode");
     } else {
       setSelected("");
+    }
+
+    if (props.selected != props.id) {
+      setIsEditing(false);
     }
   }, [props.selected]);
 
@@ -54,120 +62,148 @@ const CustomNodeComponent = (props) => {
     props.data.width = width;
   }, [height, width]);
 
-  function handleNewNodeName(event){ 
-    props.data.nodeInputHandler(event)
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
+  }
+
+  function editButtonHandler(event) {
+    console.log("clicked");
+    setIsEditing(true);
+    props.data.nodeLinkHandler(event);
   }
 
   return (
-    <Resizable
-      className={`${props.data.type} ${selected}`}
-      size={{ width, height }}
-      onResizeStart={(e, direction, ref, d) => {
-        ref.className = `${props.data.type} nodrag`;
+    <div
+      onMouseEnter={(e) => {
+        setStyle({ display: "block" });
       }}
-      onResize={(e, direction, ref, d) => {
-        setFontSize(`${(width + d.width) / 200}em`);
-        setBorderRadius(
-          `${Math.min(width + d.width, height + d.height) / 12}px`
-        );
+      onMouseLeave={(e) => {
+        setStyle({ display: "none" });
       }}
-      onResizeStop={(e, direction, ref, d) => {
-        setWidth(width + d.width);
-        setHeight(height + d.height);
-
-        ref.className = `${props.data.type}`;
-      }}
-      style={{
-        "border-radius": borderRadius,
-      }}
-      grid={[15, 15]}
     >
-      {
-        <Typography
-          //color={props.selected ? "white" : "primary.darkGrey"}
-          fontWeight="Medium"
-          style={{ "font-size": fontSize }}
-          textAlign="center"
-        >
-          {props.data.label ? (
-            props.data.label
-          ) : (
-            <input
-              placeholder="__"
-              // onChange={handleSearch}
-              onKeyPress={handleNewNodeName}
-              style={{
-                "z-index": 0,
-                border: "none",
-                textAlign: "center",
-                fontSize: "100%",
-                outline: "none",
-                width: "80%",
-                padding: "none",
-                background: "transparent",
-                fontFamily: theme.typography.fontFamily,
-                fontWeight: theme.typography.fontWeightMedium,
-                color: theme.palette.primary.darkestGrey,
-              }}
-            />
-          )}
-        </Typography>
-      }
-      <Handle
-        className="handle target"
-        id={`target-handle-${props.id}`}
-        type="target"
-        style={{
-          ...targetHandleStyle,
-          "z-index": `${props.data.floatTargetHandle ? 9999 : -1}`,
+      <div
+        style={style}
+        className="node-button corner"
+        onClick={(event) => {
+          editButtonHandler(event);
         }}
-      />
-      {/* Only display handles when node is selected */}
-      <Handle
-        className="handle source"
-        id={`top-handle-${props.id}`}
-        type="source"
-        position="top"
-        style={{
-          ...sourceHandleStyle,
-          top: "-20px",
-          display: `${props.selected ? "block" : "none"}`,
+      >
+        <PlusSign className="PlusSign" />
+      </div>
+      <Resizable
+        className={`${props.data.type} ${selected}`}
+        size={{ width, height }}
+        onResizeStart={(e, direction, ref, d) => {
+          ref.className = `${props.data.type} nodrag`;
         }}
-      />
-      <Handle
-        className="handle source"
-        id={`bottom-handle-${props.id}`}
-        type="source"
-        position="bottom"
-        style={{
-          ...sourceHandleStyle,
-          bottom: "-20px",
-          display: `${props.selected ? "block" : "none"}`,
+        onResize={(e, direction, ref, d) => {
+          setFontSize(`${(width + d.width) / 200}em`);
+          setBorderRadius(
+            `${Math.min(width + d.width, height + d.height) / 12}px`
+          );
         }}
-      />
-      <Handle
-        className="handle source"
-        id={`left-handle-${props.id}`}
-        type="source"
-        position="left"
-        style={{
-          ...sourceHandleStyle,
-          left: "-20px",
-          display: `${props.selected ? "block" : "none"}`,
+        onResizeStop={(e, direction, ref, d) => {
+          setWidth(width + d.width);
+          setHeight(height + d.height);
+
+          ref.className = `${props.data.type}`;
         }}
-      />
-      <Handle
-        className="handle source"
-        id={`right-handle-${props.id}`}
-        type="source"
-        position="right"
         style={{
-          ...sourceHandleStyle,
-          right: "-20px",
-          display: `${props.selected ? "block" : "none"}`,
+          "border-radius": borderRadius,
         }}
-      />
-    </Resizable>
+        grid={[15, 15]}
+      >
+        {
+          <Typography
+            //color={props.selected ? "white" : "primary.darkGrey"}
+            fontWeight="Medium"
+            style={{ "font-size": fontSize }}
+            textAlign="center"
+          >
+            {!isEditing && props.data.label ? (
+              props.data.label
+            ) : (
+              <input
+                placeholder="__"
+                // focused={isEditing}
+                autoFocus
+                // onChange={handleSearch}
+                onKeyPress={handleNewNodeName}
+                onFocus={() => props.data.nodeLinkHandler()}
+                key="input"
+                style={{
+                  "z-index": 0,
+                  border: "none",
+                  textAlign: "center",
+                  fontSize: "100%",
+                  outline: "none",
+                  width: "80%",
+                  padding: "none",
+                  background: "transparent",
+                  fontFamily: theme.typography.fontFamily,
+                  fontWeight: theme.typography.fontWeightMedium,
+                  color: theme.palette.primary.darkestGrey,
+                }}
+              />
+            )}
+          </Typography>
+        }
+        <Handle
+          className="handle target"
+          id={`target-handle-${props.id}`}
+          type="target"
+          style={{
+            ...targetHandleStyle,
+            "z-index": `${props.data.floatTargetHandle ? 9999 : -1}`,
+          }}
+        />
+        {/* Only display handles when node is selected */}
+        <Handle
+          className="handle source"
+          id={`top-handle-${props.id}`}
+          type="source"
+          position="top"
+          style={{
+            ...sourceHandleStyle,
+            top: "-20px",
+            display: `${props.selected ? "block" : "none"}`,
+          }}
+        />
+        <Handle
+          className="handle source"
+          id={`bottom-handle-${props.id}`}
+          type="source"
+          position="bottom"
+          style={{
+            ...sourceHandleStyle,
+            bottom: "-20px",
+            display: `${props.selected ? "block" : "none"}`,
+          }}
+        />
+        <Handle
+          className="handle source"
+          id={`left-handle-${props.id}`}
+          type="source"
+          position="left"
+          style={{
+            ...sourceHandleStyle,
+            left: "-20px",
+            display: `${props.selected ? "block" : "none"}`,
+          }}
+        />
+        <Handle
+          className="handle source"
+          id={`right-handle-${props.id}`}
+          type="source"
+          position="right"
+          style={{
+            ...sourceHandleStyle,
+            right: "-20px",
+            display: `${props.selected ? "block" : "none"}`,
+          }}
+        />
+      </Resizable>
+    </div>
   );
 };
 
@@ -195,8 +231,8 @@ const WrapperNodeComponent = (props) => {
     props.data.width = width;
   }, [height, width]);
 
-  function handleNewNodeName(event){ 
-    props.data.nodeInputHandler(event)
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
   }
 
   return (
@@ -328,7 +364,11 @@ const FolderNodeComponent = (props) => {
   const [selected, setSelected] = useState("");
   useEffect(() => {
     if (props.selected) {
-      if (props.data.type === "CircleShape" || props.data.type === "ShadowBoxShape") setSelected("highlightedNode");
+      if (
+        props.data.type === "CircleShape" ||
+        props.data.type === "ShadowBoxShape"
+      )
+        setSelected("highlightedNode");
     } else {
       setSelected("");
     }
@@ -339,8 +379,8 @@ const FolderNodeComponent = (props) => {
     props.data.width = width;
   }, [height, width]);
 
-  function handleNewNodeName(event){ 
-    props.data.nodeInputHandler(event)
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
   }
 
   return (
@@ -464,8 +504,8 @@ const CircleNodeComponent = (props) => {
     props.data.width = width;
   }, [height, width]);
 
-  function handleNewNodeName(event){ 
-    props.data.nodeInputHandler(event)
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
   }
 
   return (
@@ -562,4 +602,9 @@ const CircleNodeComponent = (props) => {
   );
 };
 
-export { CustomNodeComponent, WrapperNodeComponent, FolderNodeComponent, CircleNodeComponent };
+export {
+  CustomNodeComponent,
+  WrapperNodeComponent,
+  FolderNodeComponent,
+  CircleNodeComponent,
+};

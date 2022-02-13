@@ -27,9 +27,10 @@ import { updateRepoFile } from "../Redux/actions/repoFiles";
 
 import FloatingEdge from "../canvas/FloatingEdge.tsx";
 import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
-
+import SourceDocFile from "../SourceDoc/SourceDocFile";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { Typography } from "@mui/material";
 // const edgeTypes = {
 //   floating: FloatingEdge,
 // };
@@ -85,9 +86,11 @@ export function useReactFlowWrapper({
   activeToolBarButton,
   setActiveToolBarButton,
   setOpenArtifact,
+  openArtifact,
   search,
   setSearch,
   fuse,
+  repository,
 }) {
   const { RFState, nodesZIndex } = useSelector((state) => {
     return { RFState: state.RFState, nodesZIndex: state.nodes.nodesZIndex };
@@ -107,8 +110,8 @@ export function useReactFlowWrapper({
   const [selectedNodeEvent, setSelectedNodeEvent] = useState(null);
   const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
   const { project } = useZoomPanHelper();
-  const [tabValue, setTabValue] = useState(0)
-  
+  const [tabValue, setTabValue] = useState(0);
+
   // Projects event click position to RF coordinates
   function calculatePosition(
     event = null,
@@ -146,7 +149,7 @@ export function useReactFlowWrapper({
 
       var shapeType = selectedShapeName.current;
       if (file) {
-        shapeType = (file.type == "dir") ? "DashedShape" : "FileNode";
+        shapeType = file.type == "dir" ? "DashedShape" : "FileNode";
       }
 
       let url =
@@ -175,22 +178,27 @@ export function useReactFlowWrapper({
           // but the type will probably be set from a few different places
           type: shapeType,
           width:
-            selectedShapeName.current && selectedShapeName.current === "CircleShape"
+            selectedShapeName.current &&
+            selectedShapeName.current === "CircleShape"
               ? 100
               : Math.floor(100 / 15) * 15,
           height:
-            selectedShapeName.current && selectedShapeName.current === "CircleShape"
+            selectedShapeName.current &&
+            selectedShapeName.current === "CircleShape"
               ? 100
               : Math.floor(70 / 15) * 15,
           nodeInputHandler: nodeInputHandler,
+          nodeLinkHandler: nodeLinkHandler,
         },
         type: shapeType,
         width:
-          selectedShapeName.current && selectedShapeName.current === "CircleShape"
+          selectedShapeName.current &&
+          selectedShapeName.current === "CircleShape"
             ? 100
             : Math.floor(100 / 15) * 15,
         height:
-          selectedShapeName.current && selectedShapeName.current === "CircleShape"
+          selectedShapeName.current &&
+          selectedShapeName.current === "CircleShape"
             ? 100
             : Math.floor(70 / 15) * 15,
         position: project({
@@ -242,6 +250,8 @@ export function useReactFlowWrapper({
   const handleContextMenuClose = (event) => {
     setContextMenu(null);
     setSelectedNodeEvent(null);
+    setContextFiles(null);
+    setNodeName("");
     console.log("rfInstance", rfInstance);
     console.log("rfInstance to Object", rfInstance.toObject());
   };
@@ -279,6 +289,7 @@ export function useReactFlowWrapper({
       setActiveToolBarButton("cursor");
     } else {
       setSelectedEL(null);
+      handleContextMenuClose();
     }
   };
 
@@ -520,7 +531,7 @@ export function useReactFlowWrapper({
   };
 
   const [nameFlag, setNameFlag] = useState(false);
-
+  console.log(selectedEL);
   const setter = (value) => {
     setElements((els) =>
       els.map((el) => {
@@ -530,12 +541,16 @@ export function useReactFlowWrapper({
             label: value,
           };
           setSelectedEL(el);
-          setSearch("");
+          setNodeName("");
         }
         return el;
       })
     );
   };
+
+  // useEffect(() => {
+  //   setNodeName("");
+  // }, [selectedEL]);
 
   useEffect(() => {
     // console.log(selectedEL)
@@ -547,20 +562,79 @@ export function useReactFlowWrapper({
 
   function nodeInputHandler(event) {
     if (event.key === "Enter") {
-      setSearch(event.target.value);
+      setNodeName(event.target.value);
       setNameFlag(true);
     } else {
-      setSearch(event.target.value);
+      setNodeName(event.target.value);
     }
   }
 
+  const [searchContent, setSearchContent] = useState(null);
+  const [contextFiles, setContextFiles] = useState(null);
+  // search method called whenevr search var changes
+  useEffect(() => {
+    if (nodeName && !nodeName.length) {
+      // TOOD: Close Context Menu
+      // handleContextMenuClose();
+      return;
+    } else if (fuse && nodeName) {
+      // nodeLinkHandler();
+      var results = fuse.search(nodeName);
+      var newResults = results.map((result) => result.item);
+      setSearchContent(newResults);
+    }
+  }, [nodeName]);
 
+  useEffect(() => {
+    if (searchContent?.length) {
+      var repoList = [];
+      const files = searchContent;
+      for (var f of files) {
+        repoList.push(
+          <SourceDocFile
+            addNode={addNode}
+            setOpenArtifact={setOpenArtifact}
+            file={repository[f.path]}
+            openArtifact={openArtifact}
+            selectedEL={selectedEL}
+            addFileToNode={addFileToNode}
+          />
+        );
+      }
+      setContextFiles(repoList);
+    }
+  }, [searchContent]);
 
-  function handleNodeDoubleClick(event, element){
-    setTabValue(1)
+  const nodeLinkHandler = useCallback(
+    (position) => {
+      // console.log(event);
+      if (selectedEL) {
+        var position = project({
+          x: selectedEL.position.x + selectedEL.data.width + 20,
+          y: selectedEL.position.y,
+        });
+        setContextMenu(
+          contextMenu === null
+            ? {
+                mouseX: position.x, //event.clientX + 20,
+                mouseY: position.y, //event.clientY,
+                type: "nodeLink",
+              }
+            : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+              // Other native context menus might behave different.
+              // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+              null
+        );
+      }
+    },
+    [selectedEL, project]
+  );
+
+  function handleNodeDoubleClick(event, element) {
+    setTabValue(1);
   }
 
-  // for pop up later 
+  // for pop up later
   // console.log(selectedEL)
   // useEffect(() => {
   //   if (fuse && search) {
@@ -613,6 +687,8 @@ export function useReactFlowWrapper({
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>
         <Menu
+          disableAutoFocus
+          disableAutoFocusItem
           open={contextMenu !== null}
           onClose={handleContextMenuClose}
           anchorReference="anchorPosition"
@@ -668,6 +744,41 @@ export function useReactFlowWrapper({
               </div>
             </MenuItem>
           )}
+          {contextMenu !== null && contextMenu.type === "nodeLink" && (
+            // <MenuItem
+            //   style={{ position: "relative", width: "15vw", height: "20vw" }}
+            // >
+            <div
+              className="repoContainer"
+              style={{
+                position: "relative",
+                maxHeight: "50vh",
+                "overflow-y": "scroll",
+              }}
+            >
+              <Typography variant="body1" color="primary">
+                {" "}
+                Results{" "}
+              </Typography>
+              {contextFiles}
+            </div>
+
+            //  <input
+            //     placeholder="search node"
+            //     // onChange={handleSearch}
+            //     onKeyPress={nodeInputHandler}
+            //     style={{
+            //       "z-index": 0,
+            //       border: "red solid 1px",
+            //       fontSize: "100%",
+            //       outline: "none",
+            //       width: "100%",
+            //       background: "transparent",
+            //       color: "grey",
+            //     }}
+            //   />
+            // </MenuItem>
+          )}
           {/* {search !== null && contextMenu === null  && (
             <MenuItem
               style={{ position: "relative", width: "15vw", backgroundClolor:'red' }}
@@ -697,8 +808,8 @@ export function useReactFlowWrapper({
     rfInstance: rfInstance,
     setSelectedEL: setSelectedEL,
     addFileToNode: addFileToNode,
-    setTabValue: setTabValue, 
-    tabValue: tabValue
+    setTabValue: setTabValue,
+    tabValue: tabValue,
   };
 }
 

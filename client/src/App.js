@@ -134,10 +134,12 @@ function App() {
     selectedShapeName,
     activeToolBarButton,
     setActiveToolBarButton,
+    openArtifact,
     setOpenArtifact,
     search,
     setSearch,
     fuse,
+    repository,
   });
 
   // change cursor to be opposite as previous

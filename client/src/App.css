@@ -217,6 +217,16 @@ pre {
   align-items: center;
 }
 
+.PlusSign { 
+  position: fixed;
+  z-index: 10000;
+}
+
+.PlusSign:hover {
+  cursor: pointer;
+ 
+}
+
 .pathContainer {
   margin-bottom: 2%;
   padding: 1% 5%;
