@@ -4,10 +4,10 @@ export const SAVE_NODES_TO_FILE = "SAVE_NODES_TO_FILE";
 export const DELETE_NODES_FROM_ARRAY = "DELETE_NODES_FROM_ARRAY";
 
 // Repo files
-
 export const FETCH_REPO_FILES = "FETCH_REPO_FILES";
 export const STORE_REPO_FILES = "STORE_REPO_FILES";
 export const UPDATE_REPO_FILE = "UPDATE_REPO_FILE";
+export const UPDATE_CODE_CONTENT = "UPDATE_CODE_CONTENT";
 
 // Load existing diagram from github repo
 export const LOAD_DIAGRAM_TO_STORE = "LOAD_DIAGRAM_TO_STORE";

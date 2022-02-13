@@ -1,8 +1,9 @@
 import "../App.css";
 import "./SourceDoc.css";
 
-// mui components
+// third-party components
 import { Box, Typography, Tabs, Tab } from "@mui/material";
+import { Resizable } from "re-resizable";
 
 // third party dependecnies
 import PropTypes from "prop-types";
@@ -16,6 +17,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { mapDispatchToProps, mapStateToProps } from "../Redux/configureStore";
 import { connect } from "react-redux";
 
+//actions
+import { updateRepoFileCodeContent } from "../Redux/actions/repoFiles";
+import { errorNotification } from "../Redux/actions/notification";
+
 // components
 import SourceDocFile from "./SourceDocFile";
 import TextEditor from "../components/TextEditor.js";
@@ -24,8 +29,6 @@ import CodeTab from "./CodeTab";
 import SearchBar from "./SearchBar";
 
 import axios from "axios";
-import { Resizable } from "re-resizable";
-import { errorNotification } from "../Redux/actions/notification";
 import { getRepo } from "../api/apiClient";
 
 function TabPanel(props) {
@@ -292,9 +295,10 @@ function SourceDoc(props) {
       setValue(0);
     } else {
       setValue(2);
-      if (props.data.openArtifact.url) {
+      console.log("selectedEl, props.data",props.data);
+      console.log("state", state);
+      if (props.data.openArtifact.type == "file") {
         // calls node url to get file content
-        console.log("selectedEl, props.data",props.data);
         Promise.resolve(
           getRepo(props.data.repo, props.data.openArtifact.path, props.data.branch))
         .then(response => {
@@ -304,6 +308,7 @@ function SourceDoc(props) {
           .then(function (response) {
             // handle success
             // populate repoFile.data[path].code with response.data, so don't have to do multiple GET requests again
+            dispatch(updateRepoFileCodeContent(props.data.openArtifact.path, response.data));
             setCurCode(response.data);
           })
           .catch(error => {

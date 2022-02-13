@@ -3,6 +3,7 @@ import {
   FETCH_REPO_FILES,
   STORE_REPO_FILES,
   UPDATE_REPO_FILE,
+  UPDATE_CODE_CONTENT,
 } from "../constants";
 
 async function recursiveRepoBuilder(
@@ -73,5 +74,13 @@ export function updateRepoFile(node){
   return {
     type: UPDATE_REPO_FILE,
     payload: node,
+  };
+}
+
+export function updateRepoFileCodeContent(path, newCode) {
+  return {
+    type: UPDATE_CODE_CONTENT,
+    path: path,
+    newCode: newCode,
   };
 }
