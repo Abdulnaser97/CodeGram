@@ -295,31 +295,42 @@ function SourceDoc(props) {
       setValue(0);
     } else {
       setValue(2);
+      const path = props.data.openArtifact.path;
       console.log("selectedEl, props.data",props.data);
       console.log("state", state);
+
+      // only set code in Code Tab if openArtifact is a file
       if (props.data.openArtifact.type == "file") {
-        // calls node url to get file content
-        Promise.resolve(
-          getRepo(props.data.repo, props.data.openArtifact.path, props.data.branch))
-        .then(response => {
-          console.log("GET file contents response", response);
-          const download_url = response.data.download_url;
-          axios.get(download_url)
-          .then(function (response) {
-            // handle success
-            // populate repoFile.data[path].code with response.data, so don't have to do multiple GET requests again
-            dispatch(updateRepoFileCodeContent(props.data.openArtifact.path, response.data));
-            setCurCode(response.data);
+        // do GET request if file code hasn't been retrieved yet
+        if (!(state.repoFiles.repoFiles[path].code)) {
+          // calls node url to get file content
+          Promise.resolve(
+            getRepo(props.data.repo, path, props.data.branch))
+          .then(response => {
+            console.log("GET file contents response", response);
+            const download_url = response.data.download_url;
+            axios.get(download_url)
+            .then(function (response) {
+              // handle success
+              // populate repoFile.data[path].code with response.data, so don't have to do multiple GET requests again
+              dispatch(updateRepoFileCodeContent(path, response.data));
+              setCurCode(response.data);
+            })
+            .catch(error => {
+              console.log(error);
+              dispatch(errorNotification(`Github error retrieving file content`));
+            })
           })
           .catch(error => {
-            console.log(error);
-            dispatch(errorNotification(`Github error retrieving file content`));
-          })
-        })
-        .catch(error => {
-          console.log("GET file contents on select error", error);
-          dispatch(errorNotification(`Error retrieving file content`));
-        })
+            console.log("GET file contents on select error", error);
+            dispatch(errorNotification(`Error retrieving file content`));
+          });
+        }
+        else {
+          console.log("Already retrieved file code contents, calling from store");
+          setCurCode(state.repoFiles.repoFiles[path].code);
+        }  
+        
       } else {
         setCurCode("Select a nnode to view a file");
       }
