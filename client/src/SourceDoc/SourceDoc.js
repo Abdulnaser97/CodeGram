@@ -396,7 +396,7 @@ function SourceDoc(props) {
               style={{
                 position: "relative",
                 maxHeight: "50vh",
-                "overflow-y": "scroll",
+                "overflow-y": "auto",
               }}
             >
               {sourceFiles}
@@ -406,7 +406,7 @@ function SourceDoc(props) {
         <TabPanel
           value={value}
           index={1}
-          style={{ height: "85%", overflowY: "scroll" }}
+          style={{ height: "85%", overflowY: "auto" }}
         >
           <Typography
             variant="h5"
@@ -425,7 +425,7 @@ function SourceDoc(props) {
             }
           />
         </TabPanel>
-        <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
+        <TabPanel value={value} index={2} style={{ overflow: "auto" }}>
           <DocsTab
             isEditing={isEditing}
             selectedEL={selectedEL}
