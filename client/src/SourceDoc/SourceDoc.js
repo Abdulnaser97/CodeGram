@@ -84,6 +84,9 @@ function SourceDoc(props) {
   const [width, setWidth] = useState("40vw");
   const [height, setHeight] = useState("85vh");
 
+  // only updates if selectedEL is not text
+  const [filteredSelectedEL, setFilteredSelectedEL] = useState(null);
+
   const dispatch = useDispatch();
 
   const { search, repository, fuse, homePath, selectedEL } = props.data;
@@ -100,10 +103,15 @@ function SourceDoc(props) {
 
   // change open artifact to be the file from react flow
   useEffect(() => {
-    if (repository && selectedEL && selectedEL.data && selectedEL.data.path) {
-      props.functions.setOpenArtifact(repository[selectedEL.data.path]);
+    if (
+      repository &&
+      filteredSelectedEL &&
+      filteredSelectedEL.data &&
+      filteredSelectedEL.data.path
+    ) {
+      props.functions.setOpenArtifact(repository[filteredSelectedEL.data.path]);
     }
-  }, [selectedEL]);
+  }, [filteredSelectedEL]);
 
   // highlight node on canvas if exists -> may need optimizing. Indeed it needed :)
   useEffect(() => {
@@ -139,7 +147,7 @@ function SourceDoc(props) {
             setOpenArtifact={props.functions.setOpenArtifact}
             file={repository[value[1].path]}
             openArtifact={props.data.openArtifact}
-            selectedEL={props.data.selectedEL}
+            selectedEL={filteredSelectedEL}
             addFileToNode={props.functions.addFileToNode}
           />
         );
@@ -155,14 +163,14 @@ function SourceDoc(props) {
             setOpenArtifact={props.functions.setOpenArtifact}
             file={repository[f.path]}
             openArtifact={props.data.openArtifact}
-            selectedEL={props.data.selectedEL}
+            selectedEL={filteredSelectedEL}
             addFileToNode={props.functions.addFileToNode}
           />
         );
       }
       setSourceFiles(repoList);
     }
-  }, [SDContent, selectedEL, props.data.openArtifact, repository]);
+  }, [SDContent, filteredSelectedEL, props.data.openArtifact, repository]);
 
   useEffect(() => {
     if (repository && homePath) {
@@ -270,8 +278,12 @@ function SourceDoc(props) {
   //
   function renderFiles() {
     var files = [];
-    if (selectedEL && selectedEL.data && selectedEL.data.parentNodes) {
-      const f = selectedEL.data.parentNodes.map((pNode) => {
+    if (
+      filteredSelectedEL &&
+      filteredSelectedEL.data &&
+      filteredSelectedEL.data.parentNodes
+    ) {
+      const f = filteredSelectedEL.data.parentNodes.map((pNode) => {
         <li className="SourceDocFile foldertype">hello</li>;
       });
     }
@@ -284,14 +296,13 @@ function SourceDoc(props) {
   };
 
   useEffect(() => {
-    if (!selectedEL) {
-      console.log(`noELementSelected`);
+    if (!filteredSelectedEL || !selectedEL || selectedEL.data.type === "Text") {
       setValue(0);
     } else if (!selectedEL.data.label) {
       setValue(0);
-    } else {
+    } else if (filteredSelectedEL.data.label) {
       setValue(2);
-      if (props.data.openArtifact.url) {
+      if (props.data.openArtifact && props.data.openArtifact.url) {
         // calls node url to get file content
         axios
           .get(props.data.openArtifact.url)
@@ -308,7 +319,7 @@ function SourceDoc(props) {
         setCurCode("Select a nnode to view a file");
       }
     }
-  }, [selectedEL]);
+  }, [filteredSelectedEL, selectedEL]);
 
   useEffect(() => {
     props.functions.setTabValue(value);
@@ -330,6 +341,13 @@ function SourceDoc(props) {
       setSDContent(newResults);
     }
   }, [search]);
+
+  // Updated filteredSelectedEL only if selectedEL is not Text
+  useEffect(() => {
+    if (props.data.selectedEL && props.data.selectedEL.data.type !== "Text") {
+      setFilteredSelectedEL(props.data.selectedEL);
+    }
+  }, [props.data.selectedEL]);
 
   //if(props.data.isOpenSD){
   return (
@@ -416,19 +434,23 @@ function SourceDoc(props) {
               zIndex: 1,
             }}
           >
-            {selectedEL && selectedEL.data ? selectedEL.data.label : selectedEL}
+            {filteredSelectedEL && filteredSelectedEL.data
+              ? filteredSelectedEL.data.label
+              : filteredSelectedEL}
           </Typography>
           <CodeTab
             rawCode={curCode}
             fileName={
-              selectedEL && selectedEL.data ? selectedEL.data.label : ""
+              filteredSelectedEL && filteredSelectedEL.data
+                ? filteredSelectedEL.data.label
+                : ""
             }
           />
         </TabPanel>
         <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
           <DocsTab
             isEditing={isEditing}
-            selectedEL={selectedEL}
+            selectedEL={filteredSelectedEL}
             setIsEditing={setIsEditing}
             renderFiles={renderFiles}
             setElements={props.functions.setElements}
