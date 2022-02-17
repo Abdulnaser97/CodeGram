@@ -8,7 +8,7 @@ import {
 
 export function NotifDiagramLoaded() {
   const message = useSelector((state) => {
-    return state.notifications.successNotificationMessage;
+    return state.present.notifications.successNotificationMessage;
   });
   const dispatch = useDispatch();
 
@@ -32,7 +32,7 @@ export function NotifDiagramLoaded() {
 
 export function NotifDiagramLoading() {
   const message = useSelector((state) => {
-    return state.notifications.loadingNotificationMessage;
+    return state.present.notifications.loadingNotificationMessage;
   });
   const dispatch = useDispatch();
 
@@ -56,7 +56,7 @@ export function NotifDiagramLoading() {
 
 export function NotifError() {
   const message = useSelector((state) => {
-    return state.notifications.errorNotificationMessage;
+    return state.present.notifications.errorNotificationMessage;
   });
   const dispatch = useDispatch();
 

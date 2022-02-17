@@ -11,13 +11,25 @@ import {
   deleteNodeFromArray,
   sendToBack,
   bringToFront,
+  setDoUpdateRFInternalInstance,
+  setUndoRedoFlag,
 } from "./actions/nodes";
 import { fetchRepoFiles, storeRepoFiles } from "./actions/repoFiles";
 import thunk from "redux-thunk";
 import repoReducer from "./reducers/repoReducer";
-import { loadDiagramToStore } from "./actions/loadDiagram";
+import { loadDiagramToStore, syncRFState } from "./actions/loadDiagram";
 import { notificationReducer } from "./reducers/notificationReducer";
-import { successNotification, errorNotification, loadingNotification } from "./actions/notification";
+import {
+  successNotification,
+  errorNotification,
+  loadingNotification,
+} from "./actions/notification";
+import undoable, { includeAction } from "redux-undo";
+import {
+  ADD_NODE_TO_ARRAY,
+  LOAD_DIAGRAM_TO_STORE,
+  SYNC_RF_STATE,
+} from "./constants";
 
 const rootReducer = combineReducers({
   nodes: nodesReducer,
@@ -31,7 +43,13 @@ const enhancers = [devToolsEnhancer({ realtime: true })];
 // devToolsEnhancer is for the remote-redux chrome extension
 // currently is not setup properly yet, but it doesn't impede anything, so you can ignore it for now
 export const configureStore = () => {
-  return createStore(rootReducer, applyMiddleware(thunk));
+  return createStore(
+    undoable(rootReducer, {
+      limit: 40, // set a limit for the size of the history
+      filter: includeAction([ADD_NODE_TO_ARRAY]), // only store history for undo/redo when RFState is updated
+    }),
+    applyMiddleware(thunk)
+  );
 };
 
 const ActionCreators = Object.assign(
@@ -40,12 +58,15 @@ const ActionCreators = Object.assign(
   deleteNodeFromArray,
   sendToBack,
   bringToFront,
+  setDoUpdateRFInternalInstance,
   fetchRepoFiles,
   storeRepoFiles,
+  syncRFState,
   loadDiagramToStore,
   successNotification,
-  errorNotification, 
+  errorNotification,
   loadingNotification,
+  setUndoRedoFlag
 );
 export const mapStateToProps = (state) => ({
   nodes: state.nodes,

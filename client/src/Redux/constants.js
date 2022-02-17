@@ -19,3 +19,11 @@ export const SUCCESS_NOTIFICATION = "SUCCESS_NOTIFICATION";
 // Updates the z-index of the selected node to control layering
 export const UPDATE_NODE_Z_INDEX = "UPDATE_NODE_Z_INDEX";
 export const LOADING_NOTIFICATION = "LOADING_NOTIFICATION";
+
+// when rf instance is updated, store a copy in our reducer under RFState
+export const SYNC_RF_STATE = "SYNC_RF_STATE";
+
+// Used to load RFState in our redux store to react flow's internal redux store
+export const SET_UPDATE_RF_INSTANCE_FLAG = "SET_UPDATE_RF_INSTANCE_FLAG";
+
+export const SET_UNDO_REDO_FLAG = "SET_UNDO_REDO_FLAG";

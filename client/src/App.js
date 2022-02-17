@@ -76,10 +76,10 @@ function App() {
   const { nodesArr, repoFiles, repository, isLoadingDiagram } = useSelector(
     (state) => {
       return {
-        nodesArr: state.nodes.nodesArr,
-        isLoadingDiagram: state.nodes.isLoadingDiagram,
-        repoFiles: state.repoFiles,
-        repository: state.repoFiles.repoFiles,
+        nodesArr: state.present.nodes.nodesArr,
+        isLoadingDiagram: state.present.nodes.isLoadingDiagram,
+        repoFiles: state.present.repoFiles,
+        repository: state.present.repoFiles.repoFiles,
       };
     }
   );

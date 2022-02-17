@@ -1,5 +1,6 @@
 import axios from "axios";
-import { LOAD_DIAGRAM_TO_STORE } from "../constants";
+import { LOAD_DIAGRAM_TO_STORE, SYNC_RF_STATE } from "../constants";
+import { setDoUpdateRFInternalInstance } from "./nodes";
 
 export const loadDiagram = (repoFiles) => async (dispatch) => {
   var diagramFile = null;
@@ -17,7 +18,7 @@ export const loadDiagram = (repoFiles) => async (dispatch) => {
       .then(function (response) {
         // Populate nodesZIndex array
         const nodesZIndex = populateZIndexArr(response.data.elements);
-
+        dispatch(setDoUpdateRFInternalInstance(true));
         dispatch(
           loadDiagramToStore({ nodes: response.data, nodesZIndex: nodesZIndex })
         );
@@ -32,6 +33,13 @@ export const loadDiagram = (repoFiles) => async (dispatch) => {
 export function loadDiagramToStore(payload) {
   return {
     type: LOAD_DIAGRAM_TO_STORE,
+    payload: payload,
+  };
+}
+
+export function syncRFState(payload) {
+  return {
+    type: SYNC_RF_STATE,
     payload: payload,
   };
 }

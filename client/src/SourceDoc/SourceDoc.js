@@ -26,6 +26,7 @@ import SearchBar from "./SearchBar";
 import axios from "axios";
 import { Resizable } from "re-resizable";
 import { errorNotification } from "../Redux/actions/notification";
+import UndoRedo from "../components/UndoRedo";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -88,7 +89,11 @@ function SourceDoc(props) {
 
   const { search, repository, fuse, homePath, selectedEL } = props.data;
   useEffect(() => {
-    if (!state.repoFiles.repoFiles.isFetchingFiles) {
+    if (
+      !state.present.repoFiles ||
+      !state.present.repoFiles.repoFiles ||
+      !state.present.repoFiles.repoFiles.isFetchingFiles
+    ) {
       props.functions.setOpenArtifact("");
       setSourceFiles(null);
       setPath([]);
@@ -109,7 +114,7 @@ function SourceDoc(props) {
   useEffect(() => {
     try {
       if (props.data.openArtifact) {
-        var el = state.nodes.nodesArr.find((node) =>
+        var el = state.present.nodes.nodesArr.find((node) =>
           node.data ? node.data.path === props.data.openArtifact.path : false
         );
         if (el) {
@@ -291,7 +296,7 @@ function SourceDoc(props) {
       setValue(0);
     } else {
       setValue(2);
-      if (props.data.openArtifact.url) {
+      if (props.data.openArtifact && props.data.openArtifact.url) {
         // calls node url to get file content
         axios
           .get(props.data.openArtifact.url)
@@ -383,6 +388,7 @@ function SourceDoc(props) {
           index={0}
           sx={{ display: "flex", flexDirection: "column" }}
         >
+          <UndoRedo />
           <SearchBar
             handleSearch={props.functions.handleSearch}
             setTabValue={props.functions.setTabValue}

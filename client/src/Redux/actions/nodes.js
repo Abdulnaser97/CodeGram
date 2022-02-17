@@ -2,6 +2,8 @@ import {
   ADD_NODE_TO_ARRAY,
   DELETE_NODES_FROM_ARRAY,
   UPDATE_NODE_Z_INDEX,
+  SET_UPDATE_RF_INSTANCE_FLAG,
+  SET_UNDO_REDO_FLAG,
 } from "../constants";
 
 export function addNodeToArray(node) {
@@ -86,5 +88,19 @@ export function bringToFront(element) {
       type: UPDATE_NODE_Z_INDEX,
       nodesZIndex: newNodesZIndex,
     });
+  };
+}
+
+export function setDoUpdateRFInternalInstance(boolFlag) {
+  return {
+    type: SET_UPDATE_RF_INSTANCE_FLAG,
+    payload: boolFlag,
+  };
+}
+
+export function setUndoRedoFlag(boolFlag) {
+  return {
+    type: SET_UNDO_REDO_FLAG,
+    payload: boolFlag,
   };
 }
