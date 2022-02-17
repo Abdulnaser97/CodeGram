@@ -291,7 +291,7 @@ function SourceDoc(props) {
       setValue(0);
     } else {
       setValue(2);
-      if (props.data.openArtifact.url) {
+      if (props.data.openArtifact && props.data.openArtifact.url) {
         // calls node url to get file content
         axios
           .get(props.data.openArtifact.url)

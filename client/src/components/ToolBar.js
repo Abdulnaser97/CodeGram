@@ -10,13 +10,13 @@ import {
   Rectangle,
   Text,
   ShadowBoxShape,
+  Undo,
+  Redo,
 } from "../Media/ToolBar/ToolBarIcons";
 import "./ToolBar.css";
 
 const ToolBarBox = styled.div`
-  position: fixed;
-  top: 30vh;
-  left: 1.5vw;
+  position: relative;
   width: 3vw;
   height: 11vw;
   display: flex;
@@ -69,7 +69,33 @@ const PopupButton = styled(PopupButtonStyle)`
   `}
 `;
 
-export function useToolBar(props) {
+const UndoRedoBox = styled.div`
+  position: relative;
+  margin-top: 0.7vw;
+  width: 3vw;
+  height: 5vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  border-radius: 7px;
+  box-shadow: 0px 4px 10px rgba(5, 0, 56, 0.1);
+  background-color: white;
+  z-index: 1000;
+`;
+
+const SideControls = styled.div`
+  position: fixed;
+  top: 45vh;
+  left: 1.5vw;
+  width: 3vw;
+  height: 17vw;
+  display: block;
+  align-items: center;
+  z-index: 1000;
+`;
+
+export function useToolBar() {
   const [active, setActive] = useState("cursor");
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -98,89 +124,92 @@ export function useToolBar(props) {
 
   return {
     toolBarRender: (
-      <ToolBarBox>
-        <ToolBarButton
-          className="ToolBarButton"
-          // style={{ "margin-top": "1vw" }}
-          active={active === "cursor" ? true : false}
-          onClick={() => setActive("cursor")}
-        >
-          <Cursor />
-        </ToolBarButton>
-        <ToolBarButton
-          className="ToolBarButton"
-          active={active === "text" ? true : false}
-          onClick={() => setActive("text")}
-        >
-          <Text />
-        </ToolBarButton>
-        <ToolBarButton
-          className="ToolBarButton"
-          active={active === "selectShape" ? true : false}
-          onClick={(e) => moreShapes(e)}
-        >
-          {selectedShape}
-        </ToolBarButton>
-        <Menu
-          id={id}
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handleClose}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
-          }}
-          transformOrigin={{
-            vertical: "center",
-            horizontal: "left",
-          }}
-          PaperProps={{
-            style: {
-              position: "relative",
-              width: "fit-content",
-              marginLeft: "1.3vw",
-              marginTop: "-0.8vw",
-              borderRadius: "7px",
-              boxShadow: "0px 4px 10px rgba(5, 0, 56, 0.1)",
-            },
-          }}
-          MenuListProps={{
-            paddingtop: "2px",
-            paddingbottom: "2px",
-          }}
-          transitionDuration={{ enter: 100, exit: 120 }}
-        >
-          <div className="ShapesGrid" key="ShapesGrid">
-            <PopupButton
-              className="PopupButton"
-              key="PopupButton1"
-              active={selectedShapeName.current === "FileNode" ? true : false}
-              onClick={() => shapeSelect(<Rectangle />, "FileNode")}
-            >
-              <Rectangle />
-            </PopupButton>
-            <PopupButton
-              className="PopupButton"
-              key="PopupButton2"
-              active={
-                selectedShapeName.current === "DashedShape" ? true : false
-              }
-              onClick={() => shapeSelect(<DashedShape />, "DashedShape")}
-            >
-              <DashedShape />
-            </PopupButton>
-            <PopupButton
-              className="PopupButton"
-              key="PopupButton3"
-              active={
-                selectedShapeName.current === "ShadowBoxShape" ? true : false
-              }
-              onClick={() => shapeSelect(<ShadowBoxShape />, "ShadowBoxShape")}
-            >
-              <ShadowBoxShape />
-            </PopupButton>
-            {/* TODO: Comment this back in when we want circle nodes again */}
-            {/* <PopupButton
+      <SideControls>
+        <ToolBarBox>
+          <ToolBarButton
+            className="ToolBarButton"
+            // style={{ "margin-top": "1vw" }}
+            active={active === "cursor" ? true : false}
+            onClick={() => setActive("cursor")}
+          >
+            <Cursor />
+          </ToolBarButton>
+          <ToolBarButton
+            className="ToolBarButton"
+            active={active === "text" ? true : false}
+            onClick={() => setActive("text")}
+          >
+            <Text />
+          </ToolBarButton>
+          <ToolBarButton
+            className="ToolBarButton"
+            active={active === "selectShape" ? true : false}
+            onClick={(e) => moreShapes(e)}
+          >
+            {selectedShape}
+          </ToolBarButton>
+          <Menu
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "center",
+              horizontal: "left",
+            }}
+            PaperProps={{
+              style: {
+                position: "relative",
+                width: "fit-content",
+                marginLeft: "1.3vw",
+                marginTop: "-0.8vw",
+                borderRadius: "7px",
+                boxShadow: "0px 4px 10px rgba(5, 0, 56, 0.1)",
+              },
+            }}
+            MenuListProps={{
+              paddingtop: "2px",
+              paddingbottom: "2px",
+            }}
+            transitionDuration={{ enter: 100, exit: 120 }}
+          >
+            <div className="ShapesGrid" key="ShapesGrid">
+              <PopupButton
+                className="PopupButton"
+                key="PopupButton1"
+                active={selectedShapeName.current === "FileNode" ? true : false}
+                onClick={() => shapeSelect(<Rectangle />, "FileNode")}
+              >
+                <Rectangle />
+              </PopupButton>
+              <PopupButton
+                className="PopupButton"
+                key="PopupButton2"
+                active={
+                  selectedShapeName.current === "DashedShape" ? true : false
+                }
+                onClick={() => shapeSelect(<DashedShape />, "DashedShape")}
+              >
+                <DashedShape />
+              </PopupButton>
+              <PopupButton
+                className="PopupButton"
+                key="PopupButton3"
+                active={
+                  selectedShapeName.current === "ShadowBoxShape" ? true : false
+                }
+                onClick={() =>
+                  shapeSelect(<ShadowBoxShape />, "ShadowBoxShape")
+                }
+              >
+                <ShadowBoxShape />
+              </PopupButton>
+              {/* TODO: Comment this back in when we want circle nodes again */}
+              {/* <PopupButton
               className="PopupButton"
               key="PopupButton4"
               active={
@@ -190,10 +219,10 @@ export function useToolBar(props) {
             >
               <CircleShape />
             </PopupButton> */}
-          </div>
-        </Menu>
-        {/* TODO: Re-add these back in when we have use for them */}
-        {/* <ToolBarButton
+            </div>
+          </Menu>
+          {/* TODO: Re-add these back in when we have use for them */}
+          {/* <ToolBarButton
           className="ToolBarButton"
           active={active === "arrow" ? true : false}
           onClick={() => setActive("arrow")}
@@ -208,7 +237,23 @@ export function useToolBar(props) {
         >
           <Options />
         </ToolBarButton> */}
-      </ToolBarBox>
+        </ToolBarBox>
+        <UndoRedoBox>
+          <ToolBarButton
+            className="ToolBarButton"
+            onClick={() => console.log("redo")}
+          >
+            <Undo />
+          </ToolBarButton>
+          <ToolBarButton
+            className="ToolBarButton"
+            onClick={() => console.log("undo")}
+            style={{ paddingBottom: "0.5vw" }}
+          >
+            <Redo />
+          </ToolBarButton>
+        </UndoRedoBox>
+      </SideControls>
     ),
     selectedShape: selectedShape,
     selectedShapeName: selectedShapeName,

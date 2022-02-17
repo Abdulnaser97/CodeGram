@@ -129,6 +129,8 @@ function App() {
     addFileToNode,
     tabValue,
     setTabValue,
+    undo,
+    redo,
   } = useReactFlowWrapper({
     dispatch,
     selectedShapeName,

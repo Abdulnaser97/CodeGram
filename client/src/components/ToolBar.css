@@ -10,8 +10,16 @@
   fill: #ffaea6;
 }
 
-.ToolBarButton:hover path {
+.ToolBarButton:hover .circle {
   fill: #ffaea6;
+}
+
+.ToolBarButton:hover .Undo {
+  stroke: #ffaea6;
+}
+
+.ToolBarButton:hover .Redo {
+  stroke: #ffaea6;
 }
 
 .PopupButton:hover rect {
