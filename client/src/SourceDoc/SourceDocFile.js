@@ -55,8 +55,6 @@ function SourceDocFile(props) {
         node.data ? node.data.path === file.path : false
       );
       if (el) {
-        console.log("SourceDoc selectedFile el\n", el);
-        console.log("SourceDoc selectedFile\n", file);
         const x = el.position.x + el.width / 2;
         const y = el.position.y + el.height / 2;
         
