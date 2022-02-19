@@ -140,20 +140,22 @@ export default function DocsTab(props) {
       <Typography my={1} variant="h6">
         Wiki
       </Typography>
-      {isEditing ? (
-        <TextEditor
-          content={
-            selectedEL && selectedEL.data.wiki ? selectedEL.data.wiki : ""
-          }
-          onChange={handleWikiChange}
-        />
-      ) : (
-        <div
-          dangerouslySetInnerHTML={{
-            __html: wiki,
-          }}
-        />
-      )}
+      <div className="text-editor-container">
+        {isEditing ? (
+          <TextEditor
+            content={
+              selectedEL && selectedEL.data.wiki ? selectedEL.data.wiki : ""
+            }
+            onChange={handleWikiChange}
+          />
+        ) : (
+          <div
+            dangerouslySetInnerHTML={{
+              __html: wiki,
+            }}
+          />
+        )}
+      </div>
     </Box>
   );
 }

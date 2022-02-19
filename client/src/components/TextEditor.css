@@ -1,0 +1,10 @@
+.text-editor {
+    overflow-x: hidden;
+}
+
+.ck-blurred.ck.ck-content.ck-editor__editable.ck-rounded-corners.ck-editor__editable_inline,
+.ck-focused.ck.ck-content.ck-editor__editable.ck-rounded-corners.ck-editor__editable_inline {
+    height: 30vh;
+    max-width: 40vw;
+    overflow-y: auto;
+}

@@ -57,6 +57,8 @@ function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
+    "overflow-y": "auto",
+    "max-height": "85%"
   };
 }
 
@@ -338,13 +340,7 @@ function SourceDoc(props) {
         size={{ width, height }}
         className="sourceDocContainer"
         style={{
-          position: "fixed",
-          top: "13vh",
-          right: "1.5vw",
-          width: "40vw",
-          height: "90vh",
-          "z-index": 0,
-          borderRadius: "20px",
+          position: "absolute"
         }}
         onResizeStop={(e, direction, ref, d) => {
           setWidth(width + d.width);
