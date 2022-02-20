@@ -39,7 +39,7 @@ const CustomNodeComponent = (props) => {
     `${Math.min(width, height) / 12}px`
   );
   const [selected, setSelected] = useState("");
-  const [newNodeName, setNewNodeName] = useState(''); 
+  const [newNodeName, setNewNodeName] = useState("");
 
   useEffect(() => {
     if (props.selected) {
@@ -54,8 +54,8 @@ const CustomNodeComponent = (props) => {
     props.data.width = width;
   }, [height, width]);
 
-  function handleNewNodeName(event){ 
-    props.data.nodeInputHandler(event)
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
   }
 
   return (
@@ -195,8 +195,8 @@ const WrapperNodeComponent = (props) => {
     props.data.width = width;
   }, [height, width]);
 
-  function handleNewNodeName(event){ 
-    props.data.nodeInputHandler(event)
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
   }
 
   return (
@@ -328,7 +328,11 @@ const FolderNodeComponent = (props) => {
   const [selected, setSelected] = useState("");
   useEffect(() => {
     if (props.selected) {
-      if (props.data.type === "CircleShape" || props.data.type === "ShadowBoxShape") setSelected("highlightedNode");
+      if (
+        props.data.type === "CircleShape" ||
+        props.data.type === "ShadowBoxShape"
+      )
+        setSelected("highlightedNode");
     } else {
       setSelected("");
     }
@@ -339,8 +343,8 @@ const FolderNodeComponent = (props) => {
     props.data.width = width;
   }, [height, width]);
 
-  function handleNewNodeName(event){ 
-    props.data.nodeInputHandler(event)
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
   }
 
   return (
@@ -464,8 +468,8 @@ const CircleNodeComponent = (props) => {
     props.data.width = width;
   }, [height, width]);
 
-  function handleNewNodeName(event){ 
-    props.data.nodeInputHandler(event)
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
   }
 
   return (
@@ -562,4 +566,9 @@ const CircleNodeComponent = (props) => {
   );
 };
 
-export { CustomNodeComponent, WrapperNodeComponent, FolderNodeComponent, CircleNodeComponent };
+export {
+  CustomNodeComponent,
+  WrapperNodeComponent,
+  FolderNodeComponent,
+  CircleNodeComponent,
+};

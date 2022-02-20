@@ -14,7 +14,7 @@ import ReactFlow, {
   SmoothStepEdge,
   StraightEdge,
   StepEdge,
-} from "react-flow-renderer";
+} from "client/src/react-flow-renderer/dist/index.d.ts";
 import { useSelector } from "react-redux";
 import {
   addNodeToArray,
@@ -107,8 +107,8 @@ export function useReactFlowWrapper({
   const [selectedNodeEvent, setSelectedNodeEvent] = useState(null);
   const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
   const { project } = useZoomPanHelper();
-  const [tabValue, setTabValue] = useState(0)
-  
+  const [tabValue, setTabValue] = useState(0);
+
   // Projects event click position to RF coordinates
   function calculatePosition(
     event = null,
@@ -146,7 +146,7 @@ export function useReactFlowWrapper({
 
       var shapeType = selectedShapeName.current;
       if (file) {
-        shapeType = (file.type == "dir") ? "DashedShape" : "FileNode";
+        shapeType = file.type == "dir" ? "DashedShape" : "FileNode";
       }
 
       let url =
@@ -175,22 +175,26 @@ export function useReactFlowWrapper({
           // but the type will probably be set from a few different places
           type: shapeType,
           width:
-            selectedShapeName.current && selectedShapeName.current === "CircleShape"
+            selectedShapeName.current &&
+            selectedShapeName.current === "CircleShape"
               ? 100
               : Math.floor(100 / 15) * 15,
           height:
-            selectedShapeName.current && selectedShapeName.current === "CircleShape"
+            selectedShapeName.current &&
+            selectedShapeName.current === "CircleShape"
               ? 100
               : Math.floor(70 / 15) * 15,
           nodeInputHandler: nodeInputHandler,
         },
         type: shapeType,
         width:
-          selectedShapeName.current && selectedShapeName.current === "CircleShape"
+          selectedShapeName.current &&
+          selectedShapeName.current === "CircleShape"
             ? 100
             : Math.floor(100 / 15) * 15,
         height:
-          selectedShapeName.current && selectedShapeName.current === "CircleShape"
+          selectedShapeName.current &&
+          selectedShapeName.current === "CircleShape"
             ? 100
             : Math.floor(70 / 15) * 15,
         position: project({
@@ -554,13 +558,11 @@ export function useReactFlowWrapper({
     }
   }
 
-
-
-  function handleNodeDoubleClick(event, element){
-    setTabValue(1)
+  function handleNodeDoubleClick(event, element) {
+    setTabValue(1);
   }
 
-  // for pop up later 
+  // for pop up later
   // console.log(selectedEL)
   // useEffect(() => {
   //   if (fuse && search) {
@@ -697,8 +699,8 @@ export function useReactFlowWrapper({
     rfInstance: rfInstance,
     setSelectedEL: setSelectedEL,
     addFileToNode: addFileToNode,
-    setTabValue: setTabValue, 
-    tabValue: tabValue
+    setTabValue: setTabValue,
+    tabValue: tabValue,
   };
 }
 
