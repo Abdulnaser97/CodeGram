@@ -43,6 +43,7 @@ const CustomNodeComponent = (props) => {
   const [selected, setSelected] = useState("");
   const [isEditing, setIsEditing] = useState(true);
   const editRef = useRef(null);
+  const [handleSize, setHandleSize] = useState(Math.sqrt(height + width));
 
   const [newNodeName, setNewNodeName] = useState("");
   const [style, setStyle] = useState({ display: "none" });
@@ -102,7 +103,16 @@ const CustomNodeComponent = (props) => {
           ref.className = `${props.data.type} nodrag`;
         }}
         onResize={(e, direction, ref, d) => {
-          setFontSize(`${(width + d.width) / 200}em`);
+          setFontSize(
+            `${
+              Math.sqrt(
+                Math.pow(height + d.height, 2) + Math.pow(width + d.width, 2)
+              ) / 200
+            }em`
+          );
+
+          setHandleSize(Math.sqrt(height + d.height + width + d.width));
+
           setBorderRadius(
             `${Math.min(width + d.width, height + d.height) / 12}px`
           );
@@ -117,6 +127,34 @@ const CustomNodeComponent = (props) => {
           "border-radius": borderRadius,
         }}
         grid={[15, 15]}
+        handleStyles={
+          props.selected
+            ? {
+                bottomRight: {
+                  marginBottom: `-${handleSize}px`,
+                  marginRight: `-${handleSize}px`,
+                  bottom: "0",
+                  right: "0",
+                  cursor: "nwse-resize",
+                  width: `${handleSize / 1.2}px`,
+                  height: `${handleSize / 1.2}px`,
+                  borderRadius: `${handleSize / 1.2}px`,
+                  zIndex: 1,
+                },
+              }
+            : false
+        }
+        handleClasses={props.selected ? { bottomRight: "resizeHandle" } : false}
+        enable={{
+          top: false,
+          right: false,
+          bottom: false,
+          left: false,
+          topRight: false,
+          bottomRight: true,
+          bottomLeft: false,
+          topLeft: false,
+        }}
       >
         {
           <Typography
@@ -133,10 +171,10 @@ const CustomNodeComponent = (props) => {
                 // focused={isEditing}
                 autoFocus
                 // onChange={handleSearch}
-                onKeyPress={handleNewNodeName}
-                onFocus={() => {
-                  props.data.setIsOpenLinker(true);
-                }}
+                onKeyUp={handleNewNodeName}
+                // onFocus={() => {
+                //   props.data.setIsOpenLinker(true);
+                // }}
                 key="input"
                 style={{
                   "z-index": 0,
@@ -225,6 +263,8 @@ const WrapperNodeComponent = (props) => {
     `${Math.min(width, height) / 12}px`
   );
   const [selected, setSelected] = useState("");
+  const [handleSize, setHandleSize] = useState(Math.sqrt(height + width));
+
   useEffect(() => {
     if (props.selected) {
       if (props.data.type === "DashedShape") setSelected("highlightedWrapper");
@@ -250,7 +290,15 @@ const WrapperNodeComponent = (props) => {
         ref.className = `${props.data.type} nodrag`;
       }}
       onResize={(e, direction, ref, d) => {
-        setFontSize(`${(width + d.width) / 200}em`);
+        setFontSize(
+          `${
+            Math.sqrt(
+              Math.pow(height + d.height, 2) + Math.pow(width + d.width, 2)
+            ) / 200
+          }em`
+        );
+        setHandleSize(Math.sqrt(height + d.height + width + d.width));
+
         setBorderRadius(
           `${Math.min(width + d.width, height + d.height) / 12}px`
         );
@@ -263,6 +311,34 @@ const WrapperNodeComponent = (props) => {
       }}
       style={{ "border-radius": borderRadius }}
       grid={[15, 15]}
+      handleStyles={
+        props.selected
+          ? {
+              bottomRight: {
+                marginBottom: `-${handleSize}px`,
+                marginRight: `-${handleSize}px`,
+                bottom: "0",
+                right: "0",
+                cursor: "nwse-resize",
+                width: `${handleSize / 1.2}px`,
+                height: `${handleSize / 1.2}px`,
+                borderRadius: `${handleSize / 1.2}px`,
+                zIndex: 1,
+              },
+            }
+          : false
+      }
+      handleClasses={props.selected ? { bottomRight: "resizeHandle" } : false}
+      enable={{
+        top: false,
+        right: false,
+        bottom: false,
+        left: false,
+        topRight: false,
+        bottomRight: true,
+        bottomLeft: false,
+        topLeft: false,
+      }}
     >
       <div className="node-label corner">
         {props.data.label ? (
@@ -285,7 +361,8 @@ const WrapperNodeComponent = (props) => {
           <input
             placeholder="wrapper"
             // onChange={handleSearch}
-            onKeyPress={handleNewNodeName}
+            onKeyUp={handleNewNodeName}
+            autoFocus
             style={{
               "z-index": 0,
               border: "none",
@@ -369,6 +446,8 @@ const FolderNodeComponent = (props) => {
     `${Math.min(width, height) / 12}px`
   );
   const [selected, setSelected] = useState("");
+  const [handleSize, setHandleSize] = useState(Math.sqrt(height + width));
+
   useEffect(() => {
     if (props.selected) {
       if (
@@ -398,7 +477,15 @@ const FolderNodeComponent = (props) => {
         ref.className = `${props.data.type} nodrag`;
       }}
       onResize={(e, direction, ref, d) => {
-        setFontSize(`${(width + d.width) / 200}em`);
+        setFontSize(
+          `${
+            Math.sqrt(
+              Math.pow(height + d.height, 2) + Math.pow(width + d.width, 2)
+            ) / 200
+          }em`
+        );
+        setHandleSize(Math.sqrt(height + d.height + width + d.width));
+
         setBorderRadius(
           `${Math.min(width + d.width, height + d.height) / 12}px`
         );
@@ -411,6 +498,34 @@ const FolderNodeComponent = (props) => {
       }}
       style={{ "border-radius": borderRadius }}
       grid={[15, 15]}
+      handleStyles={
+        props.selected
+          ? {
+              bottomRight: {
+                marginBottom: `-${handleSize}px`,
+                marginRight: `-${handleSize}px`,
+                bottom: "0",
+                right: "0",
+                cursor: "nwse-resize",
+                width: `${handleSize / 1.2}px`,
+                height: `${handleSize / 1.2}px`,
+                borderRadius: `${handleSize / 1.2}px`,
+                zIndex: 1,
+              },
+            }
+          : false
+      }
+      handleClasses={props.selected ? { bottomRight: "resizeHandle" } : false}
+      enable={{
+        top: false,
+        right: false,
+        bottom: false,
+        left: false,
+        topRight: false,
+        bottomRight: true,
+        bottomLeft: false,
+        topLeft: false,
+      }}
     >
       <div className="node-label corner">
         {props.data.label ? (
@@ -419,7 +534,8 @@ const FolderNodeComponent = (props) => {
           <input
             placeholder="wrapper"
             // onChange={handleSearch}
-            onKeyPress={handleNewNodeName}
+            onKeyUp={handleNewNodeName}
+            autoFocus
             style={{
               "z-index": 0,
               border: "none",
@@ -497,6 +613,8 @@ const CircleNodeComponent = (props) => {
     props.data.height ? props.data.height : 200
   );
   const [selected, setSelected] = useState("");
+  const [handleSize, setHandleSize] = useState(Math.sqrt(height + width));
+
   const borderRadius = "50%";
   useEffect(() => {
     if (props.selected) {
@@ -522,6 +640,9 @@ const CircleNodeComponent = (props) => {
       onResizeStart={(e, direction, ref, d) => {
         ref.className = `${props.data.type} nodrag`;
       }}
+      onResize={(e, direction, ref, d) => {
+        setHandleSize(Math.sqrt(height + d.height + width + d.width));
+      }}
       onResizeStop={(e, direction, ref, d) => {
         setWidth(width + d.width);
         setHeight(height + d.height);
@@ -530,6 +651,34 @@ const CircleNodeComponent = (props) => {
       }}
       style={{ "border-radius": borderRadius }}
       grid={[15, 15]}
+      handleStyles={
+        props.selected
+          ? {
+              bottomRight: {
+                marginBottom: `-${handleSize}px`,
+                marginRight: `-${handleSize}px`,
+                bottom: "0",
+                right: "0",
+                cursor: "nwse-resize",
+                width: `${handleSize / 1.2}px`,
+                height: `${handleSize / 1.2}px`,
+                borderRadius: `${handleSize / 1.2}px`,
+                zIndex: 1,
+              },
+            }
+          : false
+      }
+      handleClasses={props.selected ? { bottomRight: "resizeHandle" } : false}
+      enable={{
+        top: false,
+        right: false,
+        bottom: false,
+        left: false,
+        topRight: false,
+        bottomRight: true,
+        bottomLeft: false,
+        topLeft: false,
+      }}
     >
       <div className="node-label corner">
         {props.data.label ? (
@@ -537,7 +686,8 @@ const CircleNodeComponent = (props) => {
         ) : (
           <input
             placeholder="wrapper"
-            onKeyPress={handleNewNodeName}
+            onKeyUp={handleNewNodeName}
+            autoFocus
             style={{
               "z-index": 0,
               border: "none",

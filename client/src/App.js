@@ -144,9 +144,13 @@ function App() {
 
   // change cursor to be opposite as previous
   useEffect(() => {
-    activeToolBarButton === "selectShape"
-      ? setCursor("crosshair")
-      : setCursor("default");
+    if (activeToolBarButton === "selectShape") {
+      setCursor("crosshair");
+    } else if (activeToolBarButton === "TextIcon") {
+      setCursor("text");
+    } else {
+      setCursor("default");
+    }
   }, [activeToolBarButton]);
 
   // TODO: think about when to release selecttion on create node

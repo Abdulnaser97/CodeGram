@@ -15,6 +15,7 @@ import ReactFlow, {
   SmoothStepEdge,
   StraightEdge,
   StepEdge,
+  useStoreActions,
 } from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import {
@@ -33,6 +34,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { Typography } from "@mui/material";
 import CanvasFile from "./CanvasFile";
+import { TextComponent } from "../canvas/text";
 // const edgeTypes = {
 //   floating: FloatingEdge,
 // };
@@ -98,9 +100,11 @@ export function useReactFlowWrapper({
     return { RFState: state.RFState, nodesZIndex: state.nodes.nodesZIndex };
   });
 
+  const nodes = useStoreState((state) => state.nodes);
+
   const [elements, setElements] = useState(initialElements);
   const [nodeName, setNodeName] = useState("");
-
+  console.log(elements);
   // Selected node
   const [selectedEL, setSelectedEL] = useState(initialElements[0]);
   const yPos = useRef(0);
@@ -113,6 +117,15 @@ export function useReactFlowWrapper({
   const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
   const { project } = useZoomPanHelper();
   const [tabValue, setTabValue] = useState(0);
+  const [nameFlag, setNameFlag] = useState(false);
+  const [newNodeId, setNewNodeId] = useState(null);
+  const [text, setText] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+
+  // react flow functions
+  const setSelectedElements = useStoreActions(
+    (actions) => actions.setSelectedElements
+  );
 
   // Projects event click position to RF coordinates
   function calculatePosition(
@@ -151,7 +164,7 @@ export function useReactFlowWrapper({
 
       var shapeType = selectedShapeName.current;
       if (file) {
-        shapeType = file.type == "dir" ? "DashedShape" : "FileNode";
+        shapeType = file.type === "dir" ? "DashedShape" : "FileNode";
       }
 
       let url =
@@ -213,8 +226,46 @@ export function useReactFlowWrapper({
       };
       dispatch(addNodeToArray(newNode));
       setElements((els) => els.concat(newNode));
+      setNewNodeId(newNode.id);
     },
-    [setElements, nodeName, dispatch, project]
+    [setElements, nodeName, dispatch, project, setSelectedElements]
+  );
+
+  // Add node function
+  const addText = useCallback(
+    (props) => {
+      var event = props.event ? props.event : null;
+      var label = "";
+      var position = calculatePosition(event, rfInstance);
+
+      var shapeType = selectedShapeName.current;
+
+      const newText = {
+        id: getNodeId(),
+        data: {
+          label: label,
+          name: label,
+          type: shapeType,
+          requestEdit: false,
+          width: null,
+          fontSize: null,
+          height: Math.floor(150 / 15) * 15,
+          nodeInputHandler: nodeInputHandler,
+        },
+        type: shapeType,
+        height: Math.floor(150 / 15) * 15,
+        width: Math.floor(350 / 15) * 15,
+        position: project({
+          x: position.x,
+          y: position.y,
+        }),
+        animated: true,
+      };
+      dispatch(addNodeToArray(newText));
+      setElements((els) => els.concat(newText));
+      setNewNodeId(newText.id);
+    },
+    [setElements, nodeName, dispatch, project, setSelectedElements]
   );
 
   const handleContextMenu = (event, node) => {
@@ -258,7 +309,6 @@ export function useReactFlowWrapper({
     setNodeName("");
     console.log("closing");
     console.log("rfInstance", rfInstance);
-    console.log("rfInstance to Object", rfInstance.toObject());
   };
 
   const handlePaneContextMenu = (event) => {
@@ -285,16 +335,22 @@ export function useReactFlowWrapper({
   const onElementClick = (event, element) => {
     console.log("click", element);
     setSelectedEL(element);
+    element.data.selected = true;
   };
 
   const onPaneClick = async (event) => {
-    console.log(event);
+    if (nodeName || text) {
+      setNameFlag(true);
+    } else {
+      setSelectedEL(null);
+      // handleContextMenuClose();
+    }
     if (activeToolBarButton === "selectShape") {
       await addNode({ event: event });
       setActiveToolBarButton("cursor");
-    } else {
-      setSelectedEL(null);
-      handleContextMenuClose();
+    } else if (activeToolBarButton === "TextIcon") {
+      await addText({ event: event });
+      setActiveToolBarButton("cursor");
     }
   };
 
@@ -318,12 +374,17 @@ export function useReactFlowWrapper({
         // TODO : lookinto styling floating edges  and smoothstep
         {
           ...params,
+          id: getNodeId(),
           type: "floating",
           arrowHeadType: ArrowHeadType.Arrow,
           data: {
-            label: "",
+            label: "new label",
             wiki: "",
           },
+          labelBgPadding: [8, 4],
+          labelBgBorderRadius: 4,
+          labelBgStyle: { fill: "#FFCC00", color: "#fff", fillOpacity: 1 },
+          labelShowBg: true,
         },
         els
       )
@@ -349,19 +410,16 @@ export function useReactFlowWrapper({
 
   const onConnectStart = (event, { nodeId, handleType }) => {
     setConnectionStarted(true);
-    console.log("connection started");
   };
   const onConnectStop = (event) => {
     setFloatTargetHandle(false);
 
     setConnectionStarted(false);
-    console.log("connection stopped");
   };
   const onConnectEnd = (event) => {
     event.target.style.zIndex = -1;
     setFloatTargetHandle(false);
     setConnectionStarted(false);
-    console.log("connection ended");
   };
 
   const onNodeMouseEnter = (event, node) => {
@@ -462,6 +520,7 @@ export function useReactFlowWrapper({
       if (
         selectedEL &&
         document.activeElement.tagName !== "INPUT" &&
+        document.activeElement.tagName !== "TEXTAREA" &&
         document.activeElement.tagName !== "DIV"
       ) {
         onElementsRemove([selectedEL]);
@@ -473,6 +532,7 @@ export function useReactFlowWrapper({
       if (
         selectedEL &&
         document.activeElement.tagName !== "INPUT" &&
+        document.activeElement.tagName !== "TEXTAREA" &&
         document.activeElement.tagName !== "DIV"
       ) {
         dispatch(sendToBack(selectedEL));
@@ -485,6 +545,7 @@ export function useReactFlowWrapper({
       if (
         selectedEL &&
         document.activeElement.tagName !== "INPUT" &&
+        document.activeElement.tagName !== "TEXTAREA" &&
         document.activeElement.tagName !== "DIV"
       ) {
         dispatch(bringToFront(selectedEL));
@@ -540,7 +601,6 @@ export function useReactFlowWrapper({
     dispatch(updateRepoFile(selEl, oldPath));
   };
 
-  const [nameFlag, setNameFlag] = useState(false);
   console.log(selectedEL);
 
   const setter = (value) => {
@@ -550,9 +610,15 @@ export function useReactFlowWrapper({
           el.data = {
             ...el.data,
             label: value,
+            requestEdit: false,
           };
           setSelectedEL(el);
           setNodeName("");
+          if (selectedEL.data.type !== "Text") {
+            setSearch("");
+          } else {
+            setText("");
+          }
         }
         return el;
       })
@@ -565,19 +631,30 @@ export function useReactFlowWrapper({
   }, [selectedEL]);
 
   useEffect(() => {
-    // console.log(selectedEL)
-    if (nameFlag) {
-      setter(nodeName);
-      setNameFlag(false);
+    if (nameFlag && selectedEL && selectedEL.id) {
+      if (text) {
+        setter(text);
+        setSelectedEL(null);
+      } else if (nodeName) {
+        setter(nodeName);
+        setSelectedEL(null);
+      }
     }
-  }, [nameFlag]);
+    setNameFlag(false);
+  }, [nameFlag, selectedEL, search, text]);
 
-  function nodeInputHandler(event) {
-    if (event.key === "Enter") {
-      setNodeName(event.target.value);
+  function nodeInputHandler(event, nodeType = "") {
+    if (
+      event.key === "Enter" &&
+      document.activeElement.tagName !== "TEXTAREA"
+    ) {
       setNameFlag(true);
+    }
+    if (nodeType === "Text") {
+      setText(event.target.value);
     } else {
       setNodeName(event.target.value);
+      if (event.target.value.length == 1) setIsOpenLinker(true);
     }
 
     // if (event.target.value.length == 1) {
@@ -673,8 +750,25 @@ export function useReactFlowWrapper({
   }, [searchContextProps, selectedEL, project]);
 
   function handleNodeDoubleClick(event, element) {
-    setTabValue(1);
+    if (element.data && element.data.type === "Text") {
+      element.data.requestEdit = true;
+      setIsEditing(!isEditing);
+      // pass edit flag to text data to change text content on double click
+    } else {
+      setTabValue(1);
+    }
   }
+
+  useEffect(() => {
+    if (newNodeId) {
+      const newlyAddedNode = nodes.find((node) => node.id === newNodeId);
+      if (newlyAddedNode) {
+        setSelectedElements([newlyAddedNode]);
+        setSelectedEL(newlyAddedNode);
+        setNewNodeId(null);
+      }
+    }
+  }, [newNodeId, nodes]);
 
   // for pop up later
   // console.log(selectedEL)
@@ -699,6 +793,7 @@ export function useReactFlowWrapper({
             ShadowBoxShape: FolderNodeComponent,
             circle: CustomNodeComponent,
             HomeNodeComponent: HomeNodeComponent,
+            Text: TextComponent,
           }}
           elements={elements}
           edgeTypes={edgeTypes}
@@ -718,7 +813,7 @@ export function useReactFlowWrapper({
           onNodeMouseMove={onNodeMouseMove}
           onNodeMouseLeave={onNodeMouseLeave}
           onPaneClick={onPaneClick}
-          selectNodesOnDrag={false}
+          selectNodesOnDrag={true}
           onNodeContextMenu={handleContextMenu}
           onEdgeContextMenu={handleEdgeContextMenu}
           onPaneContextMenu={handlePaneContextMenu}
