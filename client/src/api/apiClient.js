@@ -48,16 +48,15 @@ export async function invalidateToken() {
 }
 
 export async function getRepo(repo, path, branch) {
-  console.log(branch)
   const data = {
     repo: repo,
     path: path,
-    branch:branch
+    branch: branch,
   };
   return await perform("post", `/getcontent`, data);
 }
 
-export async function getBranches(repo) { 
+export async function getBranches(repo) {
   const data = {
     repo: repo,
   };
@@ -77,6 +76,14 @@ export async function getPR(repo, prNum) {
   return await perform("post", `/pr`, data);
 }
 
+export async function getCheckRunResult(repo, sha) {
+  const data = {
+    repo: repo,
+    sha: sha,
+  };
+  return await perform("post", `/getcheckrun`, data);
+}
+
 export async function getUser() {
   return await perform("get", `/auth/login/success`);
 }
@@ -84,7 +91,7 @@ export async function getUser() {
 export async function save(repo, branch, content) {
   const data = {
     repo: repo,
-    branch: branch, 
+    branch: branch,
     content: content,
   };
   return await perform("put", `/save`, data);

@@ -12,7 +12,7 @@ import {
   sendToBack,
   bringToFront,
 } from "./actions/nodes";
-import { fetchRepoFiles, storeRepoFiles } from "./actions/repoFiles";
+import { fetchRepoFiles, storeRepoFiles, updateRepoFileCodeContent } from "./actions/repoFiles";
 import thunk from "redux-thunk";
 import repoReducer from "./reducers/repoReducer";
 import { loadDiagramToStore } from "./actions/loadDiagram";
@@ -46,6 +46,7 @@ const ActionCreators = Object.assign(
   bringToFront,
   fetchRepoFiles,
   storeRepoFiles,
+  updateRepoFileCodeContent,
   loadDiagramToStore,
   successNotification,
   errorNotification,

@@ -32,6 +32,9 @@ import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { TextComponent } from "../canvas/text";
+
+import template from "../Templates/FullStackTemplate.json";
+
 // const edgeTypes = {
 //   floating: FloatingEdge,
 // };
@@ -55,6 +58,8 @@ var initialElements = [
     },
   },
 ];
+
+initialElements = template.elements;
 
 const edgeTypes = {
   default: SmoothStepEdge,
@@ -169,6 +174,8 @@ export function useReactFlowWrapper({
           ? file.url
           : null;
 
+      const html_url = file && file.html_url ? file.html_url : null;
+
       const newNode = {
         id: getNodeId(),
         data: {
@@ -181,6 +188,7 @@ export function useReactFlowWrapper({
           documentation: ["url1", "url2"],
           description: "",
           url: url,
+          html_url: html_url,
           path: file && file.path ? file.path : "",
           floatTargetHandle: false,
 
