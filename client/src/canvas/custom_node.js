@@ -7,6 +7,14 @@ import { useEffect } from "react";
 import { Typography } from "@mui/material";
 import { theme } from "../Themes";
 
+import GitHub from "../Landing/GitHub";
+
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+// api call import
+function login() {
+  window.location.assign(`${REACT_APP_BACKEND_URL}/auth/github`);
+}
+
 const targetHandleStyle = {
   borderRadius: 5,
   background: "transparent",
@@ -39,7 +47,7 @@ const CustomNodeComponent = (props) => {
     `${Math.min(width, height) / 12}px`
   );
   const [selected, setSelected] = useState("");
-  const [newNodeName, setNewNodeName] = useState(''); 
+  const [newNodeName, setNewNodeName] = useState("");
 
   useEffect(() => {
     if (props.selected) {
@@ -54,8 +62,8 @@ const CustomNodeComponent = (props) => {
     props.data.width = width;
   }, [height, width]);
 
-  function handleNewNodeName(event){ 
-    props.data.nodeInputHandler(event)
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
   }
 
   return (
@@ -195,8 +203,8 @@ const WrapperNodeComponent = (props) => {
     props.data.width = width;
   }, [height, width]);
 
-  function handleNewNodeName(event){ 
-    props.data.nodeInputHandler(event)
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
   }
 
   return (
@@ -339,8 +347,8 @@ const FolderNodeComponent = (props) => {
     props.data.width = width;
   }, [height, width]);
 
-  function handleNewNodeName(event){ 
-    props.data.nodeInputHandler(event)
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
   }
 
   return (
@@ -444,4 +452,176 @@ const FolderNodeComponent = (props) => {
   );
 };
 
-export { CustomNodeComponent, WrapperNodeComponent, FolderNodeComponent };
+const HomeNodeComponent = (props) => {
+  const [width, setWidth] = useState(props.data.width ? props.data.width : 200);
+  const [height, setHeight] = useState(
+    props.data.height ? props.data.height : 200
+  );
+  const [selected, setSelected] = useState("");
+  useEffect(() => {
+    if (props.selected) {
+      if (props.data.type === "CircleShape") setSelected("highlightedNode");
+    } else {
+      setSelected("");
+    }
+  }, [props.selected]);
+  const [fontSize, setFontSize] = useState(`${width / 180}em`);
+  useEffect(() => {
+    props.data.height = height;
+    props.data.width = width;
+  }, [height, width]);
+
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
+  }
+
+  return (
+    <Resizable
+      className={`FileNode ${selected}`}
+      size={{ width, height }}
+      onResizeStart={(e, direction, ref, d) => {
+        ref.className = `FileNode nodrag`;
+      }}
+      onResizeStop={(e, direction, ref, d) => {
+        setWidth(width + d.width);
+        setHeight(height + d.height);
+
+        ref.className = `FileNode`;
+      }}
+      grid={[15, 15]}
+    >
+      <div>
+        <Typography
+          fontWeight="Light"
+          style={{ "font-size": fontSize }}
+          textAlign="center"
+          variant="h5"
+        >
+          Welcome to CodeGram
+        </Typography>
+      </div>
+      <Handle
+        className="handle source"
+        id={`bottom-handle-${props.id}`}
+        type="source"
+        position="bottom"
+        style={{
+          ...sourceHandleStyle,
+          bottom: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
+    </Resizable>
+  );
+};
+
+const LinkComponent = (props) => {
+  const [width, setWidth] = useState(props.data.width ? props.data.width : 200);
+  const [height, setHeight] = useState(
+    props.data.height ? props.data.height : 200
+  );
+  const [selected, setSelected] = useState("");
+  useEffect(() => {
+    if (props.selected) {
+      if (props.data.type === "CircleShape") setSelected("highlightedNode");
+    } else {
+      setSelected("");
+    }
+  }, [props.selected]);
+  const [fontSize, setFontSize] = useState(`${width / 180}em`);
+  useEffect(() => {
+    props.data.height = height;
+    props.data.width = width;
+  }, [height, width]);
+
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
+  }
+
+  return (
+    <>
+      <input
+        placeholder="Enter link to your public repo!"
+        style={{
+          borderRadius: "0.6vw",
+          "padding-left": "20px",
+          "padding-right": "20px",
+          outline: "none",
+          height: "5vh",
+          width: "15vw",
+          border: "1px solid #ffaea6",
+          color: "#FFAEA6",
+          background: "transparent",
+          appearance: "none",
+          cursor: "pointer",
+          boxShadow: "-2.5px 4px 5px #c9c9c9",
+        }}
+      ></input>
+      <Handle
+        className="handle source"
+        id={`top-handle-${props.id}`}
+        type="source"
+        position="top"
+        style={{
+          ...sourceHandleStyle,
+          top: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
+    </>
+  );
+};
+
+const SignUpComponent = (props) => {
+  const [width, setWidth] = useState(props.data.width ? props.data.width : 200);
+  const [height, setHeight] = useState(
+    props.data.height ? props.data.height : 200
+  );
+  const [selected, setSelected] = useState("");
+  useEffect(() => {
+    if (props.selected) {
+      if (props.data.type === "CircleShape") setSelected("highlightedNode");
+    } else {
+      setSelected("");
+    }
+  }, [props.selected]);
+  const [fontSize, setFontSize] = useState(`${width / 180}em`);
+  useEffect(() => {
+    props.data.height = height;
+    props.data.width = width;
+  }, [height, width]);
+
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
+  }
+
+  return (
+    <>
+      <div
+        style={{ height: "100%", width: "100%" }}
+        className="GitHubButtonWrapper"
+      >
+        <GitHub className="GitHub" onClick={login} />
+      </div>
+      <Handle
+        className="handle source"
+        id={`top-handle-${props.id}`}
+        type="source"
+        position="top"
+        style={{
+          ...sourceHandleStyle,
+          // display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
+    </>
+  );
+};
+
+export {
+  CustomNodeComponent,
+  WrapperNodeComponent,
+  FolderNodeComponent,
+  HomeNodeComponent,
+  SignUpComponent,
+  LinkComponent,
+};

@@ -3,6 +3,9 @@ import {
   CustomNodeComponent,
   WrapperNodeComponent,
   FolderNodeComponent,
+  HomeNodeComponent,
+  LinkComponent,
+  SignUpComponent,
 } from "../canvas/custom_node";
 import ReactFlow, {
   addEdge,
@@ -22,9 +25,7 @@ import {
   sendToBack,
 } from "../Redux/actions/nodes";
 
-import {
-  updateRepoFile
-} from "../Redux/actions/repoFiles";
+import { updateRepoFile } from "../Redux/actions/repoFiles";
 
 import FloatingEdge from "../canvas/FloatingEdge.tsx";
 import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
@@ -32,9 +33,8 @@ import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 
-import template from '../Templates/FullStackTemplate.json';
-
-
+import template from "../Templates/FullStackTemplate.json";
+import ControlTemplate from "../Templates/ControlTemplate.json";
 // const edgeTypes = {
 //   floating: FloatingEdge,
 // };
@@ -59,7 +59,7 @@ var initialElements = [
   },
 ];
 
-initialElements = template.elements ; 
+initialElements = ControlTemplate.elements;
 
 const edgeTypes = {
   default: SmoothStepEdge,
@@ -93,8 +93,8 @@ export function useReactFlowWrapper({
   setActiveToolBarButton,
   setOpenArtifact,
   search,
-  setSearch, 
-  fuse
+  setSearch,
+  fuse,
 }) {
   const { RFState, nodesZIndex } = useSelector((state) => {
     return { RFState: state.RFState, nodesZIndex: state.nodes.nodesZIndex };
@@ -143,7 +143,7 @@ export function useReactFlowWrapper({
     (props) => {
       var file = props.file ? props.file : null;
       var event = props.event ? props.event : null;
-      var label = '';
+      var label = "";
       var position = calculatePosition(event, rfInstance);
 
       let url =
@@ -181,7 +181,7 @@ export function useReactFlowWrapper({
               : Math.floor(70 / 15) * 15,
           // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
           //file: file
-          nodeInputHandler:nodeInputHandler
+          nodeInputHandler: nodeInputHandler,
         },
         type: file ? "FileNode" : selectedShapeName.current,
         width:
@@ -427,6 +427,8 @@ export function useReactFlowWrapper({
     }
   };
 
+  console.log(elements);
+
   const keydownHandler = (e) => {
     // Ctrl + C (Cmd + C) for copy
     if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
@@ -485,7 +487,7 @@ export function useReactFlowWrapper({
   });
 
   const addFileToNode = (file) => {
-    console.log(selectedEL)
+    console.log(selectedEL);
     var selEl = null;
     setElements((els) =>
       els.map((el) => {
@@ -496,17 +498,17 @@ export function useReactFlowWrapper({
             ...el.data,
             label: file.name,
             url:
-            file && file.download_url !== undefined
-              ? file.download_url
-              : file && file.url !== undefined
-              ? file.url
-              : null,
-          path: file && file.path ? file.path : "",
-          floatTargetHandle: false,
+              file && file.download_url !== undefined
+                ? file.download_url
+                : file && file.url !== undefined
+                ? file.url
+                : null,
+            path: file && file.path ? file.path : "",
+            floatTargetHandle: false,
 
-          // can set this type to whatever is selected in the tool bar for now
-          // but the type will probably be set from a few different places
-          type: file ? "FileNode" : selectedShapeName.current,
+            // can set this type to whatever is selected in the tool bar for now
+            // but the type will probably be set from a few different places
+            type: file ? "FileNode" : selectedShapeName.current,
           };
           selEl = el;
         }
@@ -516,48 +518,44 @@ export function useReactFlowWrapper({
     );
     setSelectedEL(selEl);
     dispatch(updateRepoFile(selEl));
-  }
+  };
 
-  const [nameFlag, setNameFlag] = useState(false)
+  const [nameFlag, setNameFlag] = useState(false);
 
   const setter = (value) => {
     setElements((els) =>
       els.map((el) => {
         if (el.id === selectedEL.id) {
           el.data = {
-            ...el.data, 
-            label: value
+            ...el.data,
+            label: value,
           };
-          setSelectedEL(el)
-          setSearch('')
+          setSelectedEL(el);
+          setSearch("");
         }
         return el;
       })
     );
+  };
+
+  useEffect(() => {
+    // console.log(selectedEL)
+    if (nameFlag) {
+      setter(search);
+      setNameFlag(false);
+    }
+  }, [nameFlag]);
+
+  function nodeInputHandler(event) {
+    if (event.key === "Enter") {
+      setSearch(event.target.value);
+      setNameFlag(true);
+    } else {
+      setSearch(event.target.value);
+    }
   }
 
-  useEffect (() => { 
-    // console.log(selectedEL)
-    if (nameFlag){
-      setter(search) 
-      setNameFlag(false)
-    }
-
-  }, [nameFlag])
-
-
-
-  function nodeInputHandler(event){
-
-    if (event.key === 'Enter'){
-        setSearch(event.target.value)
-        setNameFlag(true)
-      } else {
-        setSearch(event.target.value)
-      }
-    }
-
-  // for pop up later 
+  // for pop up later
   // console.log(selectedEL)
   // useEffect(() => {
   //   if (fuse && search) {
@@ -577,6 +575,9 @@ export function useReactFlowWrapper({
             DashedShape: WrapperNodeComponent,
             CircleShape: FolderNodeComponent,
             circle: CustomNodeComponent,
+            home: HomeNodeComponent,
+            LinkComponent: LinkComponent,
+            SignUpComponent: SignUpComponent,
           }}
           elements={elements}
           edgeTypes={edgeTypes}
@@ -690,7 +691,7 @@ export function useReactFlowWrapper({
     selectedEL: selectedEL,
     rfInstance: rfInstance,
     setSelectedEL: setSelectedEL,
-    addFileToNode: addFileToNode
+    addFileToNode: addFileToNode,
   };
 }
 
