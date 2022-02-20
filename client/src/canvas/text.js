@@ -142,6 +142,7 @@ const TextComponent = (props) => {
           style={{
             "font-size": fontSize,
             whiteSpace: "pre-wrap",
+            wordBreak: "break-word",
           }}
           textAlign="left"
           color="primary.darkestGrey"
