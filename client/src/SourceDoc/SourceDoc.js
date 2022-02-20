@@ -284,9 +284,13 @@ function SourceDoc(props) {
   };
 
   useEffect(() => {
+    console.log(`Chaning Selected El: ${selectedEL}`);
     if (!selectedEL) {
       console.log(`noELementSelected`);
       setValue(0);
+    } else if (selectedEL.type === "floating"){
+      setValue(2);  
+      console.log("Attempting to set to new tab");  
     } else if (!selectedEL.data.label) {
       setValue(0);
     } else {

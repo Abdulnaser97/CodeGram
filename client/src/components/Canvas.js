@@ -348,6 +348,18 @@ export function useReactFlowWrapper({
     console.log("connection ended");
   };
 
+  const onEdgeMouseEnter = (event, edge) => { /////////////////////////////////////////////////////////////////
+    console.log('hovering over the edge!');
+    // edge.data.floatEdgeButton = true;
+    // setFloatEdgeButton(true);
+  };
+
+  const onEdgeMouseLeave = (event, edge) => { /////////////////////////////////////////////////////////////////
+    console.log('no longer hovering over the edge!');
+    // edge.data.floatEdgeButton = false;
+    // setFloatEdgeButton(false);
+  };
+
   const onNodeMouseEnter = (event, node) => {
     if (connectionStarted && !floatTargetHandle) {
       node.data.floatTargetHandle = true;
@@ -600,6 +612,8 @@ export function useReactFlowWrapper({
           onNodeMouseEnter={onNodeMouseEnter}
           onNodeMouseMove={onNodeMouseMove}
           onNodeMouseLeave={onNodeMouseLeave}
+          onEdgeMouseEnter= {onEdgeMouseEnter}
+          onEdgeMouseLeave= {onEdgeMouseLeave}
           onPaneClick={onPaneClick}
           selectNodesOnDrag={false}
           onNodeContextMenu={handleContextMenu}
