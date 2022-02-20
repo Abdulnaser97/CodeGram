@@ -23,7 +23,7 @@
                 "display": "none",
                 "justifyContent": "center",
                 "alignItems": "center",
-                "zIndex": "11"
+                "zIndex": "21"
             }
         },
         {
@@ -71,7 +71,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "10"
+                "zIndex": "20"
             }
         },
         {
@@ -119,7 +119,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "12"
+                "zIndex": "22"
             }
         },
         {
@@ -163,11 +163,11 @@
             "height": 60,
             "position": {
                 "x": 150,
-                "y": 464.99999999999994
+                "y": 495
             },
             "animated": true,
             "style": {
-                "zIndex": "8"
+                "zIndex": "18"
             }
         },
         {
@@ -215,7 +215,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "14"
+                "zIndex": "23"
             }
         },
         {
@@ -263,7 +263,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "15"
+                "zIndex": "24"
             }
         },
         {
@@ -311,7 +311,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "16"
+                "zIndex": "25"
             }
         },
         {
@@ -359,7 +359,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "17"
+                "zIndex": "26"
             }
         },
         {
@@ -407,55 +407,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "18"
-            }
-        },
-        {
-            "id": "randomnode_1643572544313",
-            "data": {
-                "label": "API Endpoints",
-                "name": "",
-                "linkedFiles": [
-                    "aa.py",
-                    "gg.py",
-                    "kookoo.py"
-                ],
-                "childNodes": [
-                    "da",
-                    "de",
-                    "do"
-                ],
-                "siblingNodes": [
-                    "ta",
-                    "te",
-                    "to"
-                ],
-                "parentNodes": [
-                    "pa",
-                    "pe"
-                ],
-                "documentation": [
-                    "url1",
-                    "url2"
-                ],
-                "description": "",
-                "url": null,
-                "path": "",
-                "floatTargetHandle": false,
-                "type": "CircleShape",
-                "width": 555,
-                "height": 135
-            },
-            "type": "CircleShape",
-            "width": 90,
-            "height": 60,
-            "position": {
-                "x": 165,
-                "y": 540
-            },
-            "animated": true,
-            "style": {
-                "zIndex": "9"
+                "zIndex": "27"
             }
         },
         {
@@ -503,7 +455,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "19"
+                "zIndex": "28"
             }
         },
         {
@@ -551,7 +503,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "20"
+                "zIndex": "29"
             }
         },
         {
@@ -599,7 +551,103 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "21"
+                "zIndex": "30"
+            }
+        },
+        {
+            "id": "randomnode_1645398100507",
+            "data": {
+                "label": "Api Endpoints",
+                "name": "",
+                "linkedFiles": [
+                    "aa.py",
+                    "gg.py",
+                    "kookoo.py"
+                ],
+                "childNodes": [
+                    "da",
+                    "de",
+                    "do"
+                ],
+                "siblingNodes": [
+                    "ta",
+                    "te",
+                    "to"
+                ],
+                "parentNodes": [
+                    "pa",
+                    "pe"
+                ],
+                "documentation": [
+                    "url1",
+                    "url2"
+                ],
+                "description": "",
+                "url": null,
+                "path": "",
+                "floatTargetHandle": false,
+                "type": "DashedShape",
+                "width": 540,
+                "height": 150
+            },
+            "type": "DashedShape",
+            "width": 90,
+            "height": 60,
+            "position": {
+                "x": 165,
+                "y": 540
+            },
+            "animated": true,
+            "style": {
+                "zIndex": "31"
+            }
+        },
+        {
+            "id": "randomnode_1645398169226",
+            "data": {
+                "label": "Full Stack Application Template",
+                "name": "",
+                "linkedFiles": [
+                    "aa.py",
+                    "gg.py",
+                    "kookoo.py"
+                ],
+                "childNodes": [
+                    "da",
+                    "de",
+                    "do"
+                ],
+                "siblingNodes": [
+                    "ta",
+                    "te",
+                    "to"
+                ],
+                "parentNodes": [
+                    "pa",
+                    "pe"
+                ],
+                "documentation": [
+                    "url1",
+                    "url2"
+                ],
+                "description": "",
+                "url": null,
+                "path": "",
+                "floatTargetHandle": false,
+                "type": "DashedShape",
+                "width": 720,
+                "height": 720
+            },
+            "type": "DashedShape",
+            "width": 90,
+            "height": 60,
+            "position": {
+                "x": 90,
+                "y": 165
+            },
+            "animated": true,
+            "style": {
+                "zIndex": "7"
             }
         },
         {
@@ -615,7 +663,7 @@
             },
             "id": "reactflow__edge-randomnode_1643572180947top-handle-randomnode_1643572180947-randomnode_1642555106668target-handle-randomnode_1642555106668",
             "style": {
-                "zIndex": "7"
+                "zIndex": "17"
             }
         },
         {
@@ -629,7 +677,10 @@
                 "label": "",
                 "wiki": ""
             },
-            "id": "reactflow__edge-randomnode_1643572180947target-handle-randomnode_1643572180947-randomnode_1643572180947target-handle-randomnode_1643572180947"
+            "id": "reactflow__edge-randomnode_1643572180947target-handle-randomnode_1643572180947-randomnode_1643572180947target-handle-randomnode_1643572180947",
+            "style": {
+                "zIndex": "8"
+            }
         },
         {
             "source": "randomnode_1643639619838",
@@ -642,7 +693,10 @@
                 "label": "",
                 "wiki": ""
             },
-            "id": "reactflow__edge-randomnode_1643639619838top-handle-randomnode_1643639619838-randomnode_1643572424203target-handle-randomnode_1643572424203"
+            "id": "reactflow__edge-randomnode_1643639619838top-handle-randomnode_1643639619838-randomnode_1643572424203target-handle-randomnode_1643572424203",
+            "style": {
+                "zIndex": "9"
+            }
         },
         {
             "source": "randomnode_1643639619838",
@@ -655,7 +709,10 @@
                 "label": "",
                 "wiki": ""
             },
-            "id": "reactflow__edge-randomnode_1643639619838top-handle-randomnode_1643639619838-randomnode_1643572430780target-handle-randomnode_1643572430780"
+            "id": "reactflow__edge-randomnode_1643639619838top-handle-randomnode_1643639619838-randomnode_1643572430780target-handle-randomnode_1643572430780",
+            "style": {
+                "zIndex": "10"
+            }
         },
         {
             "source": "randomnode_1643639619838",
@@ -668,7 +725,10 @@
                 "label": "",
                 "wiki": ""
             },
-            "id": "reactflow__edge-randomnode_1643639619838top-handle-randomnode_1643639619838-randomnode_1643572438432target-handle-randomnode_1643572438432"
+            "id": "reactflow__edge-randomnode_1643639619838top-handle-randomnode_1643639619838-randomnode_1643572438432target-handle-randomnode_1643572438432",
+            "style": {
+                "zIndex": "11"
+            }
         },
         {
             "source": "randomnode_1643639619838",
@@ -681,7 +741,10 @@
                 "label": "",
                 "wiki": ""
             },
-            "id": "reactflow__edge-randomnode_1643639619838top-handle-randomnode_1643639619838-randomnode_1643572451712target-handle-randomnode_1643572451712"
+            "id": "reactflow__edge-randomnode_1643639619838top-handle-randomnode_1643639619838-randomnode_1643572451712target-handle-randomnode_1643572451712",
+            "style": {
+                "zIndex": "12"
+            }
         },
         {
             "source": "randomnode_1643639619838",
@@ -694,7 +757,10 @@
                 "label": "",
                 "wiki": ""
             },
-            "id": "reactflow__edge-randomnode_1643639619838top-handle-randomnode_1643639619838-randomnode_1643572468127target-handle-randomnode_1643572468127"
+            "id": "reactflow__edge-randomnode_1643639619838top-handle-randomnode_1643639619838-randomnode_1643572468127target-handle-randomnode_1643572468127",
+            "style": {
+                "zIndex": "13"
+            }
         },
         {
             "source": "randomnode_1643573133853",
@@ -707,7 +773,10 @@
                 "label": "",
                 "wiki": ""
             },
-            "id": "reactflow__edge-randomnode_1643573133853target-handle-randomnode_1643573133853-randomnode_1643573133853target-handle-randomnode_1643573133853"
+            "id": "reactflow__edge-randomnode_1643573133853target-handle-randomnode_1643573133853-randomnode_1643573133853target-handle-randomnode_1643573133853",
+            "style": {
+                "zIndex": "14"
+            }
         },
         {
             "source": "randomnode_1643650412183",
@@ -720,7 +789,10 @@
                 "label": "",
                 "wiki": ""
             },
-            "id": "reactflow__edge-randomnode_1643650412183right-handle-randomnode_1643650412183-randomnode_1643573133853target-handle-randomnode_1643573133853"
+            "id": "reactflow__edge-randomnode_1643650412183right-handle-randomnode_1643650412183-randomnode_1643573133853target-handle-randomnode_1643573133853",
+            "style": {
+                "zIndex": "15"
+            }
         },
         {
             "source": "randomnode_1643650412183",
@@ -733,14 +805,15 @@
                 "label": "",
                 "wiki": ""
             },
-            "id": "reactflow__edge-randomnode_1643650412183right-handle-randomnode_1643650412183-randomnode_1642555128888target-handle-randomnode_1642555128888"
+            "id": "reactflow__edge-randomnode_1643650412183right-handle-randomnode_1643650412183-randomnode_1642555128888target-handle-randomnode_1642555128888",
+            "style": {
+                "zIndex": "16"
+            }
         }
     ],
     "position": [
-        170.15090524464972,
-        -47.28907617283579
+        282.5242361609353,
+        -33.273410040548356
     ],
-    "zoom": 0.6399362069221587
+    "zoom": 0.7149924931808512
 }
-
-
