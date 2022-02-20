@@ -2,7 +2,7 @@ import { Handle } from "react-flow-renderer";
 import { Resizable } from "re-resizable";
 
 import "./nodeStyles.css";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useEffect } from "react";
 import { Typography } from "@mui/material";
 import { theme } from "../Themes";
@@ -41,7 +41,8 @@ const CustomNodeComponent = (props) => {
     `${Math.min(width, height) / 12}px`
   );
   const [selected, setSelected] = useState("");
-  const [isEditing, setIsEditing] = useState();
+  const [isEditing, setIsEditing] = useState(true);
+  const editRef = useRef(null);
 
   const [newNodeName, setNewNodeName] = useState("");
   const [style, setStyle] = useState({ display: "none" });
@@ -69,8 +70,12 @@ const CustomNodeComponent = (props) => {
   function editButtonHandler(event) {
     console.log("clicked");
     setIsEditing(true);
-    props.data.nodeLinkHandler(event);
+    props.data.setIsOpenLinker(true);
   }
+
+  useEffect(() => {
+    setIsEditing(false);
+  }, [props.data]);
 
   return (
     <div
@@ -129,7 +134,9 @@ const CustomNodeComponent = (props) => {
                 autoFocus
                 // onChange={handleSearch}
                 onKeyPress={handleNewNodeName}
-                onFocus={() => props.data.nodeLinkHandler()}
+                onFocus={() => {
+                  props.data.setIsOpenLinker(true);
+                }}
                 key="input"
                 style={{
                   "z-index": 0,
@@ -602,9 +609,68 @@ const CircleNodeComponent = (props) => {
   );
 };
 
+const HomeNodeComponent = (props) => {
+  const [width, setWidth] = useState(props.data.width ? props.data.width : 200);
+  const [height, setHeight] = useState(
+    props.data.height ? props.data.height : 200
+  );
+  const [selected, setSelected] = useState("");
+  const borderRadius = "50%";
+  useEffect(() => {
+    if (props.selected) {
+      if (props.data.type === "CircleShape") setSelected("highlightedNode");
+    } else {
+      setSelected("");
+    }
+  }, [props.selected]);
+
+  useEffect(() => {
+    props.data.height = height;
+    props.data.width = width;
+  }, [height, width]);
+
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
+  }
+
+  return (
+    <Resizable
+      className={`${props.data.type} ${selected}`}
+      size={{ width, height }}
+      onResizeStart={(e, direction, ref, d) => {
+        ref.className = `${props.data.type} nodrag`;
+      }}
+      onResizeStop={(e, direction, ref, d) => {
+        setWidth(width + d.width);
+        setHeight(height + d.height);
+
+        ref.className = `${props.data.type}`;
+      }}
+      style={{ "border-radius": borderRadius }}
+      grid={[15, 15]}
+    >
+      <div>
+        <Typography variant="h3">Welcome to CodeGram!</Typography>
+      </div>
+      <Handle
+        className="handle source"
+        id={`bottom-handle-${props.id}`}
+        type="source"
+        position="bottom"
+        style={{
+          ...sourceHandleStyle,
+          bottom: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
+    </Resizable>
+  );
+};
+
 export {
   CustomNodeComponent,
   WrapperNodeComponent,
   FolderNodeComponent,
   CircleNodeComponent,
+  HomeNodeComponent,
 };

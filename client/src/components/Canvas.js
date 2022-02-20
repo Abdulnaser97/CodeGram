@@ -4,6 +4,7 @@ import {
   WrapperNodeComponent,
   FolderNodeComponent,
   CircleNodeComponent,
+  HomeNodeComponent,
 } from "../canvas/custom_node";
 import ReactFlow, {
   addEdge,
@@ -31,6 +32,7 @@ import SourceDocFile from "../SourceDoc/SourceDocFile";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { Typography } from "@mui/material";
+import CanvasFile from "./CanvasFile";
 // const edgeTypes = {
 //   floating: FloatingEdge,
 // };
@@ -38,7 +40,7 @@ import { Typography } from "@mui/material";
 var initialElements = [
   {
     id: "1",
-    type: "input",
+    type: "HomeNodeComponent",
     data: { label: "Project Root", url: "", width: 1, height: 1 },
     position: { x: 0, y: 0 },
     animated: true,
@@ -188,7 +190,9 @@ export function useReactFlowWrapper({
               ? 100
               : Math.floor(70 / 15) * 15,
           nodeInputHandler: nodeInputHandler,
+          setIsOpenLinker: setIsOpenLinker,
           nodeLinkHandler: nodeLinkHandler,
+          setNewSearchContentProps: setNewSearchContentProps,
         },
         type: shapeType,
         width:
@@ -252,6 +256,7 @@ export function useReactFlowWrapper({
     setSelectedNodeEvent(null);
     setContextFiles(null);
     setNodeName("");
+    console.log("closing");
     console.log("rfInstance", rfInstance);
     console.log("rfInstance to Object", rfInstance.toObject());
   };
@@ -499,6 +504,10 @@ export function useReactFlowWrapper({
   const addFileToNode = (file) => {
     console.log(selectedEL);
     var selEl = null;
+    // if (selectedEL?.data?.label){
+    //   repository[selectedEL?.data?.path]
+    // }
+    var oldPath = selectedEL?.data?.path;
     setElements((els) =>
       els.map((el) => {
         if (el.id === selectedEL.id) {
@@ -526,12 +535,14 @@ export function useReactFlowWrapper({
         return el;
       })
     );
+    handleContextMenuClose();
     setSelectedEL(selEl);
-    dispatch(updateRepoFile(selEl));
+    dispatch(updateRepoFile(selEl, oldPath));
   };
 
   const [nameFlag, setNameFlag] = useState(false);
   console.log(selectedEL);
+
   const setter = (value) => {
     setElements((els) =>
       els.map((el) => {
@@ -548,14 +559,15 @@ export function useReactFlowWrapper({
     );
   };
 
-  // useEffect(() => {
-  //   setNodeName("");
-  // }, [selectedEL]);
+  useEffect(() => {
+    if (selectedEL)
+      setNewSearchContentProps(selectedEL.position, selectedEL.data.width);
+  }, [selectedEL]);
 
   useEffect(() => {
     // console.log(selectedEL)
     if (nameFlag) {
-      setter(search);
+      setter(nodeName);
       setNameFlag(false);
     }
   }, [nameFlag]);
@@ -567,6 +579,12 @@ export function useReactFlowWrapper({
     } else {
       setNodeName(event.target.value);
     }
+
+    // if (event.target.value.length == 1) {
+    //   setIsOpenLinker(true);
+    // } else if (event.target.value.length == 0) {
+    //   setIsOpenLinker(false);
+    // }
   }
 
   const [searchContent, setSearchContent] = useState(null);
@@ -579,7 +597,7 @@ export function useReactFlowWrapper({
       return;
     } else if (fuse && nodeName) {
       // nodeLinkHandler();
-      var results = fuse.search(nodeName);
+      var results = fuse.search(nodeName, { limit: 5 });
       var newResults = results.map((result) => result.item);
       setSearchContent(newResults);
     }
@@ -591,7 +609,8 @@ export function useReactFlowWrapper({
       const files = searchContent;
       for (var f of files) {
         repoList.push(
-          <SourceDocFile
+          <CanvasFile
+            setContextMenu={setContextMenu}
             addNode={addNode}
             setOpenArtifact={setOpenArtifact}
             file={repository[f.path]}
@@ -605,30 +624,53 @@ export function useReactFlowWrapper({
     }
   }, [searchContent]);
 
-  const nodeLinkHandler = useCallback(
-    (position) => {
-      // console.log(event);
-      if (selectedEL) {
-        var position = project({
-          x: selectedEL.position.x + selectedEL.data.width + 20,
-          y: selectedEL.position.y,
-        });
-        setContextMenu(
-          contextMenu === null
-            ? {
-                mouseX: position.x, //event.clientX + 20,
-                mouseY: position.y, //event.clientY,
-                type: "nodeLink",
-              }
-            : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
-              // Other native context menus might behave different.
-              // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
-              null
-        );
-      }
-    },
-    [selectedEL, project]
-  );
+  const [isOpenLinker, setIsOpenLinker] = useState(false);
+
+  useEffect(() => {
+    if (isOpenLinker) {
+      console.log("opening menu");
+      nodeLinkHandler();
+      setIsOpenLinker(false);
+    }
+  }, [isOpenLinker]);
+
+  const [searchContextProps, setSearchContentProps] = useState({
+    x: 0,
+    y: 0,
+  });
+
+  function setNewSearchContentProps(position, nodeWidth) {
+    console.log(position);
+    console.log(nodeWidth);
+    setSearchContentProps({
+      ...searchContextProps,
+      x: position.x - nodeWidth, //event.clientX + 20,
+      y: position.y,
+    });
+  }
+
+  const nodeLinkHandler = useCallback(() => {
+    // console.log(event);
+    if (selectedEL) {
+      // var position = project({
+      //   x: selectedEL.position.x + selectedEL.data.width + 20,
+      //   y: selectedEL.position.y,
+      // });
+      console.log(searchContextProps);
+      setContextMenu(
+        contextMenu === null
+          ? {
+              mouseX: searchContextProps.x,
+              mouseY: searchContextProps.y,
+              type: "nodeLink",
+            }
+          : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+            // Other native context menus might behave different.
+            // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+            null
+      );
+    }
+  }, [searchContextProps, selectedEL, project]);
 
   function handleNodeDoubleClick(event, element) {
     setTabValue(1);
@@ -656,6 +698,7 @@ export function useReactFlowWrapper({
             CircleShape: CircleNodeComponent,
             ShadowBoxShape: FolderNodeComponent,
             circle: CustomNodeComponent,
+            HomeNodeComponent: HomeNodeComponent,
           }}
           elements={elements}
           edgeTypes={edgeTypes}
@@ -687,8 +730,10 @@ export function useReactFlowWrapper({
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>
         <Menu
+          variant="menu"
           disableAutoFocus
           disableAutoFocusItem
+          autoFocus={false}
           open={contextMenu !== null}
           onClose={handleContextMenuClose}
           anchorReference="anchorPosition"
@@ -748,19 +793,28 @@ export function useReactFlowWrapper({
             // <MenuItem
             //   style={{ position: "relative", width: "15vw", height: "20vw" }}
             // >
-            <div
-              className="repoContainer"
-              style={{
-                position: "relative",
-                maxHeight: "50vh",
-                "overflow-y": "scroll",
-              }}
-            >
-              <Typography variant="body1" color="primary">
+            <div>
+              <Typography
+                variant="subtitle1"
+                color="primary"
+                textAlign={"center"}
+              >
                 {" "}
                 Results{" "}
               </Typography>
-              {contextFiles}
+
+              <div
+                className="repoContainer"
+                style={{
+                  position: "relative",
+                  maxHeight: "40vh",
+                  minHeight: "10vh",
+                  width: "15vw",
+                  "overflow-y": "scroll",
+                }}
+              >
+                {contextFiles}
+              </div>
             </div>
 
             //  <input

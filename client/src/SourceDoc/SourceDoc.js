@@ -425,7 +425,7 @@ function SourceDoc(props) {
             }
           />
         </TabPanel>
-        <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
+        <TabPanel value={value} index={2} style={{ overflowY: "scroll" }}>
           <DocsTab
             isEditing={isEditing}
             selectedEL={selectedEL}

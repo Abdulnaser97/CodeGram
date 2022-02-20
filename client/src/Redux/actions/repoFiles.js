@@ -69,9 +69,17 @@ export function storeRepoFiles(repoFiles) {
 }
 
 // unused but leaving as example for now
-export function updateRepoFile(node){ 
-  return {
-    type: UPDATE_REPO_FILE,
-    payload: node,
+export function updateRepoFile(node, oldPath) {
+  return (dispatch, getState) => {
+    const { repoFiles } = getState();
+
+    console.log(oldPath);
+    if (oldPath) repoFiles.repoFiles[oldPath].linked = false;
+
+    dispatch({
+      type: UPDATE_REPO_FILE,
+      payload: node,
+      repoFiles: repoFiles.repoFiles,
+    });
   };
 }

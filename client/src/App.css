@@ -109,6 +109,17 @@ body {
   justify-content: space-between;
   max-height: 60px;
 }
+.CanvasFile {
+  position: relative;
+  width: 90%;
+  border-top: 1px solid #d4d4d4;
+  border-bottom: 1px solid #d4d4d4;
+  display: flex;
+  justify-content: space-between;
+  max-height: 60px;
+  margin-left: 10%;
+  margin-right: 10%;
+}
 
 .SourceDocFile:hover {
   box-shadow: rgba(0, 0, 0, 0.623) 1.95px 1.95px 2.6px;
@@ -117,6 +128,20 @@ body {
 
 .selectedFile {
   border: 1px solid #ff8b8b;
+}
+
+.canvasLinked{
+  background-color: #f3f3f3;
+  color: #626262;
+}
+
+.canvasUnlinked{
+  background-color: white;
+  color:black;
+}
+
+.canvasUnlinked:hover {
+  background-color: rgb(252, 252, 252);
 }
 
 .unlinked {
