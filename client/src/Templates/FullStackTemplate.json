@@ -155,15 +155,15 @@
                 "path": "",
                 "floatTargetHandle": false,
                 "type": "DashedShape",
-                "width": 600,
+                "width": 585,
                 "height": 345
             },
             "type": "DashedShape",
             "width": 90,
             "height": 60,
             "position": {
-                "x": 150,
-                "y": 464.99999999999994
+                "x": 165,
+                "y": 465
             },
             "animated": true,
             "style": {
@@ -210,8 +210,8 @@
             "width": 90,
             "height": 60,
             "position": {
-                "x": 180.00000000000003,
-                "y": 585
+                "x": 195.00000000000003,
+                "y": 570
             },
             "animated": true,
             "style": {
@@ -258,8 +258,8 @@
             "width": 90,
             "height": 60,
             "position": {
-                "x": 285,
-                "y": 585
+                "x": 300,
+                "y": 570
             },
             "animated": true,
             "style": {
@@ -306,8 +306,8 @@
             "width": 90,
             "height": 60,
             "position": {
-                "x": 390,
-                "y": 585
+                "x": 405,
+                "y": 570
             },
             "animated": true,
             "style": {
@@ -354,8 +354,8 @@
             "width": 90,
             "height": 60,
             "position": {
-                "x": 495,
-                "y": 585
+                "x": 510,
+                "y": 570
             },
             "animated": true,
             "style": {
@@ -402,8 +402,8 @@
             "width": 90,
             "height": 60,
             "position": {
-                "x": 600,
-                "y": 585
+                "x": 615,
+                "y": 570
             },
             "animated": true,
             "style": {
@@ -442,16 +442,16 @@
                 "url": null,
                 "path": "",
                 "floatTargetHandle": false,
-                "type": "CircleShape",
-                "width": 555,
+                "type": "ShadowBoxShape",
+                "width": 540,
                 "height": 135
             },
-            "type": "CircleShape",
+            "type": "ShadowBoxShape",
             "width": 90,
             "height": 60,
             "position": {
-                "x": 165,
-                "y": 540
+                "x": 180,
+                "y": 525
             },
             "animated": true,
             "style": {
@@ -539,15 +539,15 @@
                 "path": "",
                 "floatTargetHandle": false,
                 "type": "FileNode",
-                "width": 90,
+                "width": 555,
                 "height": 60
             },
             "type": "FileNode",
             "width": 90,
             "height": 60,
             "position": {
-                "x": 390,
-                "y": 735
+                "x": 180,
+                "y": 720
             },
             "animated": true,
             "style": {
