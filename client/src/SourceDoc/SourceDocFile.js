@@ -4,11 +4,17 @@ import Folder from "@mui/icons-material/Folder";
 import FolderIcon from "@mui/icons-material/Folder";
 import { mapDispatchToProps, mapStateToProps } from "../Redux/configureStore";
 import { connect } from "react-redux";
+import { useStore, useZoomPanHelper } from "react-flow-renderer";
+
 
 // export default function SourceDocFile(props) {
 function SourceDocFile(props) {
   const { addNode, setOpenArtifact, openArtifact, addFileToNode, selectedEL } = props;
   var { file } = props;
+
+  const store = useStore();
+  const { fitBounds } = useZoomPanHelper();
+  const { nodes } = store.getState();
 
   if (!file) {
     return <> </>;
@@ -43,6 +49,26 @@ function SourceDocFile(props) {
 
   function fileClickHandler(file) {
     setOpenArtifact(file);
+
+    if (file) {
+      var el = nodes.find((node) =>
+        node.data ? node.data.path === file.path : false
+      );
+      if (el) {
+        const x = el.position.x + el.width / 2;
+        const y = el.position.y + el.height / 2;
+        
+        fitBounds(
+          {
+            x: x,
+            y: y,
+            width: el.data.width,
+            height: el.data.height
+          },
+          1
+        )
+      }
+    }
   }
 
   return (
