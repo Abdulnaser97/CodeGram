@@ -57,6 +57,8 @@ function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
+    "overflow-y": "auto",
+    "max-height": "85%"
   };
 }
 
@@ -338,13 +340,7 @@ function SourceDoc(props) {
         size={{ width, height }}
         className="sourceDocContainer"
         style={{
-          position: "fixed",
-          top: "13vh",
-          right: "1.5vw",
-          width: "40vw",
-          height: "90vh",
-          "z-index": 0,
-          borderRadius: "20px",
+          position: "absolute"
         }}
         onResizeStop={(e, direction, ref, d) => {
           setWidth(width + d.width);
@@ -396,7 +392,7 @@ function SourceDoc(props) {
               style={{
                 position: "relative",
                 maxHeight: "50vh",
-                "overflow-y": "scroll",
+                "overflow-y": "auto",
               }}
             >
               {sourceFiles}
@@ -406,7 +402,7 @@ function SourceDoc(props) {
         <TabPanel
           value={value}
           index={1}
-          style={{ height: "85%", overflowY: "scroll" }}
+          style={{ height: "85%", overflowY: "auto" }}
         >
           <Typography
             variant="h5"
@@ -425,7 +421,7 @@ function SourceDoc(props) {
             }
           />
         </TabPanel>
-        <TabPanel value={value} index={2} style={{ overflow: "scroll" }}>
+        <TabPanel value={value} index={2} style={{ overflow: "auto" }}>
           <DocsTab
             isEditing={isEditing}
             selectedEL={selectedEL}
