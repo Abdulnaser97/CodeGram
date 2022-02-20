@@ -148,13 +148,15 @@ export function useReactFlowWrapper({
       if (file) {
         shapeType = (file.type == "dir") ? "DashedShape" : "FileNode";
       }
-
+      
       let url =
         file && file.download_url !== undefined
           ? file.download_url
           : file && file.url !== undefined
           ? file.url
           : null;
+
+      const html_url = (file && file.html_url) ? file.html_url : null;
 
       const newNode = {
         id: getNodeId(),
@@ -168,6 +170,7 @@ export function useReactFlowWrapper({
           documentation: ["url1", "url2"],
           description: "",
           url: url,
+          html_url: html_url,
           path: file && file.path ? file.path : "",
           floatTargetHandle: false,
 

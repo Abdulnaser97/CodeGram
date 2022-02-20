@@ -15,6 +15,7 @@ export default function DocsTab(props) {
     setIsEditing,
     renderFiles,
     selectedEL,
+    openArtifact,
     setElements,
     setSelectedEL,
   } = props;
@@ -135,7 +136,7 @@ export default function DocsTab(props) {
       )}
 
       <Typography variant="h6">
-        <a href={selectedEL && selectedEL.data.url}> source code link </a>
+        <a href={openArtifact && openArtifact.html_url} target="_blank"> source code link </a>
       </Typography>
       <Typography my={1} variant="h6">
         Wiki

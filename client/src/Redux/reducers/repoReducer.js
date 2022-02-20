@@ -1,4 +1,11 @@
-import { ADD_NODE_TO_ARRAY, FETCH_REPO_FILES, STORE_REPO_FILES, DELETE_NODES_FROM_ARRAY, UPDATE_REPO_FILE } from "../constants";
+import { 
+  ADD_NODE_TO_ARRAY, 
+  FETCH_REPO_FILES, 
+  STORE_REPO_FILES, 
+  DELETE_NODES_FROM_ARRAY, 
+  UPDATE_REPO_FILE ,
+  UPDATE_CODE_CONTENT,
+} from "../constants";
 
 const initialState = {
   repoFiles: [],
@@ -47,6 +54,18 @@ const repoReducer = (state = initialState, action) => {
       return {
         ...state,
         repoFiles: action.repoFiles,
+      }
+    };
+    case UPDATE_CODE_CONTENT: {
+      return {
+        ...state,
+        repoFiles: {
+          ...state.repoFiles,
+          [action.path]: {
+            ...state.repoFiles[action.path],
+            code: action.newCode, 
+          }
+        }
       }
     };
     default:
