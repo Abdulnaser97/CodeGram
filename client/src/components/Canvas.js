@@ -427,7 +427,7 @@ export function useReactFlowWrapper({
     }
   };
 
-  console.log(elements);
+  console.log(selectedEL);
 
   const keydownHandler = (e) => {
     // Ctrl + C (Cmd + C) for copy

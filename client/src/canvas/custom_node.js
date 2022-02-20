@@ -4,10 +4,11 @@ import { Resizable } from "re-resizable";
 import "./nodeStyles.css";
 import { useState } from "react";
 import { useEffect } from "react";
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import { theme } from "../Themes";
 
 import GitHub from "../Landing/GitHub";
+import { getPublicRepo } from "../api/apiClient";
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 // api call import
@@ -521,6 +522,7 @@ const LinkComponent = (props) => {
     props.data.height ? props.data.height : 200
   );
   const [selected, setSelected] = useState("");
+  const [publicUrl, setPublicUrl] = useState("");
   useEffect(() => {
     if (props.selected) {
       if (props.data.type === "CircleShape") setSelected("highlightedNode");
@@ -534,8 +536,8 @@ const LinkComponent = (props) => {
     props.data.width = width;
   }, [height, width]);
 
-  function handleNewNodeName(event) {
-    props.data.nodeInputHandler(event);
+  function handleURL(event) {
+    setPublicUrl(event.target.value);
   }
 
   return (
@@ -556,7 +558,28 @@ const LinkComponent = (props) => {
           cursor: "pointer",
           boxShadow: "-2.5px 4px 5px #c9c9c9",
         }}
+        onChange={handleURL}
       ></input>
+      <Box mx={2} sx={{ "box-shadow": 0 }}>
+        <div
+          className="navbar-button github"
+          style={{ backgroundColor: "transparent" }}
+          onClick={() => console.log(getPublicRepo(publicUrl))}
+        >
+          <Box className="SaveButtonWrapper">
+            <Typography
+              mx={1}
+              my={0.8}
+              fontSize=".8vw"
+              fontWeight="bold"
+              color="primary"
+              textAlign={"center"}
+            >
+              Go!
+            </Typography>
+          </Box>
+        </div>
+      </Box>
       <Handle
         className="handle source"
         id={`top-handle-${props.id}`}
@@ -598,7 +621,7 @@ const SignUpComponent = (props) => {
   return (
     <>
       <div
-        style={{ height: "100%", width: "100%" }}
+        style={{ height: "80%", width: "80%" }}
         className="GitHubButtonWrapper"
       >
         <GitHub className="GitHub" onClick={login} />

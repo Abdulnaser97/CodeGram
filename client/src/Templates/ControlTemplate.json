@@ -66,8 +66,8 @@
 		"width": 100,
 		"height": 70,
 		"position": {
-		    "x": 158,
-		    "y": 246
+		    "x": 203,
+		    "y": 101
 		},
 		"animated": true,
 		"style": {
@@ -114,8 +114,8 @@
 		"width": 100,
 		"height": 70,
 		"position": {
-		    "x": 158,
-		    "y": 246
+		    "x": 128,
+		    "y": 381
 		},
 		"animated": true,
 		"style": {
@@ -161,10 +161,7 @@
 		"type": "LinkComponent",
 		"width": 100,
 		"height": 70,
-		"position": {
-		    "x": 158,
-		    "y": 246
-		},
+		"position": {"x": 588, "y": 438},
 		"animated": true,
 		"style": {
 		    "zIndex": "10"
