@@ -30,6 +30,10 @@ import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
 
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+
+import template from '../Templates/FullStackTemplate.json';
+
+
 // const edgeTypes = {
 //   floating: FloatingEdge,
 // };
@@ -53,6 +57,8 @@ var initialElements = [
     },
   },
 ];
+
+initialElements = template.elements ; 
 
 const edgeTypes = {
   default: SmoothStepEdge,

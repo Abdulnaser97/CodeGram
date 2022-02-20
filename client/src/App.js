@@ -52,6 +52,9 @@ import {
   loadingNotification,
 } from "./Redux/actions/notification";
 
+//templates
+//import * as data from './Templates/FullStackTemplate.CodeGram';
+
 const LogoTopNav = styled.div`
   position: relative;
   left: 0;
