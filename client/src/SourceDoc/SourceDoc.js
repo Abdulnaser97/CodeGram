@@ -62,7 +62,7 @@ function a11yProps(index) {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
     "overflow-y": "auto",
-    "max-height": "85%"
+    "max-height": "85%",
   };
 }
 
@@ -90,6 +90,9 @@ function SourceDoc(props) {
   const [width, setWidth] = useState("40vw");
   const [height, setHeight] = useState("85vh");
 
+  // only updates if selectedEL is not text
+  const [filteredSelectedEL, setFilteredSelectedEL] = useState(null);
+
   const dispatch = useDispatch();
 
   const { search, repository, fuse, homePath, selectedEL } = props.data;
@@ -106,10 +109,15 @@ function SourceDoc(props) {
 
   // change open artifact to be the file from react flow
   useEffect(() => {
-    if (repository && selectedEL && selectedEL.data && selectedEL.data.path) {
-      props.functions.setOpenArtifact(repository[selectedEL.data.path]);
+    if (
+      repository &&
+      filteredSelectedEL &&
+      filteredSelectedEL.data &&
+      filteredSelectedEL.data.path
+    ) {
+      props.functions.setOpenArtifact(repository[filteredSelectedEL.data.path]);
     }
-  }, [selectedEL]);
+  }, [filteredSelectedEL]);
 
   // highlight node on canvas if exists -> may need optimizing. Indeed it needed :)
   useEffect(() => {
@@ -145,7 +153,7 @@ function SourceDoc(props) {
             setOpenArtifact={props.functions.setOpenArtifact}
             file={repository[value[1].path]}
             openArtifact={props.data.openArtifact}
-            selectedEL={props.data.selectedEL}
+            selectedEL={filteredSelectedEL}
             addFileToNode={props.functions.addFileToNode}
           />
         );
@@ -161,14 +169,14 @@ function SourceDoc(props) {
             setOpenArtifact={props.functions.setOpenArtifact}
             file={repository[f.path]}
             openArtifact={props.data.openArtifact}
-            selectedEL={props.data.selectedEL}
+            selectedEL={filteredSelectedEL}
             addFileToNode={props.functions.addFileToNode}
           />
         );
       }
       setSourceFiles(repoList);
     }
-  }, [SDContent, selectedEL, props.data.openArtifact, repository]);
+  }, [SDContent, filteredSelectedEL, props.data.openArtifact, repository]);
 
   useEffect(() => {
     if (repository && homePath) {
@@ -276,8 +284,12 @@ function SourceDoc(props) {
   //
   function renderFiles() {
     var files = [];
-    if (selectedEL && selectedEL.data && selectedEL.data.parentNodes) {
-      const f = selectedEL.data.parentNodes.map((pNode) => {
+    if (
+      filteredSelectedEL &&
+      filteredSelectedEL.data &&
+      filteredSelectedEL.data.parentNodes
+    ) {
+      const f = filteredSelectedEL.data.parentNodes.map((pNode) => {
         <li className="SourceDocFile foldertype">hello</li>;
       });
     }
@@ -290,69 +302,78 @@ function SourceDoc(props) {
   };
 
   useEffect(() => {
-    if (!selectedEL) {
-      console.log(`noELementSelected`);
+    if (!filteredSelectedEL || !selectedEL || selectedEL.data.type === "Text") {
       setValue(0);
     } else if (!selectedEL.data.label) {
       setValue(0);
-    } else {
+    } else if (filteredSelectedEL.data.label) {
       setValue(2);
       const path = props.data.openArtifact.path;
-      console.log("selectedEl, props.data",props.data);
+      console.log("selectedEl, props.data", props.data);
       console.log("state", state);
 
       // only set code in Code Tab if openArtifact is a file
       if (props.data.openArtifact.type == "file") {
-
         // do GET request if file code hasn't been retrieved yet
-        if (!(state.repoFiles.repoFiles[path].code) && state.repoFiles.repoFiles[path].url.includes("?token")) {
+        if (
+          !state.repoFiles.repoFiles[path].code &&
+          state.repoFiles.repoFiles[path].url.includes("?token")
+        ) {
           // calls node url to get file content
-          Promise.resolve(
-            getRepo(props.data.repo, path, props.data.branch))
-          .then(response => {
-            console.log("GET file contents response", response);
-            const download_url = response.data.download_url;
-            axios.get(download_url)
-            .then(function (response) {
-              // handle success
-              // populate repoFile.data[path].code with response.data, so don't have to do multiple GET requests again
-              dispatch(updateRepoFileCodeContent(path, response.data));
-              setCurCode(response.data);
+          Promise.resolve(getRepo(props.data.repo, path, props.data.branch))
+            .then((response) => {
+              console.log("GET file contents response", response);
+              const download_url = response.data.download_url;
+              axios
+                .get(download_url)
+                .then(function (response) {
+                  // handle success
+                  // populate repoFile.data[path].code with response.data, so don't have to do multiple GET requests again
+                  dispatch(updateRepoFileCodeContent(path, response.data));
+                  setCurCode(response.data);
+                })
+                .catch((error) => {
+                  console.log(error);
+                  dispatch(
+                    errorNotification(`Github error retrieving file content`)
+                  );
+                });
             })
-            .catch(error => {
-              console.log(error);
-              dispatch(errorNotification(`Github error retrieving file content`));
-            })
-          })
-          .catch(error => {
-            console.log("GET file contents on select error", error);
-            dispatch(errorNotification(`Error retrieving file content`));
-          });
+            .catch((error) => {
+              console.log("GET file contents on select error", error);
+              dispatch(errorNotification(`Error retrieving file content`));
+            });
         }
         // public repos
-        else if (!(state.repoFiles.repoFiles[path].code) && !(state.repoFiles.repoFiles[path].url.includes("?token"))) {
-          axios.get(props.data.openArtifact.url)
+        else if (
+          !state.repoFiles.repoFiles[path].code &&
+          !state.repoFiles.repoFiles[path].url.includes("?token")
+        ) {
+          axios
+            .get(props.data.openArtifact.url)
             .then(function (response) {
               // handle success
               // populate repoFile.data[path].code with response.data, so don't have to do multiple GET requests again
               dispatch(updateRepoFileCodeContent(path, response.data));
               setCurCode(response.data);
             })
-            .catch(error => {
+            .catch((error) => {
               console.log(error);
-              dispatch(errorNotification(`Github error retrieving file content`));
-            })
-        }
-        else {
-          console.log("Already retrieved file code contents, calling from store");
+              dispatch(
+                errorNotification(`Github error retrieving file content`)
+              );
+            });
+        } else {
+          console.log(
+            "Already retrieved file code contents, calling from store"
+          );
           setCurCode(state.repoFiles.repoFiles[path].code);
-        }  
-        
+        }
       } else {
         setCurCode("Select a nnode to view a file");
       }
     }
-  }, [selectedEL]);
+  }, [filteredSelectedEL, selectedEL]);
 
   useEffect(() => {
     props.functions.setTabValue(value);
@@ -375,6 +396,13 @@ function SourceDoc(props) {
     }
   }, [search]);
 
+  // Updated filteredSelectedEL only if selectedEL is not Text
+  useEffect(() => {
+    if (props.data.selectedEL && props.data.selectedEL.data.type !== "Text") {
+      setFilteredSelectedEL(props.data.selectedEL);
+    }
+  }, [props.data.selectedEL]);
+
   //if(props.data.isOpenSD){
   return (
     <div className={props.data.isOpenSD ? "openSD" : "hiddenSD"}>
@@ -382,7 +410,7 @@ function SourceDoc(props) {
         size={{ width, height }}
         className="sourceDocContainer"
         style={{
-          position: "absolute"
+          position: "absolute",
         }}
         onResizeStop={(e, direction, ref, d) => {
           setWidth(width + d.width);
@@ -454,12 +482,16 @@ function SourceDoc(props) {
               zIndex: 1,
             }}
           >
-            {selectedEL && selectedEL.data ? selectedEL.data.label : selectedEL}
+            {filteredSelectedEL && filteredSelectedEL.data
+              ? filteredSelectedEL.data.label
+              : filteredSelectedEL}
           </Typography>
           <CodeTab
             rawCode={curCode}
             fileName={
-              selectedEL && selectedEL.data ? selectedEL.data.label : ""
+              filteredSelectedEL && filteredSelectedEL.data
+                ? filteredSelectedEL.data.label
+                : ""
             }
           />
         </TabPanel>

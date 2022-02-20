@@ -8,7 +8,7 @@ import {
   DashedShape,
   Options,
   Rectangle,
-  Text,
+  TextIcon,
   ShadowBoxShape,
 } from "../Media/ToolBar/ToolBarIcons";
 import "./ToolBar.css";
@@ -42,7 +42,7 @@ const ToolBarButton = styled(ToolBarButtonStyle)`
     `
     .Rect{   stroke: #ffaea6;}
     .options{ fill: #ffaea6;}
-    .Text{   fill: #ffaea6;}
+    .TextIcon{   fill: #ffaea6;}
     path{   fill: #ffaea6;}
     .CircleShape{   stroke: #ffaea6;}
     .DashedShape{   stroke: #ffaea6;}
@@ -109,10 +109,13 @@ export function useToolBar(props) {
         </ToolBarButton>
         <ToolBarButton
           className="ToolBarButton"
-          active={active === "text" ? true : false}
-          onClick={() => setActive("text")}
+          active={active === "TextIcon" ? true : false}
+          onClick={() => {
+            setActive("TextIcon");
+            selectedShapeName.current = "Text";
+          }}
         >
-          <Text />
+          <TextIcon />
         </ToolBarButton>
         <ToolBarButton
           className="ToolBarButton"
