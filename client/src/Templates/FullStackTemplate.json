@@ -23,7 +23,7 @@
                 "display": "none",
                 "justifyContent": "center",
                 "alignItems": "center",
-                "zIndex": "21"
+                "zIndex": "20"
             }
         },
         {
@@ -71,7 +71,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "20"
+                "zIndex": "19"
             }
         },
         {
@@ -119,7 +119,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "22"
+                "zIndex": "21"
             }
         },
         {
@@ -215,7 +215,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "23"
+                "zIndex": "22"
             }
         },
         {
@@ -263,7 +263,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "24"
+                "zIndex": "23"
             }
         },
         {
@@ -311,7 +311,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "25"
+                "zIndex": "24"
             }
         },
         {
@@ -359,7 +359,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "26"
+                "zIndex": "25"
             }
         },
         {
@@ -407,7 +407,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "27"
+                "zIndex": "26"
             }
         },
         {
@@ -455,7 +455,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "28"
+                "zIndex": "27"
             }
         },
         {
@@ -491,19 +491,19 @@
                 "path": "",
                 "floatTargetHandle": false,
                 "type": "FileNode",
-                "width": 90,
+                "width": 405,
                 "height": 60
             },
             "type": "FileNode",
             "width": 90,
             "height": 60,
             "position": {
-                "x": 390,
+                "x": 240,
                 "y": 735
             },
             "animated": true,
             "style": {
-                "zIndex": "29"
+                "zIndex": "28"
             }
         },
         {
@@ -551,7 +551,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "30"
+                "zIndex": "29"
             }
         },
         {
@@ -599,7 +599,7 @@
             },
             "animated": true,
             "style": {
-                "zIndex": "31"
+                "zIndex": "30"
             }
         },
         {
