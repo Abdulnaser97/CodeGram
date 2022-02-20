@@ -1,3 +1,5 @@
+const { Base64 } = require("js-base64");
+
 async function handlePullRequestChange(context) {
   const pr = context.payload.pull_request;
   if (!pr || pr.state !== "open") return;
@@ -10,7 +12,7 @@ async function handlePullRequestChange(context) {
     owner: org,
     repo: repo,
   });
-  const feedback = { files: [], lines: [] };
+  let feedback = { files: [], lines: [] };
 
   for (const file of files.data) {
     const addedlines = file.patch.match(/(\n\+)+\s*[^\d\+](.*)/g);
@@ -23,6 +25,33 @@ async function handlePullRequestChange(context) {
       }
     }
   }
+
+  let diagram = await context.octokit.rest.repos.getContent({
+    owner: org,
+    repo: repo,
+    ref: sourceBrance,
+    path: "Diagram1.CodeGram",
+  });
+
+  if (diagram && diagram.data && diagram.data.content) {
+    diagram = await Base64.decode(diagram.data.content);
+    diagram = await JSON.parse(diagram);
+
+    let prFiles = new Set(feedback.files);
+    diagram.elements.forEach((element) => {
+      if (element.type && element.type === "FileNode") {
+        let path = element.data.path;
+
+        if (prFiles.has(path)) {
+          prFiles.delete(path);
+        }
+      }
+    });
+
+    feedback.files = Array.from(prFiles);
+    console.log(`Found diagram for ${org}/${repo}#${sourceBrance}`);
+  }
+
   const action_required = feedback.files.length > 0;
   const conclusion = action_required ? "action_required" : "success";
   const title = action_required
@@ -37,7 +66,7 @@ async function handlePullRequestChange(context) {
 
     summary +=
       "\n\n ## [Click Here to Update Diagram](" +
-      `https://code-gram.com?pr=${pr.number}&repo=${repo}&branch=${sourceBrance}` +
+      `http://localhost:3001?pr=${pr.number}&repo=${repo}&branch=${sourceBrance}&sha=${pr.head.sha}` +
       ")";
   }
 
