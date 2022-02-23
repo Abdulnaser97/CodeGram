@@ -55,17 +55,17 @@ function SourceDocFile(props) {
         node.data ? node.data.path === file.path : false
       );
       if (el) {
-        const x = el.position.x + el.width / 2;
-        const y = el.position.y + el.height / 2;
+        const x = el.__rf.position.x + el.__rf.width / 2;
+        const y = el.__rf.position.y + el.__rf.height / 2;
         
         fitBounds(
           {
             x: x,
             y: y,
-            width: el.data.width,
-            height: el.data.height
+            width: el.__rf.width,
+            height: el.__rf.height
           },
-          1
+          2
         )
       }
     }
