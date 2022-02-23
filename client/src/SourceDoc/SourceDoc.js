@@ -69,7 +69,7 @@ function a11yProps(index) {
 function SourceDoc(props) {
   const state = useSelector((state) => state);
   // Tabs: for tabs in the side menu
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(0); /////////////////////////////////////////////////////////////////////
 
   const [curCode, setCurCode] = useState("Select a node to view file");
 
@@ -307,7 +307,7 @@ function SourceDoc(props) {
     } else if (!selectedEL.data.label) {
       setValue(0);
     } else if (filteredSelectedEL.data.label) {
-      setValue(2);
+      setValue(0);
       const path = props.data.openArtifact.path;
       console.log("selectedEl, props.data", props.data);
       console.log("state", state);
