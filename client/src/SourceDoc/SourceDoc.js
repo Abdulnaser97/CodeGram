@@ -308,14 +308,17 @@ function SourceDoc(props) {
       setValue(0);
     } else if (filteredSelectedEL.data.label) {
       setValue(2);
-      const path = props.data.openArtifact.path;
+      const path = props.data.openArtifact
+        ? props.data.openArtifact.path
+        : null;
       console.log("selectedEl, props.data", props.data);
       console.log("state", state);
 
       // only set code in Code Tab if openArtifact is a file
-      if (props.data.openArtifact.type == "file") {
+      if (props.data.openArtifact && props.data.openArtifact.type == "file") {
         // do GET request if file code hasn't been retrieved yet
         if (
+          path &&
           !state.repoFiles.repoFiles[path].code &&
           state.repoFiles.repoFiles[path].url.includes("?token")
         ) {

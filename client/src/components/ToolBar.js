@@ -1,5 +1,6 @@
 import { Menu } from "@mui/material";
 import { useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import {
   Arrow,
@@ -13,6 +14,7 @@ import {
   Undo,
   Redo,
 } from "../Media/ToolBar/ToolBarIcons";
+import { redo, undo } from "../Redux/actions/nodes";
 import "./ToolBar.css";
 
 const ToolBarBox = styled.div`
@@ -103,6 +105,8 @@ export function useToolBar() {
   const [selectedShape, setSelectedShape] = useState(<Rectangle />);
   const selectedShapeName = useRef("FileNode");
 
+  const dispatch = useDispatch();
+
   const moreShapes = (event) => {
     setAnchorEl(event.currentTarget);
     setActive("selectShape");
@@ -139,7 +143,7 @@ export function useToolBar() {
             active={active === "text" ? true : false}
             onClick={() => setActive("text")}
           >
-            <Text />
+            <TextIcon />
           </ToolBarButton>
           <ToolBarButton
             className="ToolBarButton"
@@ -241,13 +245,13 @@ export function useToolBar() {
         <UndoRedoBox>
           <ToolBarButton
             className="ToolBarButton"
-            onClick={() => console.log("redo")}
+            onClick={() => dispatch(undo())}
           >
             <Undo />
           </ToolBarButton>
           <ToolBarButton
             className="ToolBarButton"
-            onClick={() => console.log("undo")}
+            onClick={() => dispatch(redo())}
             style={{ paddingBottom: "0.5vw" }}
           >
             <Redo />

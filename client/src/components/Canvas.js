@@ -96,11 +96,19 @@ export function useReactFlowWrapper({
   setSearch,
   fuse,
 }) {
-  const { RFState, nodesZIndex } = useSelector((state) => {
-    return { RFState: state.RFState, nodesZIndex: state.nodes.nodesZIndex };
-  });
+  const { RFState, nodesZIndex, undo, redo, curNodeDimensions } = useSelector(
+    (state) => {
+      return {
+        RFState: state.RFState,
+        nodesZIndex: state.nodes.nodesZIndex,
+        undo: state.RFState.undo,
+        redo: state.RFState.redo,
+        curNodeDimensions: state.nodes.curNodeDimensions,
+      };
+    }
+  );
 
-  const nodes = useStoreState((state) => state.nodes);
+  const nodes = useStoreState((state) => state.present.nodes);
 
   const [elements, setElements] = useState(initialElements);
   const [nodeName, setNodeName] = useState("");
@@ -669,12 +677,6 @@ export function useReactFlowWrapper({
   return {
     render: (
       <div className="canvas">
-        <button onClick={() => undo()} disabled={!canUndo}>
-          undo
-        </button>
-        <button onClick={() => redo()} disabled={!canRedo}>
-          redo
-        </button>
         <ReactFlow
           nodeTypes={{
             default: CustomNodeComponent,
@@ -711,6 +713,8 @@ export function useReactFlowWrapper({
           minZoom={0.1}
           maxZoom={4}
           onNodeDoubleClick={handleNodeDoubleClick}
+          onUndo={undo}
+          onRedo={redo}
           // search={search}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />

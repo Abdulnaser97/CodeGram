@@ -1,6 +1,9 @@
 import {
   ADD_NODE_TO_ARRAY,
   DELETE_NODES_FROM_ARRAY,
+  REDO,
+  UNDO,
+  UPDATE_NODE_DIMENSIONS,
   UPDATE_NODE_Z_INDEX,
 } from "../constants";
 
@@ -85,6 +88,37 @@ export function bringToFront(element) {
     dispatch({
       type: UPDATE_NODE_Z_INDEX,
       nodesZIndex: newNodesZIndex,
+    });
+  };
+}
+
+export function undo() {
+  return (dispatch, getState) => {
+    const { RFState } = getState();
+
+    dispatch({
+      type: UNDO,
+      payload: !RFState.undo,
+    });
+  };
+}
+
+export function redo() {
+  return (dispatch, getState) => {
+    const { RFState } = getState();
+
+    dispatch({
+      type: REDO,
+      payload: !RFState.redo,
+    });
+  };
+}
+
+export function updateNodeDimensions(id, height, width) {
+  return (dispatch, getState) => {
+    dispatch({
+      type: UPDATE_NODE_DIMENSIONS,
+      payload: { id: id, height: height, width: width },
     });
   };
 }

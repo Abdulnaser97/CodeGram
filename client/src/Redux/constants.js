@@ -18,4 +18,8 @@ export const SUCCESS_NOTIFICATION = "SUCCESS_NOTIFICATION";
 
 // Updates the z-index of the selected node to control layering
 export const UPDATE_NODE_Z_INDEX = "UPDATE_NODE_Z_INDEX";
+export const UPDATE_NODE_DIMENSIONS = "UPDATE_NODE_DIMENSIONS";
 export const LOADING_NOTIFICATION = "LOADING_NOTIFICATION";
+
+export const UNDO = "UNDO";
+export const REDO = "REDO";

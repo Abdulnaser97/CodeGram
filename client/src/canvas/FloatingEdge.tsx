@@ -17,7 +17,7 @@ const FloatingEdge: FC<EdgeProps> = ({
   markerEndId,
   style,
 }) => {
-  const nodes = useStoreState((state) => state.nodes);
+  const nodes = useStoreState((state) => state.present.nodes);
   const markerEnd = getMarkerEnd(arrowHeadType, markerEndId);
 
   const sourceNode = useMemo(
