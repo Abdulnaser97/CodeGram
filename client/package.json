@@ -21,9 +21,9 @@
     "browserify-fs": "^1.0.0",
     "fuse.js": "^6.5.3",
     "re-resizable": "^6.9.1",
-    "react": "file:../react-flow/node_modules/react",
-    "react-dom": "file:../react-flow/node_modules/react-dom",
-    "react-flow-renderer": "file:../react-flow",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-flow-renderer": "https://github.com/Abdulnaser97/react-flow/tarball/main",
     "react-mailchimp-subscribe": "^2.1.3",
     "react-redux": "^7.2.6",
     "react-scripts": "^4.0.3",
@@ -39,13 +39,17 @@
     "build": "react-scripts build",
     "test": "jest",
     "eject": "react-scripts eject",
-    "buildRF": "cd .. && cd react-flow && npm i && npm run build && cd .. && cd client"
+    "buildRF": "cd node_modules/react-flow-renderer && npm i && npm run build && cd .. && cd .. && npm i"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
     ]
+  },
+  "peerDependencies": {
+    "react": "16 || 17",
+    "react-dom": "16 || 17"
   },
   "browserslist": {
     "production": [
