@@ -140,8 +140,11 @@ export function useToolBar() {
           </ToolBarButton>
           <ToolBarButton
             className="ToolBarButton"
-            active={active === "text" ? true : false}
-            onClick={() => setActive("text")}
+            active={active === "TextIcon" ? true : false}
+            onClick={() => {
+              setActive("TextIcon");
+              selectedShapeName.current = "Text";
+            }}
           >
             <TextIcon />
           </ToolBarButton>
