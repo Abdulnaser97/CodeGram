@@ -23,6 +23,7 @@ import {
   deleteNodeFromArray,
   sendToBack,
 } from "../Redux/actions/nodes";
+import { doRedo, doUndo } from "../Redux/actions/nodes";
 
 import { updateRepoFile } from "../Redux/actions/repoFiles";
 
@@ -96,17 +97,14 @@ export function useReactFlowWrapper({
   setSearch,
   fuse,
 }) {
-  const { RFState, nodesZIndex, undo, redo, curNodeDimensions } = useSelector(
-    (state) => {
-      return {
-        RFState: state.RFState,
-        nodesZIndex: state.nodes.nodesZIndex,
-        undo: state.RFState.undo,
-        redo: state.RFState.redo,
-        curNodeDimensions: state.nodes.curNodeDimensions,
-      };
-    }
-  );
+  const { RFState, nodesZIndex, undo, redo } = useSelector((state) => {
+    return {
+      RFState: state.RFState,
+      nodesZIndex: state.nodes.nodesZIndex,
+      undo: state.RFState.undo,
+      redo: state.RFState.redo,
+    };
+  });
 
   const nodes = useStoreState((state) => state.present.nodes);
 
@@ -501,6 +499,20 @@ export function useReactFlowWrapper({
     }
   };
 
+  const onUndo = (event = null) => {
+    if (event) {
+      event.preventDefault();
+    }
+    dispatch(doUndo());
+  };
+
+  const onRedo = (event = null) => {
+    if (event) {
+      event.preventDefault();
+    }
+    dispatch(doRedo());
+  };
+
   const keydownHandler = (e) => {
     // Ctrl + C (Cmd + C) for copy
     if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
@@ -512,6 +524,21 @@ export function useReactFlowWrapper({
       if (clipBoard) {
         onPaste();
       }
+    }
+
+    // Ctrl + Z for backward
+    if (e.keyCode === 90 && (e.ctrlKey || e.metaKey)) {
+      onUndo();
+    }
+
+    // Ctrl + Y for forward
+    if (e.keyCode === 89 && (e.ctrlKey || e.metaKey)) {
+      onRedo();
+    }
+
+    // cmd + shift + z for forward
+    if (e.keyCode === 90 && (e.metaKey || e.ctrlKey) && e.shiftKey) {
+      onRedo();
     }
 
     // backspace for delete

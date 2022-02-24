@@ -3,7 +3,6 @@ import {
   DELETE_NODES_FROM_ARRAY,
   REDO,
   UNDO,
-  UPDATE_NODE_DIMENSIONS,
   UPDATE_NODE_Z_INDEX,
 } from "../constants";
 
@@ -92,7 +91,7 @@ export function bringToFront(element) {
   };
 }
 
-export function undo() {
+export function doUndo() {
   return (dispatch, getState) => {
     const { RFState } = getState();
 
@@ -103,22 +102,13 @@ export function undo() {
   };
 }
 
-export function redo() {
+export function doRedo() {
   return (dispatch, getState) => {
     const { RFState } = getState();
 
     dispatch({
       type: REDO,
       payload: !RFState.redo,
-    });
-  };
-}
-
-export function updateNodeDimensions(id, height, width) {
-  return (dispatch, getState) => {
-    dispatch({
-      type: UPDATE_NODE_DIMENSIONS,
-      payload: { id: id, height: height, width: width },
     });
   };
 }

@@ -5,7 +5,7 @@
   "scripts": {
     "start": "concurrently \"cd codegram-bot && npm start\" \"cd client && npm start\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "buildRF": "cd client/node_modules/react-flow-renderer && npm i && npm run build"
+    "buildRF": "cd react-flow && npm i && npm run build && cd .."
   },
   "dependencies": {
     "concurrently": "^6.4.0"

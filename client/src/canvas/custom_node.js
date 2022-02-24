@@ -1,18 +1,11 @@
-import {
-  Handle,
-  useStoreActions,
-  useStoreState,
-  useUpdateNodeInternals,
-} from "react-flow-renderer";
+import { Handle } from "react-flow-renderer";
 import { Resizable } from "re-resizable";
 
 import "./nodeStyles.css";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useEffect } from "react";
 import { Typography } from "@mui/material";
 import { theme } from "../Themes";
-import { useDispatch } from "react-redux";
-import { updateNodeDimensions } from "../Redux/actions/nodes";
 
 const targetHandleStyle = {
   borderRadius: 5,
@@ -48,7 +41,6 @@ const CustomNodeComponent = (props) => {
   const [selected, setSelected] = useState("");
   const [handleSize, setHandleSize] = useState(Math.sqrt(height + width));
 
-  const dispatch = useDispatch();
   useEffect(() => {
     if (props.selected) {
       if (props.data.type === "FileNode") setSelected("highlightedNode");
@@ -60,7 +52,6 @@ const CustomNodeComponent = (props) => {
   useEffect(() => {
     props.data.height = height;
     props.data.width = width;
-    dispatch(updateNodeDimensions(props.id, height, width));
   }, [height, width]);
 
   function handleNewNodeName(event) {

@@ -6,14 +6,12 @@ import {
   UPDATE_NODE_Z_INDEX,
   UNDO,
   REDO,
-  UPDATE_NODE_DIMENSIONS,
 } from "../constants";
 
 const initialState = {
   nodesArr: [],
   isLoadingDiagram: true,
   nodesZIndex: [],
-  curNodeDimensions: {},
 };
 
 export const nodesReducer = (state = initialState, action) => {
@@ -36,12 +34,6 @@ export const nodesReducer = (state = initialState, action) => {
         ...state,
         nodesZIndex: action.nodesZIndex,
       };
-    case UPDATE_NODE_DIMENSIONS:
-      return {
-        ...state,
-        curNodeDimensions: action.payload,
-      };
-
     case LOAD_DIAGRAM_TO_STORE:
       return {
         ...state,

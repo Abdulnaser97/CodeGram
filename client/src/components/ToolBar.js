@@ -14,7 +14,7 @@ import {
   Undo,
   Redo,
 } from "../Media/ToolBar/ToolBarIcons";
-import { redo, undo } from "../Redux/actions/nodes";
+import { doUndo, doRedo } from "../Redux/actions/nodes";
 import "./ToolBar.css";
 
 const ToolBarBox = styled.div`
@@ -248,13 +248,13 @@ export function useToolBar() {
         <UndoRedoBox>
           <ToolBarButton
             className="ToolBarButton"
-            onClick={() => dispatch(undo())}
+            onClick={() => dispatch(doUndo())}
           >
             <Undo />
           </ToolBarButton>
           <ToolBarButton
             className="ToolBarButton"
-            onClick={() => dispatch(redo())}
+            onClick={() => dispatch(doRedo())}
             style={{ paddingBottom: "0.5vw" }}
           >
             <Redo />

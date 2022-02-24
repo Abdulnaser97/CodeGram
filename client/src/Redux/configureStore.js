@@ -11,9 +11,8 @@ import {
   deleteNodeFromArray,
   sendToBack,
   bringToFront,
-  undo,
-  redo,
-  updateNodeDimensions,
+  doUndo,
+  doRedo,
 } from "./actions/nodes";
 import {
   fetchRepoFiles,
@@ -58,9 +57,8 @@ const ActionCreators = Object.assign(
   successNotification,
   errorNotification,
   loadingNotification,
-  updateNodeDimensions,
-  undo,
-  redo
+  doUndo,
+  doRedo
 );
 export const mapStateToProps = (state) => ({
   nodes: state.nodes,
