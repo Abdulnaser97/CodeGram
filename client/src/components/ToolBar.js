@@ -8,7 +8,7 @@ import {
   DashedShape,
   Options,
   Rectangle,
-  Text,
+  TextIcon,
   ShadowBoxShape,
   Undo,
   Redo,
@@ -42,7 +42,7 @@ const ToolBarButton = styled(ToolBarButtonStyle)`
     `
     .Rect{   stroke: #ffaea6;}
     .options{ fill: #ffaea6;}
-    .Text{   fill: #ffaea6;}
+    .TextIcon{   fill: #ffaea6;}
     path{   fill: #ffaea6;}
     .CircleShape{   stroke: #ffaea6;}
     .DashedShape{   stroke: #ffaea6;}

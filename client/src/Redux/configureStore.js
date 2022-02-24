@@ -12,12 +12,16 @@ import {
   sendToBack,
   bringToFront,
 } from "./actions/nodes";
-import { fetchRepoFiles, storeRepoFiles } from "./actions/repoFiles";
+import { fetchRepoFiles, storeRepoFiles, updateRepoFileCodeContent } from "./actions/repoFiles";
 import thunk from "redux-thunk";
 import repoReducer from "./reducers/repoReducer";
 import { loadDiagramToStore } from "./actions/loadDiagram";
 import { notificationReducer } from "./reducers/notificationReducer";
-import { successNotification, errorNotification, loadingNotification } from "./actions/notification";
+import {
+  successNotification,
+  errorNotification,
+  loadingNotification,
+} from "./actions/notification";
 
 const rootReducer = combineReducers({
   nodes: nodesReducer,
@@ -42,10 +46,11 @@ const ActionCreators = Object.assign(
   bringToFront,
   fetchRepoFiles,
   storeRepoFiles,
+  updateRepoFileCodeContent,
   loadDiagramToStore,
   successNotification,
-  errorNotification, 
-  loadingNotification,
+  errorNotification,
+  loadingNotification
 );
 export const mapStateToProps = (state) => ({
   nodes: state.nodes,
