@@ -96,9 +96,15 @@ export function useReactFlowWrapper({
   setSearch,
   fuse,
 }) {
-  const { RFState, nodesZIndex } = useSelector((state) => {
-    return { RFState: state.RFState, nodesZIndex: state.nodes.nodesZIndex };
+  const { RFState, nodesZIndex, state, repository } = useSelector((state) => {
+    return {
+      state: state,
+      RFState: state.RFState,
+      nodesZIndex: state.nodes.nodesZIndex,
+      repository: state.repoFiles.repoFiles,
+    };
   });
+  console.log(state);
 
   const [elements, setElements] = useState(initialElements);
   const [nodeName, setNodeName] = useState("");
@@ -427,8 +433,8 @@ export function useReactFlowWrapper({
     }
   };
 
-  console.log(selectedEL);
-
+  // console.log(selectedEL);
+  // console.log(repository);
   const keydownHandler = (e) => {
     // Ctrl + C (Cmd + C) for copy
     if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {

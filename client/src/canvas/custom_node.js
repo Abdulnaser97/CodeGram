@@ -6,9 +6,12 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { Typography, Box } from "@mui/material";
 import { theme } from "../Themes";
+import { useDispatch } from "react-redux";
 
 import GitHub from "../Landing/GitHub";
-import { getPublicRepo } from "../api/apiClient";
+
+import { getPublicRepo, getRepo } from "../api/apiClient";
+import { storeRepoFiles, fetchRepoFiles } from "../Redux/actions/repoFiles";
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 // api call import
@@ -523,6 +526,8 @@ const LinkComponent = (props) => {
   );
   const [selected, setSelected] = useState("");
   const [publicUrl, setPublicUrl] = useState("");
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (props.selected) {
       if (props.data.type === "CircleShape") setSelected("highlightedNode");
@@ -539,6 +544,13 @@ const LinkComponent = (props) => {
   function handleURL(event) {
     setPublicUrl(event.target.value);
   }
+
+  const getRepoFromLink = async () => {
+    dispatch(fetchRepoFiles());
+    var files = await getPublicRepo(publicUrl);
+    console.log(files);
+    dispatch(storeRepoFiles(files));
+  };
 
   return (
     <>
@@ -564,7 +576,7 @@ const LinkComponent = (props) => {
         <div
           className="navbar-button github"
           style={{ backgroundColor: "transparent" }}
-          onClick={() => console.log(getPublicRepo(publicUrl))}
+          onClick={() => getRepoFromLink()}
         >
           <Box className="SaveButtonWrapper">
             <Typography

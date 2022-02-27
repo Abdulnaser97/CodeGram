@@ -86,7 +86,6 @@ function App() {
       };
     }
   );
-
   //  console.log(nodesArr)
 
   const [user, setUser] = useState([]);
@@ -127,16 +126,16 @@ function App() {
     selectedEL,
     rfInstance,
     setSelectedEL,
-    addFileToNode
+    addFileToNode,
   } = useReactFlowWrapper({
     dispatch,
     selectedShapeName,
     activeToolBarButton,
     setActiveToolBarButton,
     setOpenArtifact,
-    search, 
-    setSearch, 
-    fuse
+    search,
+    setSearch,
+    fuse,
   });
 
   // change cursor to be opposite as previous
@@ -524,7 +523,7 @@ function App() {
               setIsOpenSD: setIsOpenSD,
               setElements: setElements,
               setOpenArtifact: setOpenArtifact,
-              addFileToNode: addFileToNode
+              addFileToNode: addFileToNode,
             }}
             data={{
               repo: repo,
