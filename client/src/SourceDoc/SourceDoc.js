@@ -302,82 +302,90 @@ function SourceDoc(props) {
   };
 
   useEffect(() => {
-    if (!filteredSelectedEL || !selectedEL || selectedEL.data.type === "Text") {
-      setValue(0);
-    } else if (!selectedEL.data.label) {
-      setValue(0);
-    } else if (filteredSelectedEL.data.label) {
-      setValue(2);
-      const path = props.data.openArtifact
-        ? props.data.openArtifact.path
-        : null;
-      console.log("selectedEl, props.data", props.data);
-      console.log("state", state);
+    try {
+      if (
+        !filteredSelectedEL ||
+        !selectedEL ||
+        selectedEL.data.type === "Text"
+      ) {
+        setValue(0);
+      } else if (!selectedEL.data.label) {
+        setValue(0);
+      } else if (filteredSelectedEL.data.label) {
+        setValue(2);
+        const path = props.data.openArtifact
+          ? props.data.openArtifact.path
+          : null;
+        console.log("selectedEl, props.data", props.data);
+        console.log("state", state);
 
-      // only set code in Code Tab if openArtifact is a file
-      if (props.data.openArtifact.type == "file") {
-        // do GET request if file code hasn't been retrieved yet
-        if (
-          path &&
-          !state.repoFiles.repoFiles[path].code &&
-          state.repoFiles.repoFiles[path].url.includes("?token")
-        ) {
-          // calls node url to get file content
-          Promise.resolve(getRepo(props.data.repo, path, props.data.branch))
-            .then((response) => {
-              console.log("GET file contents response", response);
-              const download_url = response.data.download_url;
-              axios
-                .get(download_url)
-                .then(function (response) {
-                  // handle success
-                  // populate repoFile.data[path].code with response.data, so don't have to do multiple GET requests again
-                  dispatch(updateRepoFileCodeContent(path, response.data));
-                  setCurCode(response.data);
-                })
-                .catch((error) => {
-                  console.log(error);
-                  dispatch(
-                    errorNotification(`Github error retrieving file content`)
-                  );
-                });
-            })
-            .catch((error) => {
-              console.log("GET file contents on select error", error);
-              dispatch(errorNotification(`Error retrieving file content`));
-            });
-        }
-        // public repos
-        else if (
-          path &&
-          !state.repoFiles.repoFiles[path].code &&
-          !state.repoFiles.repoFiles[path].url.includes("?token")
-        ) {
-          axios
-            .get(props.data.openArtifact.url)
-            .then(function (response) {
-              // handle success
-              // populate repoFile.data[path].code with response.data, so don't have to do multiple GET requests again
-              dispatch(updateRepoFileCodeContent(path, response.data));
-              setCurCode(response.data);
-            })
-            .catch((error) => {
-              console.log(error);
-              dispatch(
-                errorNotification(`Github error retrieving file content`)
-              );
-            });
-        } else {
-          console.log(
-            "Already retrieved file code contents, calling from store"
-          );
-          if (path) {
-            setCurCode(state.repoFiles.repoFiles[path].code);
+        // only set code in Code Tab if openArtifact is a file
+        if (props.data.openArtifact.type == "file") {
+          // do GET request if file code hasn't been retrieved yet
+          if (
+            path &&
+            !state.repoFiles.repoFiles[path].code &&
+            state.repoFiles.repoFiles[path].url.includes("?token")
+          ) {
+            // calls node url to get file content
+            Promise.resolve(getRepo(props.data.repo, path, props.data.branch))
+              .then((response) => {
+                console.log("GET file contents response", response);
+                const download_url = response.data.download_url;
+                axios
+                  .get(download_url)
+                  .then(function (response) {
+                    // handle success
+                    // populate repoFile.data[path].code with response.data, so don't have to do multiple GET requests again
+                    dispatch(updateRepoFileCodeContent(path, response.data));
+                    setCurCode(response.data);
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    dispatch(
+                      errorNotification(`Github error retrieving file content`)
+                    );
+                  });
+              })
+              .catch((error) => {
+                console.log("GET file contents on select error", error);
+                dispatch(errorNotification(`Error retrieving file content`));
+              });
           }
+          // public repos
+          else if (
+            path &&
+            !state.repoFiles.repoFiles[path].code &&
+            !state.repoFiles.repoFiles[path].url.includes("?token")
+          ) {
+            axios
+              .get(props.data.openArtifact.url)
+              .then(function (response) {
+                // handle success
+                // populate repoFile.data[path].code with response.data, so don't have to do multiple GET requests again
+                dispatch(updateRepoFileCodeContent(path, response.data));
+                setCurCode(response.data);
+              })
+              .catch((error) => {
+                console.log(error);
+                dispatch(
+                  errorNotification(`Github error retrieving file content`)
+                );
+              });
+          } else {
+            console.log(
+              "Already retrieved file code contents, calling from store"
+            );
+            if (path) {
+              setCurCode(state.repoFiles.repoFiles[path].code);
+            }
+          }
+        } else {
+          setCurCode("Select a nnode to view a file");
         }
-      } else {
-        setCurCode("Select a nnode to view a file");
       }
+    } catch (error) {
+      console.log("Error:", error);
     }
   }, [filteredSelectedEL, selectedEL]);
 
