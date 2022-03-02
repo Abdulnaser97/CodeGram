@@ -208,7 +208,9 @@ function App() {
     setSelectedEL(initialElements[0]);
     setBranch("");
 
-    // }
+    const url = new URL(window.location.href);
+    url.searchParams.set("repo", event.target.value);
+    window.history.replaceState(null, null, url);
   };
 
   // set new branch from drop down menu
@@ -217,6 +219,10 @@ function App() {
     dispatch(getRepoFiles(repo, event.target.value));
     setSelectedEL(initialElements[0]);
     setBranch(event.target.value);
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("branch", event.target.value);
+    window.history.replaceState(null, null, url);
   };
 
   const handleName = (event, newValue) => {
@@ -301,12 +307,11 @@ function App() {
 
   // If redirect from github Checks, get the repo from the url params
   useEffect(() => {
-    if (!repo && params.repo && params.branch && params.sha) {
-      getBranchesList(params.repo);
-      setRepo(params.repo);
-
-      //dispatch(getRepoFiles(params.get("repo"), params.get("branch")));
-    }
+    if (!repo && params && params.repo)
+      if (!repo && params.repo) {
+        setRepo(params.repo);
+        getBranchesList(params.repo);
+      }
   }, [repo, params]);
 
   // If redirect from github Checks, get the branch from the url params
@@ -328,7 +333,9 @@ function App() {
   useEffect(() => {
     if (repo && !repoFiles.isFetchingFiles && repoFiles.repoFiles && branch) {
       dispatch(loadDiagram(repoFiles.repoFiles));
-      getCheckRunFiles(repo, params.sha);
+      if (params.sha) {
+        getCheckRunFiles(repo, params.sha);
+      }
     }
   }, [repo, dispatch, repoFiles.isFetchingFiles, branch, params.sha]);
 

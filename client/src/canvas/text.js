@@ -65,7 +65,7 @@ const TextComponent = (props) => {
 
     if (innerText) {
       setHeight(innerText.clientHeight + 30);
-      setWidth(innerText.clientWidth);
+      setWidth(innerText.scrollWidth + 20);
     }
 
     if (fitHeight) {
@@ -139,10 +139,10 @@ const TextComponent = (props) => {
         <Typography
           fontWeight="Medium"
           id={`label_${props.id}`}
+          display="block"
           style={{
             "font-size": fontSize,
-            whiteSpace: "pre-wrap",
-            wordBreak: "break-word",
+            // never wrap text
           }}
           textAlign="left"
           color="primary.darkestGrey"
@@ -155,14 +155,14 @@ const TextComponent = (props) => {
               placeholder="Enter text"
               onKeyUp={handleNewNodeName}
               autoFocus
+              wrap="off"
               style={{
-                width: "100%",
+                minWidth: "100%",
                 height: "100%",
                 "z-index": 0,
                 border: "none",
                 textAlign: "left",
                 overflow: "hidden",
-                whiteSpace: "pre-wrap",
                 top: 0,
                 fontSize: fontSize,
                 resize: "none",

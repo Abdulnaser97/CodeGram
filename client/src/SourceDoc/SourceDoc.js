@@ -406,6 +406,41 @@ function SourceDoc(props) {
     }
   }, [props.data.selectedEL]);
 
+  const keydownHandler = (e) => {
+    if (
+      document.activeElement.tagName !== "INPUT" &&
+      document.activeElement.tagName !== "TEXTAREA" &&
+      document.activeElement.tagName !== "DIV" &&
+      !e.ctrlKey &&
+      !e.altKey &&
+      !e.shiftKey &&
+      !e.metaKey
+    ) {
+      // letter R, set tab value to repo
+      if (e.keyCode === 82) {
+        setValue(0);
+      }
+
+      // letter c, set tab value to code
+      if (e.keyCode === 67) {
+        setValue(1);
+      }
+
+      // letter d, set tab value to docs
+      if (e.keyCode === 68) {
+        setValue(2);
+      }
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", keydownHandler);
+
+    return () => {
+      document.removeEventListener("keydown", keydownHandler);
+    };
+  });
+
   //if(props.data.isOpenSD){
   return (
     <div className={props.data.isOpenSD ? "openSD" : "hiddenSD"}>
