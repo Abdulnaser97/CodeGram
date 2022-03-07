@@ -10,6 +10,7 @@ import {
   save,
   getUser,
   getBranches,
+  getCheckRunResult,
 } from "./api/apiClient";
 import { connect, useSelector } from "react-redux";
 import {
@@ -86,7 +87,6 @@ function App() {
       };
     }
   );
-  //  console.log(nodesArr)
 
   const [user, setUser] = useState([]);
   const [content, setContent] = useState([]);
@@ -102,8 +102,13 @@ function App() {
   const [cursor, setCursor] = useState("default");
   const [branch, setBranch] = useState("");
   const [repoBranches, setRepoBranches] = useState([]);
+  const [checkRunFiles, setCheckRunFiles] = useState([]);
   // redux
   const dispatch = useDispatch();
+
+  const params = new Proxy(new URLSearchParams(window.location.search), {
+    get: (searchParams, prop) => searchParams.get(prop),
+  });
 
   const options = {
     keys: ["name"],
@@ -127,6 +132,8 @@ function App() {
     rfInstance,
     setSelectedEL,
     addFileToNode,
+    tabValue,
+    setTabValue,
   } = useReactFlowWrapper({
     dispatch,
     selectedShapeName,
@@ -140,9 +147,13 @@ function App() {
 
   // change cursor to be opposite as previous
   useEffect(() => {
-    activeToolBarButton === "selectShape"
-      ? setCursor("crosshair")
-      : setCursor("default");
+    if (activeToolBarButton === "selectShape") {
+      setCursor("crosshair");
+    } else if (activeToolBarButton === "TextIcon") {
+      setCursor("text");
+    } else {
+      setCursor("default");
+    }
   }, [activeToolBarButton]);
 
   // TODO: think about when to release selecttion on create node
@@ -158,6 +169,33 @@ function App() {
   const getBranchesList = async (repo) => {
     const repoBranches = await getBranches(repo);
     setRepoBranches(repoBranches.data);
+  };
+
+  // get codegram scanner result
+  const getCheckRunFiles = async (repo, sha) => {
+    try {
+      let checkRuns = await getCheckRunResult(repo, sha);
+      if (!checkRuns || !checkRuns.data || !checkRuns.data.check_runs) {
+        throw new Error("Could not Retrieve CheckRuns");
+      }
+      checkRuns = checkRuns.data.check_runs;
+
+      // retrieve checrun with name CodeGram Scanner
+      const codeGramScanner = checkRuns.find(
+        (checkRun) => checkRun.name === "CodeGram Scanner"
+      );
+      if (!codeGramScanner) {
+        throw new Error("CodeGram Scanner CheckRun not found");
+      }
+      setCheckRunFiles(codeGramScanner);
+    } catch (err) {
+      console.log("Error: Failed To Retrieve CheckRun Files", err);
+      dispatch(
+        errorNotification(
+          `Failed To Retrieve PR Files, you can still link the PR files from the Repo tab in SourceDoc`
+        )
+      );
+    }
   };
 
   // set new repo from drop down menu
@@ -261,17 +299,38 @@ function App() {
 
   /** useEffect Hools ************************************************* useEffect Hooks *****************************************************************/
 
-  // // Load saved diagram when new repo is selected
-  // useEffect(() => {
-  //   repo && getBranchesList(repo)
-  // }, [repo]);
+  // If redirect from github Checks, get the repo from the url params
+  useEffect(() => {
+    if (!repo && params.repo && params.branch && params.sha) {
+      getBranchesList(params.repo);
+      setRepo(params.repo);
+
+      //dispatch(getRepoFiles(params.get("repo"), params.get("branch")));
+    }
+  }, [repo, params]);
+
+  // If redirect from github Checks, get the branch from the url params
+  useEffect(() => {
+    if (
+      repo &&
+      params.branch &&
+      repoBranches != undefined &&
+      repoBranches.length !== 0
+    ) {
+      setElements(initialElements);
+      setBranch(params.branch);
+      dispatch(getRepoFiles(repo, params.branch));
+      setSelectedEL(initialElements[0]);
+    }
+  }, [repoBranches, params.branch, repo]);
 
   // Load saved diagram when new repo is selected
   useEffect(() => {
     if (repo && !repoFiles.isFetchingFiles && repoFiles.repoFiles && branch) {
       dispatch(loadDiagram(repoFiles.repoFiles));
+      getCheckRunFiles(repo, params.sha);
     }
-  }, [repo, dispatch, repoFiles.isFetchingFiles, branch]);
+  }, [repo, dispatch, repoFiles.isFetchingFiles, branch, params.sha]);
 
   // create home path, and search engine after all loads
   useEffect(() => {
@@ -318,10 +377,16 @@ function App() {
 
   // Retrieves user details once authenticated
   useEffect(() => {
-    getUser().then((userDetails) => {
-      setUser(userDetails.user);
-      setLoggedIn(true);
-    });
+    try {
+      getUser().then((userDetails) => {
+        if (userDetails) {
+          setUser(userDetails.user);
+          setLoggedIn(true);
+        }
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
 
   // Stores Access token in session storage, Not very secure, but good for now
@@ -471,45 +536,6 @@ function App() {
           >
             Welcome to CodeGram demo {user.username}!
           </Typography>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              position: "fixed",
-              top: "8vh",
-              right: "2vw",
-              width: "40vw",
-            }}
-          >
-            <div className="SourceDocMinimize" />
-
-            <Typography
-              fontSize={"1vw"}
-              color={"primary.main"}
-              fontWeight={"medium"}
-              mx={1}
-              my={0}
-            >
-              Search >
-            </Typography>
-
-            <input
-              placeholder="Search Repo Content"
-              onChange={handleSearch}
-              onKeyPress={handleSearch}
-              style={{
-                "z-index": 0,
-                border: "none",
-                backgroundColor: "rgb(247, 247, 247)",
-                boxShadow: 6,
-                color: "grey",
-                fontSize: "1vw",
-                outline: "none",
-                width: "65%",
-                fontWeight: theme.typography.fontWeightMedium,
-              }}
-            />
-          </div>
           {toolBarRender}
           <Container className="canvasContainer">{render}</Container>
           <SourceDoc
@@ -524,6 +550,9 @@ function App() {
               setElements: setElements,
               setOpenArtifact: setOpenArtifact,
               addFileToNode: addFileToNode,
+              setTabValue: setTabValue,
+              handleSearch: handleSearch,
+              getRepoFiles: getRepoFiles,
             }}
             data={{
               repo: repo,
@@ -536,6 +565,7 @@ function App() {
               homePath: homePath,
               branch: branch,
               openArtifact: openArtifact,
+              tabValue: tabValue,
             }}
           />
           <NotifDiagramLoading />

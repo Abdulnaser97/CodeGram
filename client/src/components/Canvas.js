@@ -6,6 +6,7 @@ import {
   HomeNodeComponent,
   LinkComponent,
   SignUpComponent,
+  CircleNodeComponent,
 } from "../canvas/custom_node";
 import ReactFlow, {
   addEdge,
@@ -16,6 +17,7 @@ import ReactFlow, {
   SmoothStepEdge,
   StraightEdge,
   StepEdge,
+  useStoreActions,
 } from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import {
@@ -32,6 +34,7 @@ import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
 
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { TextComponent } from "../canvas/text";
 
 import template from "../Templates/FullStackTemplate.json";
 import ControlTemplate from "../Templates/ControlTemplate.json";
@@ -106,6 +109,8 @@ export function useReactFlowWrapper({
   });
   console.log(state);
 
+  const nodes = useStoreState((state) => state.nodes);
+
   const [elements, setElements] = useState(initialElements);
   const [nodeName, setNodeName] = useState("");
 
@@ -119,6 +124,17 @@ export function useReactFlowWrapper({
   const [clipBoard, setClipBoard] = useState(null);
   const [selectedNodeEvent, setSelectedNodeEvent] = useState(null);
   const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
+  const { project } = useZoomPanHelper();
+  const [tabValue, setTabValue] = useState(0);
+  const [nameFlag, setNameFlag] = useState(false);
+  const [newNodeId, setNewNodeId] = useState(null);
+  const [text, setText] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+
+  // react flow functions
+  const setSelectedElements = useStoreActions(
+    (actions) => actions.setSelectedElements
+  );
 
   // Projects event click position to RF coordinates
   function calculatePosition(
@@ -129,7 +145,10 @@ export function useReactFlowWrapper({
     let position = null;
     if (event) {
       if (rfInstance) {
-        position = rfInstance.project({ x: event.clientX, y: event.clientY });
+        position = rfInstance.project({
+          x: event.clientX,
+          y: event.clientY,
+        });
       } else {
         position = { x: event.clientX, y: event.clientY };
       }
@@ -152,12 +171,19 @@ export function useReactFlowWrapper({
       var label = "";
       var position = calculatePosition(event, rfInstance);
 
+      var shapeType = selectedShapeName.current;
+      if (file) {
+        shapeType = file.type === "dir" ? "DashedShape" : "FileNode";
+      }
+
       let url =
         file && file.download_url !== undefined
           ? file.download_url
           : file && file.url !== undefined
           ? file.url
           : null;
+
+      const html_url = file && file.html_url ? file.html_url : null;
 
       const newNode = {
         id: getNodeId(),
@@ -171,43 +197,84 @@ export function useReactFlowWrapper({
           documentation: ["url1", "url2"],
           description: "",
           url: url,
+          html_url: html_url,
           path: file && file.path ? file.path : "",
           floatTargetHandle: false,
 
           // can set this type to whatever is selected in the tool bar for now
           // but the type will probably be set from a few different places
-          type: file ? "FileNode" : selectedShapeName.current,
+          type: shapeType,
           width:
-            selectedShapeName.current && !file === "DashedShape"
-              ? Math.floor(300 / 15) * 15
+            selectedShapeName.current &&
+            selectedShapeName.current === "CircleShape"
+              ? 100
               : Math.floor(100 / 15) * 15,
           height:
-            selectedShapeName.current && !file === "DashedShape"
-              ? Math.floor(150 / 15) * 15
+            selectedShapeName.current &&
+            selectedShapeName.current === "CircleShape"
+              ? 100
               : Math.floor(70 / 15) * 15,
-          // type: file.nodeType !== undefined ? file.nodeType: "wrapperNode",
-          //file: file
           nodeInputHandler: nodeInputHandler,
         },
-        type: file ? "FileNode" : selectedShapeName.current,
+        type: shapeType,
         width:
-          selectedShapeName.current && !file === "DashedShape"
-            ? Math.floor(300 / 15) * 15
+          selectedShapeName.current &&
+          selectedShapeName.current === "CircleShape"
+            ? 100
             : Math.floor(100 / 15) * 15,
         height:
-          selectedShapeName.current && !file === "DashedShape"
-            ? Math.floor(150 / 15) * 15
+          selectedShapeName.current &&
+          selectedShapeName.current === "CircleShape"
+            ? 100
             : Math.floor(70 / 15) * 15,
-        position: {
+        position: project({
           x: position.x,
           y: position.y,
-        },
+        }),
         animated: true,
       };
       dispatch(addNodeToArray(newNode));
       setElements((els) => els.concat(newNode));
+      setNewNodeId(newNode.id);
     },
-    [setElements, nodeName, dispatch]
+    [setElements, nodeName, dispatch, project, setSelectedElements]
+  );
+
+  // Add node function
+  const addText = useCallback(
+    (props) => {
+      var event = props.event ? props.event : null;
+      var label = "";
+      var position = calculatePosition(event, rfInstance);
+
+      var shapeType = selectedShapeName.current;
+
+      const newText = {
+        id: getNodeId(),
+        data: {
+          label: label,
+          name: label,
+          type: shapeType,
+          requestEdit: false,
+          width: null,
+          fontSize: null,
+          height: Math.floor(150 / 15) * 15,
+          nodeInputHandler: nodeInputHandler,
+        },
+        type: shapeType,
+        height: Math.floor(150 / 15) * 15,
+        width: Math.floor(350 / 15) * 15,
+        position: project({
+          x: position.x,
+          y: position.y,
+        }),
+        animated: true,
+      };
+      dispatch(addNodeToArray(newText));
+      setElements((els) => els.concat(newText));
+      setNewNodeId(newText.id);
+    },
+    [setElements, nodeName, dispatch, project, setSelectedElements]
   );
 
   const handleContextMenu = (event, node) => {
@@ -248,7 +315,6 @@ export function useReactFlowWrapper({
     setContextMenu(null);
     setSelectedNodeEvent(null);
     console.log("rfInstance", rfInstance);
-    console.log("rfInstance to Object", rfInstance.toObject());
   };
 
   const handlePaneContextMenu = (event) => {
@@ -275,15 +341,21 @@ export function useReactFlowWrapper({
   const onElementClick = (event, element) => {
     console.log("click", element);
     setSelectedEL(element);
+    element.data.selected = true;
   };
 
   const onPaneClick = async (event) => {
-    console.log(event);
+    if (search || text) {
+      setNameFlag(true);
+    } else {
+      setSelectedEL(null);
+    }
     if (activeToolBarButton === "selectShape") {
       await addNode({ event: event });
       setActiveToolBarButton("cursor");
-    } else {
-      setSelectedEL(null);
+    } else if (activeToolBarButton === "TextIcon") {
+      await addText({ event: event });
+      setActiveToolBarButton("cursor");
     }
   };
 
@@ -338,19 +410,16 @@ export function useReactFlowWrapper({
 
   const onConnectStart = (event, { nodeId, handleType }) => {
     setConnectionStarted(true);
-    console.log("connection started");
   };
   const onConnectStop = (event) => {
     setFloatTargetHandle(false);
 
     setConnectionStarted(false);
-    console.log("connection stopped");
   };
   const onConnectEnd = (event) => {
     event.target.style.zIndex = -1;
     setFloatTargetHandle(false);
     setConnectionStarted(false);
-    console.log("connection ended");
   };
 
   const onNodeMouseEnter = (event, node) => {
@@ -453,6 +522,7 @@ export function useReactFlowWrapper({
       if (
         selectedEL &&
         document.activeElement.tagName !== "INPUT" &&
+        document.activeElement.tagName !== "TEXTAREA" &&
         document.activeElement.tagName !== "DIV"
       ) {
         onElementsRemove([selectedEL]);
@@ -464,6 +534,7 @@ export function useReactFlowWrapper({
       if (
         selectedEL &&
         document.activeElement.tagName !== "INPUT" &&
+        document.activeElement.tagName !== "TEXTAREA" &&
         document.activeElement.tagName !== "DIV"
       ) {
         dispatch(sendToBack(selectedEL));
@@ -476,6 +547,7 @@ export function useReactFlowWrapper({
       if (
         selectedEL &&
         document.activeElement.tagName !== "INPUT" &&
+        document.activeElement.tagName !== "TEXTAREA" &&
         document.activeElement.tagName !== "DIV"
       ) {
         dispatch(bringToFront(selectedEL));
@@ -526,8 +598,6 @@ export function useReactFlowWrapper({
     dispatch(updateRepoFile(selEl));
   };
 
-  const [nameFlag, setNameFlag] = useState(false);
-
   const setter = (value) => {
     setElements((els) =>
       els.map((el) => {
@@ -535,9 +605,14 @@ export function useReactFlowWrapper({
           el.data = {
             ...el.data,
             label: value,
+            requestEdit: false,
           };
           setSelectedEL(el);
-          setSearch("");
+          if (selectedEL.data.type !== "Text") {
+            setSearch("");
+          } else {
+            setText("");
+          }
         }
         return el;
       })
@@ -545,21 +620,52 @@ export function useReactFlowWrapper({
   };
 
   useEffect(() => {
-    // console.log(selectedEL)
-    if (nameFlag) {
-      setter(search);
-      setNameFlag(false);
+    if (nameFlag && selectedEL && selectedEL.id) {
+      if (text) {
+        setter(text);
+        setSelectedEL(null);
+      } else if (search) {
+        setter(search);
+        setSelectedEL(null);
+      }
     }
-  }, [nameFlag]);
+    setNameFlag(false);
+  }, [nameFlag, selectedEL, search, text]);
 
-  function nodeInputHandler(event) {
-    if (event.key === "Enter") {
-      setSearch(event.target.value);
+  function nodeInputHandler(event, nodeType = "") {
+    if (
+      event.key === "Enter" &&
+      document.activeElement.tagName !== "TEXTAREA"
+    ) {
       setNameFlag(true);
+    }
+    if (nodeType === "Text") {
+      setText(event.target.value);
     } else {
       setSearch(event.target.value);
     }
   }
+
+  function handleNodeDoubleClick(event, element) {
+    if (element.data && element.data.type === "Text") {
+      element.data.requestEdit = true;
+      setIsEditing(!isEditing);
+      // pass edit flag to text data to change text content on double click
+    } else {
+      setTabValue(1);
+    }
+  }
+
+  useEffect(() => {
+    if (newNodeId) {
+      const newlyAddedNode = nodes.find((node) => node.id === newNodeId);
+      if (newlyAddedNode) {
+        setSelectedElements([newlyAddedNode]);
+        setSelectedEL(newlyAddedNode);
+        setNewNodeId(null);
+      }
+    }
+  }, [newNodeId, nodes]);
 
   // for pop up later
   // console.log(selectedEL)
@@ -579,11 +685,14 @@ export function useReactFlowWrapper({
             default: CustomNodeComponent,
             FileNode: CustomNodeComponent,
             DashedShape: WrapperNodeComponent,
-            CircleShape: FolderNodeComponent,
+            // CircleShape: FolderNodeComponent,
+            CircleShape: CircleNodeComponent,
+            ShadowBoxShape: FolderNodeComponent,
             circle: CustomNodeComponent,
             home: HomeNodeComponent,
             LinkComponent: LinkComponent,
             SignUpComponent: SignUpComponent,
+            Text: TextComponent,
           }}
           elements={elements}
           edgeTypes={edgeTypes}
@@ -603,12 +712,13 @@ export function useReactFlowWrapper({
           onNodeMouseMove={onNodeMouseMove}
           onNodeMouseLeave={onNodeMouseLeave}
           onPaneClick={onPaneClick}
-          selectNodesOnDrag={false}
+          selectNodesOnDrag={true}
           onNodeContextMenu={handleContextMenu}
           onEdgeContextMenu={handleEdgeContextMenu}
           onPaneContextMenu={handlePaneContextMenu}
           minZoom={0.1}
           maxZoom={4}
+          onNodeDoubleClick={handleNodeDoubleClick}
           // search={search}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
@@ -698,6 +808,8 @@ export function useReactFlowWrapper({
     rfInstance: rfInstance,
     setSelectedEL: setSelectedEL,
     addFileToNode: addFileToNode,
+    setTabValue: setTabValue,
+    tabValue: tabValue,
   };
 }
 

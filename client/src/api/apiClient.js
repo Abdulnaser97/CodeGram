@@ -48,7 +48,6 @@ export async function invalidateToken() {
 }
 
 export async function getRepo(repo, path, branch) {
-  console.log(branch);
   const data = {
     repo: repo,
     path: path,
@@ -75,6 +74,14 @@ export async function getPR(repo, prNum) {
     prNum: prNum,
   };
   return await perform("post", `/pr`, data);
+}
+
+export async function getCheckRunResult(repo, sha) {
+  const data = {
+    repo: repo,
+    sha: sha,
+  };
+  return await perform("post", `/getcheckrun`, data);
 }
 
 export async function getUser() {

@@ -81,11 +81,16 @@
 }
 
 .CircleShape {
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255);
+  border: 1px solid #adadad;
+}
+
+.ShadowBoxShape {
   border-radius: 5%;
   background-color: rgba(255, 255, 255);
   box-shadow: -2px 4px 5px #dadadacd;
 }
-
 
 .react-flow__node {
   border-width: 2px;
@@ -102,4 +107,30 @@
 .highlightedWrapper {
   transition: ease-in-out 0.1s;
   border: 2px dashed #ff8b8b;
+}
+
+.Text {
+  border-radius: 5px;
+  background-color: none;
+  padding: 10px 10px 10px 10px;
+}
+
+.selectedText {
+  border: 1px solid #ff8b8b;
+}
+
+.resizeHandle {
+  background-color: white;
+  border: 1px solid #ff8b8b;
+  box-shadow: -1px 3px 2px #dadada;
+}
+
+.resizeHandle:hover {
+  background-color: #dadada;
+  border: 1px solid #dadada;
+}
+
+.resizeHandle:active {
+  background-color: #c5c5c5;
+  border: 1px solid #c5c5c5;
 }
