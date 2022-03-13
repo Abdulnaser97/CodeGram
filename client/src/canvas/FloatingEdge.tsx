@@ -1,4 +1,6 @@
 import { FC, useMemo, CSSProperties } from "react";
+import "./FloatingEdge.css" 
+
 import {
   EdgeProps,
   getMarkerEnd,
@@ -23,6 +25,7 @@ const FloatingEdge: FC<EdgeProps> = ({
   markerEndId,
   style,
   selected,
+  data
 }) => {
   const nodes = useStoreState((state) => state.nodes);
   const markerEnd = getMarkerEnd(arrowHeadType, markerEndId);
@@ -62,20 +65,13 @@ const FloatingEdge: FC<EdgeProps> = ({
     borderRadius: 20,
   });
 
-  return (
-    <>
-      <path
-        id={id}
-        className="react-flow__edge-path"
-        d={d}
-        markerEnd={markerEnd}
-        style={style as CSSProperties}
-      />
-      <foreignObject
+  const EdgeButton = () => {
+    return (
+      <foreignObject  
         width={40}
         height={40}
-        x={edgeCenterX - 40/2}
-        y={edgeCenterY - 40/2}
+        x={edgeCenterX - 20/2}
+        y={edgeCenterY - 20/2}
         className="edgebutton-foreignobject"
         requiredExtensions="http://www.w3.org/1999/xhtml"
       >
@@ -88,6 +84,19 @@ const FloatingEdge: FC<EdgeProps> = ({
           </button>
         </body>
       </foreignObject>
+    )
+  }
+  
+  return (
+    <>     
+      <path
+        id={id}
+        className="react-flow__edge-path"
+        d={d}
+        markerEnd={markerEnd}
+        style={style as CSSProperties}
+      />
+      {data.hoveredOver && EdgeButton()}
     </>
   );
 };

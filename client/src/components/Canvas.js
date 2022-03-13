@@ -108,6 +108,7 @@ export function useReactFlowWrapper({
   const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
   const { project } = useZoomPanHelper();
   const [tabValue, setTabValue] = useState(0)
+  const [isHovering, setIsHovering] = useState(false);
   
   // Projects event click position to RF coordinates
   function calculatePosition(
@@ -307,6 +308,7 @@ export function useReactFlowWrapper({
           data: {
             label: "",
             wiki: "",
+            hoveredOver: false,
           },
         },
         els
@@ -343,21 +345,48 @@ export function useReactFlowWrapper({
   };
   const onConnectEnd = (event) => {
     event.target.style.zIndex = -1;
+    console.log("connect edge end function", event.target);
     setFloatTargetHandle(false);
     setConnectionStarted(false);
     console.log("connection ended");
   };
 
   const onEdgeMouseEnter = (event, edge) => { /////////////////////////////////////////////////////////////////
-    console.log('hovering over the edge!');
-    // edge.data.floatEdgeButton = true;
-    // setFloatEdgeButton(true);
+    console.log('hovering over the edge!', edge);
+    setElements((els) =>
+      els.map((el) => {
+        if (el.id === edge.id) {
+          // it's important that you create a new object here
+          // in order to notify react flow about the change
+          el.data = {
+            ...el.data,
+            hoveredOver: true,
+          };
+        }
+
+        return el;
+      })
+    );
+    setIsHovering(true);
   };
 
   const onEdgeMouseLeave = (event, edge) => { /////////////////////////////////////////////////////////////////
     console.log('no longer hovering over the edge!');
-    // edge.data.floatEdgeButton = false;
-    // setFloatEdgeButton(false);
+    setElements((els) =>
+      els.map((el) => {
+        if (el.id === edge.id) {
+          // it's important that you create a new object here
+          // in order to notify react flow about the change
+          el.data = {
+            ...el.data,
+            hoveredOver: false,
+          };
+        }
+
+        return el;
+      })
+    );
+    setIsHovering(false);
   };
 
   const onNodeMouseEnter = (event, node) => {
