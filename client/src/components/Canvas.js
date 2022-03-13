@@ -203,9 +203,7 @@ export function useReactFlowWrapper({
               ? 100
               : Math.floor(70 / 15) * 15,
           nodeInputHandler: nodeInputHandler,
-          setIsOpenLinker: setIsOpenLinker,
           nodeLinkHandler: nodeLinkHandler,
-          setNewSearchContentProps: setNewSearchContentProps,
         },
         type: shapeType,
         width:
@@ -493,8 +491,15 @@ export function useReactFlowWrapper({
       let newNode = clipBoard;
       newNode.id = getNodeId();
       newNode.position = calculatePosition(event, rfInstance, newNode.position);
-      console.log("newNode is: ", newNode);
-      setElements((els) => els.concat(newNode));
+      newNode.data = {
+        ...newNode.data,
+        path: "",
+        nodeInputHandler: nodeInputHandler,
+        nodeLinkHandler: nodeLinkHandler,
+      };
+      // console.log("newNode is: ", newNode);
+      // setElements((els) => els.concat(newNode));
+      setElements([...elements, newNode]);
       dispatch(addNodeToArray(newNode));
     }
     if (event) {
@@ -601,8 +606,6 @@ export function useReactFlowWrapper({
     dispatch(updateRepoFile(selEl, oldPath));
   };
 
-  console.log(selectedEL);
-
   const setter = (value) => {
     setElements((els) =>
       els.map((el) => {
@@ -624,11 +627,6 @@ export function useReactFlowWrapper({
       })
     );
   };
-
-  useEffect(() => {
-    if (selectedEL)
-      setNewSearchContentProps(selectedEL.position, selectedEL.data.width);
-  }, [selectedEL]);
 
   useEffect(() => {
     if (nameFlag && selectedEL && selectedEL.id) {
@@ -654,18 +652,12 @@ export function useReactFlowWrapper({
       setText(event.target.value);
     } else {
       setNodeName(event.target.value);
-      if (event.target.value.length == 1) setIsOpenLinker(true);
     }
-
-    // if (event.target.value.length == 1) {
-    //   setIsOpenLinker(true);
-    // } else if (event.target.value.length == 0) {
-    //   setIsOpenLinker(false);
-    // }
   }
 
   const [searchContent, setSearchContent] = useState(null);
   const [contextFiles, setContextFiles] = useState(null);
+
   // search method called whenevr search var changes
   useEffect(() => {
     if (nodeName && !nodeName.length) {
@@ -701,53 +693,25 @@ export function useReactFlowWrapper({
     }
   }, [searchContent]);
 
-  const [isOpenLinker, setIsOpenLinker] = useState(false);
-
-  useEffect(() => {
-    if (isOpenLinker) {
-      console.log("opening menu");
-      nodeLinkHandler();
-      setIsOpenLinker(false);
-    }
-  }, [isOpenLinker]);
-
-  const [searchContextProps, setSearchContentProps] = useState({
-    x: 0,
-    y: 0,
-  });
-
-  function setNewSearchContentProps(position, nodeWidth) {
-    console.log(position);
-    console.log(nodeWidth);
-    setSearchContentProps({
-      ...searchContextProps,
-      x: position.x - nodeWidth, //event.clientX + 20,
-      y: position.y,
-    });
-  }
-
-  const nodeLinkHandler = useCallback(() => {
-    // console.log(event);
-    if (selectedEL) {
-      // var position = project({
-      //   x: selectedEL.position.x + selectedEL.data.width + 20,
-      //   y: selectedEL.position.y,
-      // });
-      console.log(searchContextProps);
-      setContextMenu(
-        contextMenu === null
-          ? {
-              mouseX: searchContextProps.x,
-              mouseY: searchContextProps.y,
-              type: "nodeLink",
-            }
-          : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
-            // Other native context menus might behave different.
-            // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
-            null
-      );
-    }
-  }, [searchContextProps, selectedEL, project]);
+  const nodeLinkHandler = useCallback(
+    (event) => {
+      if (selectedEL) {
+        setContextMenu(
+          contextMenu === null
+            ? {
+                mouseX: event.clientX + 20,
+                mouseY: event.clientY,
+                type: "nodeLink",
+              }
+            : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+              // Other native context menus might behave different.
+              // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+              null
+        );
+      }
+    },
+    [selectedEL, project]
+  );
 
   function handleNodeDoubleClick(event, element) {
     if (element.data && element.data.type === "Text") {
@@ -769,16 +733,6 @@ export function useReactFlowWrapper({
       }
     }
   }, [newNodeId, nodes]);
-
-  // for pop up later
-  // console.log(selectedEL)
-  // useEffect(() => {
-  //   if (fuse && search) {
-  //     var results = fuse.search(search);
-  //     var newResults = results.map((result) => result.item);
-  //     setFileResults(newResults);
-  //   }
-  // }, [search])
 
   return {
     render: (
@@ -820,7 +774,6 @@ export function useReactFlowWrapper({
           minZoom={0.1}
           maxZoom={4}
           onNodeDoubleClick={handleNodeDoubleClick}
-          // search={search}
         >
           <ReactFlowStoreInterface {...{ RFState, setElements }} />
         </ReactFlow>
@@ -885,9 +838,6 @@ export function useReactFlowWrapper({
             </MenuItem>
           )}
           {contextMenu !== null && contextMenu.type === "nodeLink" && (
-            // <MenuItem
-            //   style={{ position: "relative", width: "15vw", height: "20vw" }}
-            // >
             <div>
               <Typography
                 variant="subtitle1"
@@ -911,39 +861,7 @@ export function useReactFlowWrapper({
                 {contextFiles}
               </div>
             </div>
-
-            //  <input
-            //     placeholder="search node"
-            //     // onChange={handleSearch}
-            //     onKeyPress={nodeInputHandler}
-            //     style={{
-            //       "z-index": 0,
-            //       border: "red solid 1px",
-            //       fontSize: "100%",
-            //       outline: "none",
-            //       width: "100%",
-            //       background: "transparent",
-            //       color: "grey",
-            //     }}
-            //   />
-            // </MenuItem>
           )}
-          {/* {search !== null && contextMenu === null  && (
-            <MenuItem
-              style={{ position: "relative", width: "15vw", backgroundClolor:'red' }}
-            >
-               <div className="menu-item">
-                <h1>HELLO!</h1>
-              {
-                fileResults && fileResults.map((file) => {
-                  <div className="menu-text">
-                    {file.name}
-                  </div> 
-                })
-              }          
-               </div>
-            </MenuItem> */}
-          {/* )} */}
         </Menu>
       </div>
     ),

@@ -69,9 +69,8 @@ const CustomNodeComponent = (props) => {
   }
 
   function editButtonHandler(event) {
-    console.log("clicked");
     setIsEditing(true);
-    props.data.setIsOpenLinker(true);
+    props.data.nodeLinkHandler(event, props.data.width);
   }
 
   useEffect(() => {
@@ -158,7 +157,6 @@ const CustomNodeComponent = (props) => {
       >
         {
           <Typography
-            //color={props.selected ? "white" : "primary.darkGrey"}
             fontWeight="Medium"
             style={{ "font-size": fontSize }}
             textAlign="center"
@@ -168,13 +166,8 @@ const CustomNodeComponent = (props) => {
             ) : (
               <input
                 placeholder="__"
-                // focused={isEditing}
                 autoFocus
-                // onChange={handleSearch}
                 onKeyUp={handleNewNodeName}
-                // onFocus={() => {
-                //   props.data.setIsOpenLinker(true);
-                // }}
                 key="input"
                 style={{
                   "z-index": 0,
