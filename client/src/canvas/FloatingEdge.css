@@ -1,0 +1,15 @@
+
+.edgebutton {
+  border: none;
+  border-radius: 5px;
+  background-color: #ffffff;
+  color :  #6e6e6e;
+}
+
+.edgebutton:hover{
+  border: 1px solid #ffaea6;
+  border-radius: 5px;
+  background-color: #ffffff;
+  color :  #ffaea6;
+}
+
