@@ -29,7 +29,7 @@ export const Cursor = () => {
   );
 };
 
-export const Text = () => {
+export const TextIcon = () => {
   return (
     <ButtonWrapper className="buttonWrapper">
       <svg
@@ -39,9 +39,9 @@ export const Text = () => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <g id="Text">
+        <g id="TextIcon">
           <rect
-            className="Text"
+            className="TextIcon"
             x="0.841797"
             y="0.0839844"
             width="14.4002"
@@ -50,7 +50,7 @@ export const Text = () => {
             fill="#353535"
           />
           <rect
-            className="Text"
+            className="TextIcon"
             x="7.01318"
             y="16.5415"
             width="15.4288"

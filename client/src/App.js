@@ -52,6 +52,9 @@ import {
   loadingNotification,
 } from "./Redux/actions/notification";
 
+//templates
+//import * as data from './Templates/FullStackTemplate.CodeGram';
+
 const LogoTopNav = styled.div`
   position: relative;
   left: 0;
@@ -144,9 +147,13 @@ function App() {
 
   // change cursor to be opposite as previous
   useEffect(() => {
-    activeToolBarButton === "selectShape"
-      ? setCursor("crosshair")
-      : setCursor("default");
+    if (activeToolBarButton === "selectShape") {
+      setCursor("crosshair");
+    } else if (activeToolBarButton === "TextIcon") {
+      setCursor("text");
+    } else {
+      setCursor("default");
+    }
   }, [activeToolBarButton]);
 
   // TODO: think about when to release selecttion on create node
@@ -545,6 +552,7 @@ function App() {
               addFileToNode: addFileToNode,
               setTabValue: setTabValue,
               handleSearch: handleSearch,
+              getRepoFiles: getRepoFiles,
             }}
             data={{
               repo: repo,
