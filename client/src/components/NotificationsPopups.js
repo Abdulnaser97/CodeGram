@@ -49,6 +49,7 @@ export function NotifDiagramLoading() {
   useEffect(() => {
     if (!reloadDiagram) {
       setOpen(false);
+      dispatch(loadingNotification(""));
     }
   }, [reloadDiagram]);
 

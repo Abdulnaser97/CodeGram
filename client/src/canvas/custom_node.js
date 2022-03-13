@@ -795,7 +795,7 @@ const HomeNodeComponent = (props) => {
 const LinkComponentWrapper = styled.div`
   position: relative;
   display: flex;
-  margintop: 10px;
+  margin-top: 10px;
   justify-content: center;
   align-items: center;
 `;
@@ -908,7 +908,7 @@ const SignUpComponent = (props) => {
   return (
     <>
       <div
-        style={{ height: "80%", width: "80%" }}
+        style={{ height: "80%", width: "80%", marginTop: "-40px" }}
         className="GitHubButtonWrapper"
         onClick={login}
       >
@@ -921,6 +921,7 @@ const SignUpComponent = (props) => {
         position="top"
         style={{
           ...sourceHandleStyle,
+          backgroundColor: "transparent",
           // display: `${props.selected ? "block" : "none"}`,
         }}
       />
