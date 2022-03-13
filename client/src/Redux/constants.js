@@ -11,6 +11,8 @@ export const UPDATE_CODE_CONTENT = "UPDATE_CODE_CONTENT";
 
 // Load existing diagram from github repo
 export const LOAD_DIAGRAM_TO_STORE = "LOAD_DIAGRAM_TO_STORE";
+export const LOAD_TEMPLATE_DIAGRAM = "LOAD_TEMPLATE_DIAGRAM";
+export const RELOAD_DIAGRAM = "RELOAD_DIAGRAM";
 
 // Display popup notification
 export const ERROR_NOTIFICATION = "ERROR_NOTIFICATION";
@@ -19,3 +21,5 @@ export const SUCCESS_NOTIFICATION = "SUCCESS_NOTIFICATION";
 // Updates the z-index of the selected node to control layering
 export const UPDATE_NODE_Z_INDEX = "UPDATE_NODE_Z_INDEX";
 export const LOADING_NOTIFICATION = "LOADING_NOTIFICATION";
+
+export const LOAD_REPO_FROM_PUBLIC_URL = "LOAD_REPO_FROM_PUBLIC_URL";

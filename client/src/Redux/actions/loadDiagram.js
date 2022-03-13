@@ -1,5 +1,11 @@
 import axios from "axios";
-import { LOAD_DIAGRAM_TO_STORE } from "../constants";
+import {
+  LOAD_DIAGRAM_TO_STORE,
+  LOAD_REPO_FROM_PUBLIC_URL,
+  LOAD_TEMPLATE_DIAGRAM,
+  RELOAD_DIAGRAM,
+} from "../constants";
+import { successNotification } from "./notification";
 
 export const loadDiagram = (repoFiles) => async (dispatch) => {
   var diagramFile = null;
@@ -15,6 +21,8 @@ export const loadDiagram = (repoFiles) => async (dispatch) => {
     axios
       .get(diagramFile.url)
       .then(function (response) {
+        // dispatch notification diagram Found
+        dispatch(successNotification(`Diagram Found!`));
         // Populate nodesZIndex array
         const nodesZIndex = populateZIndexArr(response.data.elements);
 
@@ -22,16 +30,33 @@ export const loadDiagram = (repoFiles) => async (dispatch) => {
           loadDiagramToStore({ nodes: response.data, nodesZIndex: nodesZIndex })
         );
       })
+
       .catch(function (error) {
         // Handle error
         console.log("loadDiagram: unable to load diagram. Error: ", error);
       });
+  } else {
+    dispatch(loadTemplateDiagram(true));
   }
 };
 
 export function loadDiagramToStore(payload) {
   return {
     type: LOAD_DIAGRAM_TO_STORE,
+    payload: payload,
+  };
+}
+
+export function loadTemplateDiagram(payload) {
+  return {
+    type: LOAD_TEMPLATE_DIAGRAM,
+    payload: payload,
+  };
+}
+
+export function reloadDiagram(payload) {
+  return {
+    type: RELOAD_DIAGRAM,
     payload: payload,
   };
 }
@@ -50,4 +75,11 @@ function populateZIndexArr(nodes) {
 
   // Return the array of ids in order
   return nodesZIndex.map(([id, zIndex]) => id);
+}
+
+export function loadRepoFromPublicURL(payload) {
+  return {
+    type: LOAD_REPO_FROM_PUBLIC_URL,
+    payload: payload,
+  };
 }

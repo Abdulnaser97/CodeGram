@@ -1,5 +1,6 @@
 import { Handle } from "react-flow-renderer";
 import { Resizable } from "re-resizable";
+import styled from "styled-components";
 
 import "./nodeStyles.css";
 import { useState } from "react";
@@ -10,14 +11,9 @@ import { useDispatch } from "react-redux";
 
 import GitHub from "../Landing/GitHub";
 
-import { getPublicRepo, getRepo } from "../api/apiClient";
-import { storeRepoFiles, fetchRepoFiles } from "../Redux/actions/repoFiles";
+import { loadRepoFromPublicURL } from "../Redux/actions/loadDiagram";
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-// api call import
-function login() {
-  window.location.assign(`${REACT_APP_BACKEND_URL}/auth/github`);
-}
 
 const targetHandleStyle = {
   borderRadius: 5,
@@ -773,10 +769,10 @@ const HomeNodeComponent = (props) => {
     >
       <div>
         <Typography
-          fontWeight="Light"
-          style={{ "font-size": fontSize }}
+          fontWeight="fontWeightMedium"
+          style={{ "font-size": "40px" }}
           textAlign="center"
-          variant="h5"
+          color="secondary"
         >
           Welcome to CodeGram
         </Typography>
@@ -795,6 +791,14 @@ const HomeNodeComponent = (props) => {
     </Resizable>
   );
 };
+
+const LinkComponentWrapper = styled.div`
+  position: relative;
+  display: flex;
+  margintop: 10px;
+  justify-content: center;
+  align-items: center;
+`;
 
 const LinkComponent = (props) => {
   const [width, setWidth] = useState(props.data.width ? props.data.width : 200);
@@ -823,39 +827,28 @@ const LinkComponent = (props) => {
   }
 
   const getRepoFromLink = async () => {
-    dispatch(fetchRepoFiles());
-    var files = await getPublicRepo(publicUrl);
-    console.log(files);
-    dispatch(storeRepoFiles(files));
+    // extract repo name from public url
+    dispatch(loadRepoFromPublicURL(publicUrl));
   };
 
   return (
-    <>
+    <LinkComponentWrapper>
       <input
         placeholder="Enter link to your public repo!"
-        style={{
-          borderRadius: "0.6vw",
-          "padding-left": "20px",
-          "padding-right": "20px",
-          outline: "none",
-          height: "5vh",
-          width: "15vw",
-          border: "1px solid #ffaea6",
-          color: "#FFAEA6",
-          background: "transparent",
-          appearance: "none",
-          cursor: "pointer",
-          boxShadow: "-2.5px 4px 5px #c9c9c9",
-        }}
+        className="public-repo-link"
         onChange={handleURL}
       ></input>
-      <Box mx={2} sx={{ "box-shadow": 0 }}>
+      <Box
+        mx={2}
+        sx={{ "box-shadow": 0 }}
+        style={{ height: "35px", marginLeft: "10px" }}
+      >
         <div
-          className="navbar-button github"
+          className="go-button"
           style={{ backgroundColor: "transparent" }}
           onClick={() => getRepoFromLink()}
         >
-          <Box className="SaveButtonWrapper">
+          <Box className="GoButtonWrapper" style={{ borderRadius: "35px" }}>
             <Typography
               mx={1}
               my={0.8}
@@ -864,7 +857,7 @@ const LinkComponent = (props) => {
               color="primary"
               textAlign={"center"}
             >
-              Go!
+              Go
             </Typography>
           </Box>
         </div>
@@ -880,7 +873,7 @@ const LinkComponent = (props) => {
           display: `${props.selected ? "block" : "none"}`,
         }}
       />
-    </>
+    </LinkComponentWrapper>
   );
 };
 
@@ -907,13 +900,19 @@ const SignUpComponent = (props) => {
     props.data.nodeInputHandler(event);
   }
 
+  // api call import
+  function login() {
+    window.location.assign(`${REACT_APP_BACKEND_URL}/auth/github`);
+  }
+
   return (
     <>
       <div
         style={{ height: "80%", width: "80%" }}
         className="GitHubButtonWrapper"
+        onClick={login}
       >
-        <GitHub className="GitHub" onClick={login} />
+        <GitHub className="GitHub" />
       </div>
       <Handle
         className="handle source"

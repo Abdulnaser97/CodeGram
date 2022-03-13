@@ -97,7 +97,7 @@ function SourceDoc(props) {
 
   const { search, repository, fuse, homePath, selectedEL } = props.data;
   useEffect(() => {
-    if (!state.repoFiles.repoFiles.isFetchingFiles) {
+    if (!state.repoFiles.isFetchingFiles) {
       props.functions.setOpenArtifact("");
       setSourceFiles(null);
       setPath([]);
@@ -105,7 +105,7 @@ function SourceDoc(props) {
       setSDContent("");
       setIsEditing("");
     }
-  }, [props.data.repo, props.data.branch]);
+  }, [props.data.repo, props.data.branch, state.repoFiles.isFetchingFiles]);
 
   // change open artifact to be the file from react flow
   useEffect(() => {
@@ -176,7 +176,13 @@ function SourceDoc(props) {
       }
       setSourceFiles(repoList);
     }
-  }, [SDContent, filteredSelectedEL, props.data.openArtifact, repository]);
+  }, [
+    SDContent,
+    filteredSelectedEL,
+    props.data.openArtifact,
+    repository,
+    state.repoFiles.isFetchingFiles,
+  ]);
 
   useEffect(() => {
     if (repository && homePath) {
@@ -397,7 +403,7 @@ function SourceDoc(props) {
     if (props.data.tabValue != value) setValue(props.data.tabValue);
   }, [props.data.tabValue]);
 
-  // search method called whenevr search var changes
+  // search method called whenever search var changes
   useEffect(() => {
     props.functions.setOpenArtifact("");
     if (!search.length) {

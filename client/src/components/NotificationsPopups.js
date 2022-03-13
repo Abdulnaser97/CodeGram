@@ -1,4 +1,5 @@
 import { Alert, Snackbar } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   errorNotification,
@@ -31,9 +32,26 @@ export function NotifDiagramLoaded() {
 }
 
 export function NotifDiagramLoading() {
-  const message = useSelector((state) => {
-    return state.notifications.loadingNotificationMessage;
+  const { loadingMessage, reloadDiagram } = useSelector((state) => {
+    return {
+      loadingMessage: state.notifications.loadingNotificationMessage,
+      reloadDiagram: state.RFState.reloadDiagram,
+    };
   });
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (loadingMessage) {
+      setOpen(true);
+    }
+  }, [loadingMessage]);
+
+  useEffect(() => {
+    if (!reloadDiagram) {
+      setOpen(false);
+    }
+  }, [reloadDiagram]);
+
   const dispatch = useDispatch();
 
   return (
@@ -45,11 +63,12 @@ export function NotifDiagramLoading() {
         top: "5vh",
         left: "35vw",
       }}
-      open={message}
-      autoHideDuration={4000}
+      open={open}
       onClose={() => dispatch(loadingNotification(""))}
     >
-      <Alert onClose={() => dispatch(loadingNotification(""))}>{message}</Alert>
+      <Alert severity="info" onClose={() => dispatch(loadingNotification(""))}>
+        {loadingMessage}
+      </Alert>
     </Snackbar>
   );
 }

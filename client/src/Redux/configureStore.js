@@ -4,6 +4,7 @@ import {
   bindActionCreators,
   applyMiddleware,
 } from "redux";
+import { composeWithDevTools } from "@redux-devtools/extension";
 import { RFStateReducer, nodesReducer } from "./reducers/nodesReducer";
 import devToolsEnhancer from "remote-redux-devtools";
 import {
@@ -12,10 +13,19 @@ import {
   sendToBack,
   bringToFront,
 } from "./actions/nodes";
-import { fetchRepoFiles, storeRepoFiles, updateRepoFileCodeContent } from "./actions/repoFiles";
+import {
+  fetchRepoFiles,
+  storeRepoFiles,
+  updateRepoFileCodeContent,
+} from "./actions/repoFiles";
 import thunk from "redux-thunk";
 import repoReducer from "./reducers/repoReducer";
-import { loadDiagramToStore } from "./actions/loadDiagram";
+import {
+  loadDiagramToStore,
+  loadRepoFromPublicURL,
+  loadTemplateDiagram,
+  reloadDiagram,
+} from "./actions/loadDiagram";
 import { notificationReducer } from "./reducers/notificationReducer";
 import {
   successNotification,
@@ -30,12 +40,15 @@ const rootReducer = combineReducers({
   notifications: notificationReducer,
 });
 
-const enhancers = [devToolsEnhancer({ realtime: true })];
+const composeEnhancers = composeWithDevTools({
+  trace: true,
+  traceLimit: 25,
+});
 
 // devToolsEnhancer is for the remote-redux chrome extension
 // currently is not setup properly yet, but it doesn't impede anything, so you can ignore it for now
 export const configureStore = () => {
-  return createStore(rootReducer, applyMiddleware(thunk));
+  return createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
 };
 
 const ActionCreators = Object.assign(
@@ -50,7 +63,10 @@ const ActionCreators = Object.assign(
   loadDiagramToStore,
   successNotification,
   errorNotification,
-  loadingNotification
+  loadingNotification,
+  loadRepoFromPublicURL,
+  loadTemplateDiagram,
+  reloadDiagram
 );
 export const mapStateToProps = (state) => ({
   nodes: state.nodes,
