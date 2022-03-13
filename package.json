@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "start": "concurrently \"cd codegram-bot && npm start\" \"cd client && npm start\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "buildRF": "cd client/node_modules/react-flow-renderer && npm i && npm run build"
   },
   "dependencies": {
     "concurrently": "^6.4.0"

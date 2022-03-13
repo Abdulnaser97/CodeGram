@@ -4,6 +4,7 @@ import {
   STORE_REPO_FILES,
   DELETE_NODES_FROM_ARRAY,
   UPDATE_REPO_FILE,
+  UPDATE_CODE_CONTENT,
 } from "../constants";
 
 const initialState = {
@@ -54,6 +55,18 @@ const repoReducer = (state = initialState, action) => {
       return {
         ...state,
         repoFiles: action.repoFiles,
+      };
+    }
+    case UPDATE_CODE_CONTENT: {
+      return {
+        ...state,
+        repoFiles: {
+          ...state.repoFiles,
+          [action.path]: {
+            ...state.repoFiles[action.path],
+            code: action.newCode,
+          },
+        },
       };
     }
     default:

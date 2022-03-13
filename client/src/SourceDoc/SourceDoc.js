@@ -1,8 +1,9 @@
 import "../App.css";
 import "./SourceDoc.css";
 
-// mui components
+// third-party components
 import { Box, Typography, Tabs, Tab } from "@mui/material";
+import { Resizable } from "re-resizable";
 
 // third party dependecnies
 import PropTypes from "prop-types";
@@ -16,6 +17,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { mapDispatchToProps, mapStateToProps } from "../Redux/configureStore";
 import { connect } from "react-redux";
 
+//actions
+import { updateRepoFileCodeContent } from "../Redux/actions/repoFiles";
+import { errorNotification } from "../Redux/actions/notification";
+
 // components
 import SourceDocFile from "./SourceDocFile";
 import TextEditor from "../components/TextEditor.js";
@@ -24,8 +29,7 @@ import CodeTab from "./CodeTab";
 import SearchBar from "./SearchBar";
 
 import axios from "axios";
-import { Resizable } from "re-resizable";
-import { errorNotification } from "../Redux/actions/notification";
+import { getRepo } from "../api/apiClient";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -57,6 +61,8 @@ function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
+    "overflow-y": "auto",
+    "max-height": "85%",
   };
 }
 
@@ -296,28 +302,90 @@ function SourceDoc(props) {
   };
 
   useEffect(() => {
-    if (!filteredSelectedEL || !selectedEL || selectedEL.data.type === "Text") {
-      setValue(0);
-    } else if (!selectedEL.data.label) {
-      setValue(0);
-    } else if (filteredSelectedEL.data.label) {
-      setValue(2);
-      if (props.data.openArtifact && props.data.openArtifact.url) {
-        // calls node url to get file content
-        axios
-          .get(props.data.openArtifact.url)
-          .then(function (response) {
-            // handle success
-            setCurCode(response.data);
-          })
-          .catch(function (error) {
-            // handle error
-            console.log(error);
-            dispatch(errorNotification(`Error retrieving file content`));
-          });
-      } else {
-        setCurCode("Select a nnode to view a file");
+    try {
+      if (
+        !filteredSelectedEL ||
+        !selectedEL ||
+        selectedEL.data.type === "Text"
+      ) {
+        setValue(0);
+      } else if (!selectedEL.data.label) {
+        setValue(0);
+      } else if (filteredSelectedEL.data.label) {
+        setValue(2);
+        const path = props.data.openArtifact
+          ? props.data.openArtifact.path
+          : null;
+        console.log("selectedEl, props.data", props.data);
+        console.log("state", state);
+
+        // only set code in Code Tab if openArtifact is a file
+        if (props.data.openArtifact.type == "file") {
+          // do GET request if file code hasn't been retrieved yet
+          if (
+            path &&
+            !state.repoFiles.repoFiles[path].code &&
+            state.repoFiles.repoFiles[path].url.includes("?token")
+          ) {
+            // calls node url to get file content
+            Promise.resolve(getRepo(props.data.repo, path, props.data.branch))
+              .then((response) => {
+                console.log("GET file contents response", response);
+                const download_url = response.data.download_url;
+                axios
+                  .get(download_url)
+                  .then(function (response) {
+                    // handle success
+                    // populate repoFile.data[path].code with response.data, so don't have to do multiple GET requests again
+                    dispatch(updateRepoFileCodeContent(path, response.data));
+                    setCurCode(response.data);
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    dispatch(
+                      errorNotification(`Github error retrieving file content`)
+                    );
+                  });
+              })
+              .catch((error) => {
+                console.log("GET file contents on select error", error);
+                dispatch(errorNotification(`Error retrieving file content`));
+              });
+          }
+          // public repos
+          else if (
+            path &&
+            !state.repoFiles.repoFiles[path].code &&
+            !state.repoFiles.repoFiles[path].url.includes("?token")
+          ) {
+            axios
+              .get(props.data.openArtifact.url)
+              .then(function (response) {
+                // handle success
+                // populate repoFile.data[path].code with response.data, so don't have to do multiple GET requests again
+                dispatch(updateRepoFileCodeContent(path, response.data));
+                setCurCode(response.data);
+              })
+              .catch((error) => {
+                console.log(error);
+                dispatch(
+                  errorNotification(`Github error retrieving file content`)
+                );
+              });
+          } else {
+            console.log(
+              "Already retrieved file code contents, calling from store"
+            );
+            if (path) {
+              setCurCode(state.repoFiles.repoFiles[path].code);
+            }
+          }
+        } else {
+          setCurCode("Select a nnode to view a file");
+        }
       }
+    } catch (error) {
+      console.log("Error:", error);
     }
   }, [filteredSelectedEL, selectedEL]);
 
@@ -356,13 +424,7 @@ function SourceDoc(props) {
         size={{ width, height }}
         className="sourceDocContainer"
         style={{
-          position: "fixed",
-          top: "13vh",
-          right: "1.5vw",
-          width: "40vw",
-          height: "90vh",
-          "z-index": 0,
-          borderRadius: "20px",
+          position: "absolute",
         }}
         onResizeStop={(e, direction, ref, d) => {
           setWidth(width + d.width);
@@ -414,7 +476,7 @@ function SourceDoc(props) {
               style={{
                 position: "relative",
                 maxHeight: "50vh",
-                "overflow-y": "scroll",
+                "overflow-y": "auto",
               }}
             >
               {sourceFiles}
@@ -424,7 +486,7 @@ function SourceDoc(props) {
         <TabPanel
           value={value}
           index={1}
-          style={{ height: "85%", overflowY: "scroll" }}
+          style={{ height: "85%", overflowY: "auto" }}
         >
           <Typography
             variant="h5"
@@ -447,10 +509,11 @@ function SourceDoc(props) {
             }
           />
         </TabPanel>
-        <TabPanel value={value} index={2} style={{ overflowY: "scroll" }}>
+        <TabPanel value={value} index={2} style={{ overflow: "auto" }}>
           <DocsTab
             isEditing={isEditing}
-            selectedEL={filteredSelectedEL}
+            selectedEL={selectedEL}
+            openArtifact={props.data.openArtifact}
             setIsEditing={setIsEditing}
             renderFiles={renderFiles}
             setElements={props.functions.setElements}

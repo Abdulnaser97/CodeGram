@@ -3,6 +3,7 @@ import {
   FETCH_REPO_FILES,
   STORE_REPO_FILES,
   UPDATE_REPO_FILE,
+  UPDATE_CODE_CONTENT,
 } from "../constants";
 
 async function recursiveRepoBuilder(
@@ -26,6 +27,7 @@ async function recursiveRepoBuilder(
         type: file.type,
         path: file.path,
         url: file.download_url,
+        html_url: file.html_url,
         linked: false,
       };
     } else {
@@ -34,6 +36,7 @@ async function recursiveRepoBuilder(
         type: file.type,
         path: file.path,
         url: file.download_url,
+        html_url: file.html_url,
         linked: false,
       };
     }
@@ -81,5 +84,13 @@ export function updateRepoFile(node, oldPath) {
       payload: node,
       repoFiles: repoFiles.repoFiles,
     });
+  };
+}
+
+export function updateRepoFileCodeContent(path, newCode) {
+  return {
+    type: UPDATE_CODE_CONTENT,
+    path: path,
+    newCode: newCode,
   };
 }
