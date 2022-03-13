@@ -80,6 +80,7 @@ export function useReactFlowWrapper({
     state,
     isLoadTemplateDiagram,
     isReloadDiagram,
+    sourceDocTab,
   } = useSelector((state) => {
     return {
       state: state,
@@ -88,6 +89,7 @@ export function useReactFlowWrapper({
       repoFiles: state.repoFiles.repoFiles,
       isLoadTemplateDiagram: state.RFState.loadTemplateDiagram,
       isReloadDiagram: state.RFState.reloadDiagram,
+      sourceDocTab: state.repoFiles.sourceDocTab,
     };
   });
   console.log(state);
@@ -658,6 +660,10 @@ export function useReactFlowWrapper({
       dispatch(reloadDiagram(false));
     }
   }, [isLoadTemplateDiagram]);
+
+  useEffect(() => {
+    setTabValue(sourceDocTab);
+  }, [sourceDocTab]);
 
   // for pop up later
   // console.log(selectedEL)

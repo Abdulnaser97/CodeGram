@@ -4,6 +4,7 @@ import {
   LOAD_REPO_FROM_PUBLIC_URL,
   LOAD_TEMPLATE_DIAGRAM,
   RELOAD_DIAGRAM,
+  SET_SOURCE_DOC_TAB,
 } from "../constants";
 import { successNotification } from "./notification";
 
@@ -29,6 +30,7 @@ export const loadDiagram = (repoFiles) => async (dispatch) => {
         dispatch(
           loadDiagramToStore({ nodes: response.data, nodesZIndex: nodesZIndex })
         );
+        dispatch(setSourceDocTab(0));
       })
 
       .catch(function (error) {
@@ -37,6 +39,7 @@ export const loadDiagram = (repoFiles) => async (dispatch) => {
       });
   } else {
     dispatch(loadTemplateDiagram(true));
+    dispatch(setSourceDocTab(0));
   }
 };
 
@@ -57,6 +60,13 @@ export function loadTemplateDiagram(payload) {
 export function reloadDiagram(payload) {
   return {
     type: RELOAD_DIAGRAM,
+    payload: payload,
+  };
+}
+
+export function setSourceDocTab(payload) {
+  return {
+    type: SET_SOURCE_DOC_TAB,
     payload: payload,
   };
 }

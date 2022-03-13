@@ -230,9 +230,13 @@ function App() {
 
         window.history.replaceState(null, null, url);
         const repoName = publicRepoURL.split("/")[4];
+        const userName = publicRepoURL.split("/")[3];
+        const formattedURL =
+          "https://api.github.com/" + userName + "/" + repoName;
+
         setRepos([...repos, { name: repoName }]);
         setElements(initialElements);
-        dispatch(getPublicRepoFiles(repoName, publicRepoURL));
+        dispatch(getPublicRepoFiles(repoName, formattedURL));
         setRepo(repoName);
         setSelectedEL(initialElements[0]);
         setBranch("");
