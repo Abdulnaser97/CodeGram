@@ -3,6 +3,9 @@ import {
   CustomNodeComponent,
   WrapperNodeComponent,
   FolderNodeComponent,
+  HomeNodeComponent,
+  LinkComponent,
+  SignUpComponent,
   CircleNodeComponent,
 } from "../canvas/custom_node";
 import ReactFlow, {
@@ -34,32 +37,13 @@ import MenuItem from "@mui/material/MenuItem";
 import { TextComponent } from "../canvas/text";
 
 import template from "../Templates/FullStackTemplate.json";
+import ControlTemplate from "../Templates/ControlTemplate.json";
+import {
+  loadTemplateDiagram,
+  reloadDiagram,
+} from "../Redux/actions/loadDiagram";
 
-// const edgeTypes = {
-//   floating: FloatingEdge,
-// };
-
-var initialElements = [
-  {
-    id: "1",
-    type: "input",
-    data: { label: "Project Root", url: "", width: 1, height: 1 },
-    position: { x: 0, y: 0 },
-    animated: true,
-    style: {
-      borderColor: "transparent",
-      color: "transparent",
-      background: "transparent",
-      height: "0px",
-      width: "0px",
-      display: "none",
-      justifyContent: "center",
-      alignItems: "center",
-    },
-  },
-];
-
-initialElements = template.elements;
+var initialElements = ControlTemplate.elements;
 
 const edgeTypes = {
   default: SmoothStepEdge,
@@ -79,12 +63,6 @@ const getNodeId = () => `randomnode_${+new Date()}`;
  *
  *
  *
- *
- *
- *
- *
- *
- *
  **/
 export function useReactFlowWrapper({
   dispatch,
@@ -96,9 +74,25 @@ export function useReactFlowWrapper({
   setSearch,
   fuse,
 }) {
-  const { RFState, nodesZIndex } = useSelector((state) => {
-    return { RFState: state.RFState, nodesZIndex: state.nodes.nodesZIndex };
+  const {
+    RFState,
+    nodesZIndex,
+    state,
+    isLoadTemplateDiagram,
+    isReloadDiagram,
+    sourceDocTab,
+  } = useSelector((state) => {
+    return {
+      state: state,
+      RFState: state.RFState,
+      nodesZIndex: state.nodes.nodesZIndex,
+      repoFiles: state.repoFiles.repoFiles,
+      isLoadTemplateDiagram: state.RFState.loadTemplateDiagram,
+      isReloadDiagram: state.RFState.reloadDiagram,
+      sourceDocTab: state.repoFiles.sourceDocTab,
+    };
   });
+  console.log(state);
 
   const nodes = useStoreState((state) => state.nodes);
 
@@ -493,6 +487,8 @@ export function useReactFlowWrapper({
     }
   };
 
+  // console.log(selectedEL);
+  // console.log(repository);
   const keydownHandler = (e) => {
     // Ctrl + C (Cmd + C) for copy
     if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
@@ -656,6 +652,19 @@ export function useReactFlowWrapper({
     }
   }, [newNodeId, nodes]);
 
+  useEffect(() => {
+    if (isLoadTemplateDiagram) {
+      setElements(template.elements);
+
+      dispatch(loadTemplateDiagram(false));
+      dispatch(reloadDiagram(false));
+    }
+  }, [isLoadTemplateDiagram]);
+
+  useEffect(() => {
+    setTabValue(sourceDocTab);
+  }, [sourceDocTab]);
+
   // for pop up later
   // console.log(selectedEL)
   // useEffect(() => {
@@ -678,6 +687,9 @@ export function useReactFlowWrapper({
             CircleShape: CircleNodeComponent,
             ShadowBoxShape: FolderNodeComponent,
             circle: CustomNodeComponent,
+            home: HomeNodeComponent,
+            LinkComponent: LinkComponent,
+            SignUpComponent: SignUpComponent,
             Text: TextComponent,
           }}
           elements={elements}
@@ -707,7 +719,14 @@ export function useReactFlowWrapper({
           onNodeDoubleClick={handleNodeDoubleClick}
           // search={search}
         >
-          <ReactFlowStoreInterface {...{ RFState, setElements }} />
+          <ReactFlowStoreInterface
+            {...{
+              RFState,
+              setElements,
+              isReloadDiagram,
+              dispatch,
+            }}
+          />
         </ReactFlow>
         <Menu
           open={contextMenu !== null}
@@ -799,19 +818,25 @@ export function useReactFlowWrapper({
   };
 }
 
-export function ReactFlowStoreInterface({ RFState, setElements }) {
+export function ReactFlowStoreInterface({
+  RFState,
+  setElements,
+  isReloadDiagram,
+  dispatch,
+}) {
   // Uncomment below to view reactFlowState
   //const reactFlowState = useStoreState((state) => state);
 
   const { transform } = useZoomPanHelper();
 
   useEffect(() => {
-    if (RFState && RFState.RFState.position) {
+    if (RFState && RFState.RFState.position && isReloadDiagram) {
       const [x = 0, y = 0] = RFState.RFState.position;
       setElements(RFState.RFState.elements || []);
       transform({ x, y, zoom: RFState.RFState.zoom || 0 });
+      dispatch(reloadDiagram(false));
     }
-  }, [RFState, setElements, transform]);
+  }, [RFState, setElements, transform, isReloadDiagram]);
 
   return null;
 }

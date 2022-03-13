@@ -35,6 +35,59 @@
   transition: ease-in 0.1s;
 }
 
+.go-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  transition: ease-in 0.1s;
+  height: 35px;
+  width: 45px;
+}
+
+.GoButtonWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #ffaea6;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.go-button:hover .GoButtonWrapper {
+  background-color: #ffaea6;
+}
+
+.go-button:hover p {
+  color: white;
+}
+
+.public-repo-link {
+  border-radius: 30px;
+  padding-left: 20px;
+  padding-right: 20px;
+  outline: none;
+  height: 35px;
+  width: 350px;
+  border: 1px solid #ffaea6;
+  color: #ffaea6;
+  background: transparent;
+  appearance: none;
+  cursor: text;
+  background-color: white;
+  text-align: center;
+}
+.public-repo-link:focus {
+  border: 1.5px solid #ffaea6;
+}
+
+.public-repo-link:focus::placeholder {
+  color: transparent;
+}
+
 .LandingPage {
   position: absolute;
   top: 0;

@@ -4,6 +4,8 @@ import {
   LOAD_DIAGRAM_TO_STORE,
   FETCH_REPO_FILES,
   UPDATE_NODE_Z_INDEX,
+  LOAD_TEMPLATE_DIAGRAM,
+  RELOAD_DIAGRAM,
 } from "../constants";
 
 const initialState = {
@@ -53,6 +55,8 @@ export const nodesReducer = (state = initialState, action) => {
 
 const RFinitialState = {
   RFState: {},
+  loadTemplateDiagram: false,
+  reloadDiagram: false,
 };
 
 export const RFStateReducer = (state = RFinitialState, action) => {
@@ -62,6 +66,17 @@ export const RFStateReducer = (state = RFinitialState, action) => {
         ...state,
         RFState: action.payload.nodes,
       };
+    case LOAD_TEMPLATE_DIAGRAM:
+      return {
+        ...state,
+        loadTemplateDiagram: action.payload,
+      };
+    case RELOAD_DIAGRAM:
+      return {
+        ...state,
+        reloadDiagram: action.payload,
+      };
+
     default:
       return state;
   }

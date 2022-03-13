@@ -1,15 +1,19 @@
-import { 
-  ADD_NODE_TO_ARRAY, 
-  FETCH_REPO_FILES, 
-  STORE_REPO_FILES, 
-  DELETE_NODES_FROM_ARRAY, 
-  UPDATE_REPO_FILE ,
+import {
+  ADD_NODE_TO_ARRAY,
+  FETCH_REPO_FILES,
+  STORE_REPO_FILES,
+  DELETE_NODES_FROM_ARRAY,
+  UPDATE_REPO_FILE,
   UPDATE_CODE_CONTENT,
+  LOAD_REPO_FROM_PUBLIC_URL,
+  SET_SOURCE_DOC_TAB,
 } from "../constants";
 
 const initialState = {
+  publicRepoURL: "",
   repoFiles: [],
   isFetchingFiles: false,
+  sourceDocTab: 0,
 };
 
 const repoReducer = (state = initialState, action) => {
@@ -33,11 +37,11 @@ const repoReducer = (state = initialState, action) => {
           ...state.repoFiles,
           [action.payload.data.path]: {
             ...state.repoFiles[action.payload.data.path],
-            linked:true 
-          }
-        }
-      }
-    };
+            linked: true,
+          },
+        },
+      };
+    }
     case UPDATE_REPO_FILE: {
       return {
         ...state,
@@ -45,17 +49,17 @@ const repoReducer = (state = initialState, action) => {
           ...state.repoFiles,
           [action.payload.data.path]: {
             ...state.repoFiles[action.payload.data.path],
-            linked:true 
-          }
-        }
-      }
-    };
+            linked: true,
+          },
+        },
+      };
+    }
     case DELETE_NODES_FROM_ARRAY: {
       return {
         ...state,
         repoFiles: action.repoFiles,
-      }
-    };
+      };
+    }
     case UPDATE_CODE_CONTENT: {
       return {
         ...state,
@@ -63,11 +67,24 @@ const repoReducer = (state = initialState, action) => {
           ...state.repoFiles,
           [action.path]: {
             ...state.repoFiles[action.path],
-            code: action.newCode, 
-          }
-        }
-      }
-    };
+            code: action.newCode,
+          },
+        },
+      };
+    }
+    case LOAD_REPO_FROM_PUBLIC_URL: {
+      return {
+        ...state,
+        publicRepoURL: action.payload,
+        isFetchingFiles: true,
+      };
+    }
+    case SET_SOURCE_DOC_TAB: {
+      return {
+        ...state,
+        sourceDocTab: action.payload,
+      };
+    }
     default:
       return state;
   }
