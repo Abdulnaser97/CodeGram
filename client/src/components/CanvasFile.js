@@ -72,7 +72,10 @@ function CanvasFile(props) {
             alignItems: "center",
           }}
         >
-          <div className="iconWrapper" style={{ marginRight: "10px" }}>
+          <div
+            className="iconWrapper"
+            style={{ marginRight: "10px", color: "grey" }}
+          >
             {fileIcon}
           </div>
           <p

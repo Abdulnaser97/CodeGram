@@ -37,6 +37,7 @@ import CanvasFile from "./CanvasFile";
 import { TextComponent } from "../canvas/text";
 
 import template from "../Templates/FullStackTemplate.json";
+import { createEvent } from "@testing-library/react";
 
 // const edgeTypes = {
 //   floating: FloatingEdge,
@@ -225,8 +226,8 @@ export function useReactFlowWrapper({
             ? 100
             : Math.floor(70 / 15) * 15,
         position: project({
-          x: position.x,
-          y: position.y,
+          x: props.fromSD ? position.x : event?.clientX,
+          y: props.fromSD ? position.y : event?.clientY,
         }),
         animated: true,
       };
@@ -582,6 +583,7 @@ export function useReactFlowWrapper({
     //   repository[selectedEL?.data?.path]
     // }
     var oldPath = selectedEL?.data?.path;
+    console.log(file.type);
     setElements((els) =>
       els.map((el) => {
         if (el.id === selectedEL.id) {
@@ -601,7 +603,14 @@ export function useReactFlowWrapper({
 
             // can set this type to whatever is selected in the tool bar for now
             // but the type will probably be set from a few different places
-            type: file ? "FileNode" : selectedShapeName.current,
+            // will have to reload the node as a new component if its not the same
+            // type: () => {
+            //   if (file.type == "file") return "FileNode";
+            //   else return el.data.type;
+            //   // else if (file.type == "dir") return "DashedShape";
+            //   // else return el.data.type;
+            //   // file ? "FileNode" : selectedShapeName.current
+            // },
           };
           selEl = el;
         }

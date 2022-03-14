@@ -6,10 +6,10 @@ import { mapDispatchToProps, mapStateToProps } from "../Redux/configureStore";
 import { connect } from "react-redux";
 import { useStore, useZoomPanHelper } from "react-flow-renderer";
 
-
 // export default function SourceDocFile(props) {
 function SourceDocFile(props) {
-  const { addNode, setOpenArtifact, openArtifact, addFileToNode, selectedEL } = props;
+  const { addNode, setOpenArtifact, openArtifact, addFileToNode, selectedEL } =
+    props;
   var { file } = props;
 
   const store = useStore();
@@ -57,16 +57,16 @@ function SourceDocFile(props) {
       if (el) {
         const x = el.position.x + el.width / 2;
         const y = el.position.y + el.height / 2;
-        
+
         fitBounds(
           {
             x: x,
             y: y,
             width: el.data.width,
-            height: el.data.height
+            height: el.data.height,
           },
           1
-        )
+        );
       }
     }
   }
@@ -103,12 +103,10 @@ function SourceDocFile(props) {
         <AddBoxIcon
           fontSize="small"
           onClick={() => {
-
-            if (selectedEL && !selectedEL.data.label){
-              addFileToNode(file)
-            }
-            else {
-              addNode({ file: file });
+            if (selectedEL && !selectedEL.data.label) {
+              addFileToNode(file);
+            } else {
+              addNode({ file: file, fromSD: true });
             }
             setOpenArtifact(file);
           }}
