@@ -142,6 +142,7 @@ function App() {
     selectedShapeName,
     activeToolBarButton,
     setActiveToolBarButton,
+    openArtifact,
     setOpenArtifact,
     search,
     setSearch,

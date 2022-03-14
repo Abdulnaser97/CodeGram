@@ -31,9 +31,11 @@ import { updateRepoFile } from "../Redux/actions/repoFiles";
 
 import FloatingEdge from "../canvas/FloatingEdge.tsx";
 import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
-
+import SourceDocFile from "../SourceDoc/SourceDocFile";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { Typography } from "@mui/material";
+import CanvasFile from "./CanvasFile";
 import { TextComponent } from "../canvas/text";
 
 import template from "../Templates/FullStackTemplate.json";
@@ -70,6 +72,7 @@ export function useReactFlowWrapper({
   activeToolBarButton,
   setActiveToolBarButton,
   setOpenArtifact,
+  openArtifact,
   search,
   setSearch,
   fuse,
@@ -78,6 +81,7 @@ export function useReactFlowWrapper({
     RFState,
     nodesZIndex,
     state,
+    repository,
     isLoadTemplateDiagram,
     isReloadDiagram,
     sourceDocTab,
@@ -86,7 +90,7 @@ export function useReactFlowWrapper({
       state: state,
       RFState: state.RFState,
       nodesZIndex: state.nodes.nodesZIndex,
-      repoFiles: state.repoFiles.repoFiles,
+      repository: state.repoFiles.repoFiles,
       isLoadTemplateDiagram: state.RFState.loadTemplateDiagram,
       isReloadDiagram: state.RFState.reloadDiagram,
       sourceDocTab: state.repoFiles.sourceDocTab,
@@ -98,7 +102,7 @@ export function useReactFlowWrapper({
 
   const [elements, setElements] = useState(initialElements);
   const [nodeName, setNodeName] = useState("");
-
+  console.log(elements);
   // Selected node
   const [selectedEL, setSelectedEL] = useState(initialElements[0]);
   const yPos = useRef(0);
@@ -200,6 +204,7 @@ export function useReactFlowWrapper({
               ? 100
               : Math.floor(70 / 15) * 15,
           nodeInputHandler: nodeInputHandler,
+          nodeLinkHandler: nodeLinkHandler,
         },
         type: shapeType,
         width:
@@ -213,8 +218,8 @@ export function useReactFlowWrapper({
             ? 100
             : Math.floor(70 / 15) * 15,
         position: project({
-          x: position.x,
-          y: position.y,
+          x: props.fromSD ? position.x : event?.clientX,
+          y: props.fromSD ? position.y : event?.clientY,
         }),
         animated: true,
       };
@@ -299,6 +304,9 @@ export function useReactFlowWrapper({
   const handleContextMenuClose = (event) => {
     setContextMenu(null);
     setSelectedNodeEvent(null);
+    setContextFiles(null);
+    setNodeName("");
+    console.log("closing");
     console.log("rfInstance", rfInstance);
   };
 
@@ -330,10 +338,11 @@ export function useReactFlowWrapper({
   };
 
   const onPaneClick = async (event) => {
-    if (search || text) {
+    if (nodeName || text) {
       setNameFlag(true);
     } else {
       setSelectedEL(null);
+      // handleContextMenuClose();
     }
     if (activeToolBarButton === "selectShape") {
       await addNode({ event: event });
@@ -364,12 +373,17 @@ export function useReactFlowWrapper({
         // TODO : lookinto styling floating edges  and smoothstep
         {
           ...params,
+          id: getNodeId(),
           type: "floating",
           arrowHeadType: ArrowHeadType.Arrow,
           data: {
-            label: "",
+            label: "new label",
             wiki: "",
           },
+          labelBgPadding: [8, 4],
+          labelBgBorderRadius: 4,
+          labelBgStyle: { fill: "#FFCC00", color: "#fff", fillOpacity: 1 },
+          labelShowBg: true,
         },
         els
       )
@@ -478,8 +492,15 @@ export function useReactFlowWrapper({
       let newNode = clipBoard;
       newNode.id = getNodeId();
       newNode.position = calculatePosition(event, rfInstance, newNode.position);
-      console.log("newNode is: ", newNode);
-      setElements((els) => els.concat(newNode));
+      newNode.data = {
+        ...newNode.data,
+        path: "",
+        nodeInputHandler: nodeInputHandler,
+        nodeLinkHandler: nodeLinkHandler,
+      };
+      // console.log("newNode is: ", newNode);
+      // setElements((els) => els.concat(newNode));
+      setElements([...elements, newNode]);
       dispatch(addNodeToArray(newNode));
     }
     if (event) {
@@ -552,6 +573,11 @@ export function useReactFlowWrapper({
   const addFileToNode = (file) => {
     console.log(selectedEL);
     var selEl = null;
+    // if (selectedEL?.data?.label){
+    //   repository[selectedEL?.data?.path]
+    // }
+    var oldPath = selectedEL?.data?.path;
+    console.log(file.type);
     setElements((els) =>
       els.map((el) => {
         if (el.id === selectedEL.id) {
@@ -571,7 +597,14 @@ export function useReactFlowWrapper({
 
             // can set this type to whatever is selected in the tool bar for now
             // but the type will probably be set from a few different places
-            type: file ? "FileNode" : selectedShapeName.current,
+            // will have to reload the node as a new component if its not the same
+            // type: () => {
+            //   if (file.type == "file") return "FileNode";
+            //   else return el.data.type;
+            //   // else if (file.type == "dir") return "DashedShape";
+            //   // else return el.data.type;
+            //   // file ? "FileNode" : selectedShapeName.current
+            // },
           };
           selEl = el;
         }
@@ -579,8 +612,9 @@ export function useReactFlowWrapper({
         return el;
       })
     );
+    handleContextMenuClose();
     setSelectedEL(selEl);
-    dispatch(updateRepoFile(selEl));
+    dispatch(updateRepoFile(selEl, oldPath));
   };
 
   const setter = (value) => {
@@ -593,6 +627,7 @@ export function useReactFlowWrapper({
             requestEdit: false,
           };
           setSelectedEL(el);
+          setNodeName("");
           if (selectedEL.data.type !== "Text") {
             setSearch("");
           } else {
@@ -609,8 +644,8 @@ export function useReactFlowWrapper({
       if (text) {
         setter(text);
         setSelectedEL(null);
-      } else if (search) {
-        setter(search);
+      } else if (nodeName) {
+        setter(nodeName);
         setSelectedEL(null);
       }
     }
@@ -627,9 +662,67 @@ export function useReactFlowWrapper({
     if (nodeType === "Text") {
       setText(event.target.value);
     } else {
-      setSearch(event.target.value);
+      setNodeName(event.target.value);
     }
   }
+
+  const [searchContent, setSearchContent] = useState(null);
+  const [contextFiles, setContextFiles] = useState(null);
+
+  // search method called whenevr search var changes
+  useEffect(() => {
+    if (nodeName && !nodeName.length) {
+      // TOOD: Close Context Menu
+      // handleContextMenuClose();
+      return;
+    } else if (fuse && nodeName) {
+      // nodeLinkHandler();
+      var results = fuse.search(nodeName, { limit: 5 });
+      var newResults = results.map((result) => result.item);
+      setSearchContent(newResults);
+    }
+  }, [nodeName]);
+
+  useEffect(() => {
+    if (searchContent?.length) {
+      var repoList = [];
+      const files = searchContent;
+      for (var f of files) {
+        repoList.push(
+          <CanvasFile
+            setContextMenu={setContextMenu}
+            addNode={addNode}
+            setOpenArtifact={setOpenArtifact}
+            file={repository[f.path]}
+            openArtifact={openArtifact}
+            selectedEL={selectedEL}
+            addFileToNode={addFileToNode}
+          />
+        );
+      }
+      setContextFiles(repoList);
+    }
+  }, [searchContent]);
+
+  const nodeLinkHandler = useCallback(
+    (event) => {
+      if (selectedEL) {
+        setContextMenu(
+          contextMenu === null
+            ? {
+                mouseX: event.clientX + 20,
+                mouseY: event.clientY,
+                type: "nodeLink",
+              }
+            : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+              // Other native context menus might behave different.
+              // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+              null
+        );
+      }
+    },
+    [selectedEL, project]
+  );
 
   function handleNodeDoubleClick(event, element) {
     if (element.data && element.data.type === "Text") {
@@ -654,8 +747,18 @@ export function useReactFlowWrapper({
 
   useEffect(() => {
     if (isLoadTemplateDiagram) {
-      setElements(template.elements);
-
+      // loading the node handler functions into the nodes as
+      // actual compiled functions
+      setElements(
+        template.elements.map((el) => {
+          el.data = {
+            ...el.data,
+            nodeInputHandler: nodeInputHandler,
+            nodeLinkHandler: nodeLinkHandler,
+          };
+          return el;
+        })
+      );
       dispatch(loadTemplateDiagram(false));
       dispatch(reloadDiagram(false));
     }
@@ -664,16 +767,6 @@ export function useReactFlowWrapper({
   useEffect(() => {
     setTabValue(sourceDocTab);
   }, [sourceDocTab]);
-
-  // for pop up later
-  // console.log(selectedEL)
-  // useEffect(() => {
-  //   if (fuse && search) {
-  //     var results = fuse.search(search);
-  //     var newResults = results.map((result) => result.item);
-  //     setFileResults(newResults);
-  //   }
-  // }, [search])
 
   return {
     render: (
@@ -717,7 +810,6 @@ export function useReactFlowWrapper({
           minZoom={0.1}
           maxZoom={4}
           onNodeDoubleClick={handleNodeDoubleClick}
-          // search={search}
         >
           <ReactFlowStoreInterface
             {...{
@@ -725,10 +817,16 @@ export function useReactFlowWrapper({
               setElements,
               isReloadDiagram,
               dispatch,
+              nodeInputHandler,
+              nodeLinkHandler,
             }}
           />
         </ReactFlow>
         <Menu
+          variant="menu"
+          disableAutoFocus
+          disableAutoFocusItem
+          autoFocus={false}
           open={contextMenu !== null}
           onClose={handleContextMenuClose}
           anchorReference="anchorPosition"
@@ -784,22 +882,31 @@ export function useReactFlowWrapper({
               </div>
             </MenuItem>
           )}
-          {/* {search !== null && contextMenu === null  && (
-            <MenuItem
-              style={{ position: "relative", width: "15vw", backgroundClolor:'red' }}
-            >
-               <div className="menu-item">
-                <h1>HELLO!</h1>
-              {
-                fileResults && fileResults.map((file) => {
-                  <div className="menu-text">
-                    {file.name}
-                  </div> 
-                })
-              }          
-               </div>
-            </MenuItem> */}
-          {/* )} */}
+          {contextMenu !== null && contextMenu.type === "nodeLink" && (
+            <div>
+              <Typography
+                variant="subtitle1"
+                color="primary"
+                textAlign={"center"}
+              >
+                {" "}
+                Results{" "}
+              </Typography>
+
+              <div
+                className="repoContainer"
+                style={{
+                  position: "relative",
+                  maxHeight: "40vh",
+                  minHeight: "10vh",
+                  width: "15vw",
+                  "overflow-y": "scroll",
+                }}
+              >
+                {contextFiles}
+              </div>
+            </div>
+          )}
         </Menu>
       </div>
     ),
@@ -823,6 +930,8 @@ export function ReactFlowStoreInterface({
   setElements,
   isReloadDiagram,
   dispatch,
+  nodeInputHandler,
+  nodeLinkHandler,
 }) {
   // Uncomment below to view reactFlowState
   //const reactFlowState = useStoreState((state) => state);
@@ -832,7 +941,23 @@ export function ReactFlowStoreInterface({
   useEffect(() => {
     if (RFState && RFState.RFState.position && isReloadDiagram) {
       const [x = 0, y = 0] = RFState.RFState.position;
-      setElements(RFState.RFState.elements || []);
+      if (RFState?.RFState?.elements) {
+        // loading the node handler functions into the nodes as
+        // actual compiled functions
+        setElements(
+          RFState.RFState.elements.map((el) => {
+            el.data = {
+              ...el.data,
+              nodeInputHandler: nodeInputHandler,
+              nodeLinkHandler: nodeLinkHandler,
+            };
+            return el;
+          })
+        );
+      } else {
+        setElements([]);
+      }
+
       transform({ x, y, zoom: RFState.RFState.zoom || 0 });
       dispatch(reloadDiagram(false));
     }

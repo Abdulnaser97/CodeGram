@@ -43,10 +43,11 @@ const repoReducer = (state = initialState, action) => {
       };
     }
     case UPDATE_REPO_FILE: {
+      console.log("updating repo file");
       return {
         ...state,
         repoFiles: {
-          ...state.repoFiles,
+          ...action.repoFiles,
           [action.payload.data.path]: {
             ...state.repoFiles[action.payload.data.path],
             linked: true,
