@@ -1,13 +1,19 @@
 import { Handle } from "react-flow-renderer";
 import { Resizable } from "re-resizable";
+import styled from "styled-components";
 
 import "./nodeStyles.css";
 import { useState, useRef } from "react";
 import { useEffect } from "react";
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import { theme } from "../Themes";
+import { useDispatch } from "react-redux";
 
+import GitHub from "../Landing/GitHub";
+
+import { loadRepoFromPublicURL } from "../Redux/actions/loadDiagram";
 import PlusSign from "../Media/PlusSign";
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const targetHandleStyle = {
   borderRadius: 5,
@@ -857,7 +863,6 @@ const HomeNodeComponent = (props) => {
     props.data.height ? props.data.height : 200
   );
   const [selected, setSelected] = useState("");
-  const borderRadius = "50%";
   useEffect(() => {
     if (props.selected) {
       if (props.data.type === "CircleShape") setSelected("highlightedNode");
@@ -865,7 +870,7 @@ const HomeNodeComponent = (props) => {
       setSelected("");
     }
   }, [props.selected]);
-
+  const [fontSize, setFontSize] = useState(`${width / 180}em`);
   useEffect(() => {
     props.data.height = height;
     props.data.width = width;
@@ -877,22 +882,28 @@ const HomeNodeComponent = (props) => {
 
   return (
     <Resizable
-      className={`${props.data.type} ${selected}`}
+      className={`FileNode ${selected}`}
       size={{ width, height }}
       onResizeStart={(e, direction, ref, d) => {
-        ref.className = `${props.data.type} nodrag`;
+        ref.className = `FileNode nodrag`;
       }}
       onResizeStop={(e, direction, ref, d) => {
         setWidth(width + d.width);
         setHeight(height + d.height);
 
-        ref.className = `${props.data.type}`;
+        ref.className = `FileNode`;
       }}
-      style={{ "border-radius": borderRadius }}
       grid={[15, 15]}
     >
       <div>
-        <Typography variant="h3">Welcome to CodeGram!</Typography>
+        <Typography
+          fontWeight="fontWeightMedium"
+          style={{ "font-size": "40px" }}
+          textAlign="center"
+          color="secondary"
+        >
+          Welcome to CodeGram
+        </Typography>
       </div>
       <Handle
         className="handle source"
@@ -909,10 +920,149 @@ const HomeNodeComponent = (props) => {
   );
 };
 
+const LinkComponentWrapper = styled.div`
+  position: relative;
+  display: flex;
+  margin-top: 10px;
+  justify-content: center;
+  align-items: center;
+`;
+
+const LinkComponent = (props) => {
+  const [width, setWidth] = useState(props.data.width ? props.data.width : 200);
+  const [height, setHeight] = useState(
+    props.data.height ? props.data.height : 200
+  );
+  const [selected, setSelected] = useState("");
+  const [publicUrl, setPublicUrl] = useState("");
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (props.selected) {
+      if (props.data.type === "CircleShape") setSelected("highlightedNode");
+    } else {
+      setSelected("");
+    }
+  }, [props.selected]);
+  const [fontSize, setFontSize] = useState(`${width / 180}em`);
+  useEffect(() => {
+    props.data.height = height;
+    props.data.width = width;
+  }, [height, width]);
+
+  function handleURL(event) {
+    setPublicUrl(event.target.value);
+  }
+
+  const getRepoFromLink = async () => {
+    // extract repo name from public url
+    dispatch(loadRepoFromPublicURL(publicUrl));
+  };
+
+  return (
+    <LinkComponentWrapper>
+      <input
+        placeholder="Enter link to your public repo!"
+        className="public-repo-link"
+        onChange={handleURL}
+      ></input>
+      <Box
+        mx={2}
+        sx={{ "box-shadow": 0 }}
+        style={{ height: "35px", marginLeft: "10px" }}
+      >
+        <div
+          className="go-button"
+          style={{ backgroundColor: "transparent" }}
+          onClick={() => getRepoFromLink()}
+        >
+          <Box className="GoButtonWrapper" style={{ borderRadius: "35px" }}>
+            <Typography
+              mx={1}
+              my={0.8}
+              fontSize=".8vw"
+              fontWeight="bold"
+              color="primary"
+              textAlign={"center"}
+            >
+              Go
+            </Typography>
+          </Box>
+        </div>
+      </Box>
+      <Handle
+        className="handle source"
+        id={`top-handle-${props.id}`}
+        type="source"
+        position="top"
+        style={{
+          ...sourceHandleStyle,
+          top: "-20px",
+          display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
+    </LinkComponentWrapper>
+  );
+};
+
+const SignUpComponent = (props) => {
+  const [width, setWidth] = useState(props.data.width ? props.data.width : 200);
+  const [height, setHeight] = useState(
+    props.data.height ? props.data.height : 200
+  );
+  const [selected, setSelected] = useState("");
+  useEffect(() => {
+    if (props.selected) {
+      if (props.data.type === "CircleShape") setSelected("highlightedNode");
+    } else {
+      setSelected("");
+    }
+  }, [props.selected]);
+  const [fontSize, setFontSize] = useState(`${width / 180}em`);
+  useEffect(() => {
+    props.data.height = height;
+    props.data.width = width;
+  }, [height, width]);
+
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
+  }
+
+  // api call import
+  function login() {
+    window.location.assign(`${REACT_APP_BACKEND_URL}/auth/github`);
+  }
+
+  return (
+    <>
+      <div
+        style={{ height: "80%", width: "80%", marginTop: "-40px" }}
+        className="GitHubButtonWrapper"
+        onClick={login}
+      >
+        <GitHub className="GitHub" />
+      </div>
+      <Handle
+        className="handle source"
+        id={`top-handle-${props.id}`}
+        type="source"
+        position="top"
+        style={{
+          ...sourceHandleStyle,
+          backgroundColor: "transparent",
+          // display: `${props.selected ? "block" : "none"}`,
+        }}
+      />
+    </>
+  );
+};
+
 export {
   CustomNodeComponent,
   WrapperNodeComponent,
   FolderNodeComponent,
-  CircleNodeComponent,
   HomeNodeComponent,
+  SignUpComponent,
+  LinkComponent,
+  CircleNodeComponent,
 };

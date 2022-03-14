@@ -1,0 +1,200 @@
+{
+	"elements": [
+	    {
+		"id": "1",
+		"type": "input",
+		"data": {
+		    "label": "Project Root",
+		    "url": "",
+		    "width": 1,
+		    "height": 1
+		},
+		"position": {
+		    "x": 0,
+		    "y": 0
+		},
+		"animated": true,
+		"style": {
+		    "borderColor": "transparent",
+		    "color": "transparent",
+		    "background": "transparent",
+		    "height": "0px",
+		    "width": "0px",
+		    "display": "none",
+		    "justifyContent": "center",
+		    "alignItems": "center",
+		    "zIndex": "11"
+		}
+	    },
+	    {
+		"id": "randomnode_1",
+		"data": {
+		    "label": "Home",
+		    "name": "",
+		    "linkedFiles": [
+			"aa.py",
+			"gg.py",
+			"kookoo.py"
+		    ],
+		    "childNodes": [
+			"da",
+			"de",
+			"do"
+		    ],
+		    "siblingNodes": [
+			"ta",
+			"te",
+			"to"
+		    ],
+		    "parentNodes": [
+			"pa",
+			"pe"
+		    ],
+		    "documentation": [
+			"url1",
+			"url2"
+		    ],
+		    "description": "",
+		    "url": null,
+		    "path": "",
+		    "floatTargetHandle": false,
+		    "type": "DashedShape",
+		    "width": 585,
+		    "height": 165
+		},
+		"type": "home",
+		"width": 100,
+		"height": 70,
+		"position": {
+		    "x": 203,
+		    "y": 101
+		},
+		"animated": true,
+		"style": {
+		    "zIndex": "10"
+		}
+	    },
+	    {
+		"id": "randomnode_2",
+		"data": {
+		    "label": "SignUp Component",
+		    "name": "",
+		    "linkedFiles": [
+			"aa.py",
+			"gg.py",
+			"kookoo.py"
+		    ],
+		    "childNodes": [
+			"da",
+			"de",
+			"do"
+		    ],
+		    "siblingNodes": [
+			"ta",
+			"te",
+			"to"
+		    ],
+		    "parentNodes": [
+			"pa",
+			"pe"
+		    ],
+		    "documentation": [
+			"url1",
+			"url2"
+		    ],
+		    "description": "",
+		    "url": null,
+		    "path": "",
+		    "floatTargetHandle": false,
+		    "type": "SignUpComponent",
+		    "width": 585,
+		    "height": 165
+		},
+		"type": "SignUpComponent",
+		"width": 100,
+		"height": 70,
+		"position": {
+		    "x": 128,
+		    "y": 381
+		},
+		"animated": true,
+		"style": {
+		    "zIndex": "10"
+		}
+	    }, 
+	    {
+		"id": "randomnode_3",
+		"data": {
+		    "label": "Public Link Component",
+		    "name": "",
+		    "linkedFiles": [
+			"aa.py",
+			"gg.py",
+			"kookoo.py"
+		    ],
+		    "childNodes": [
+			"da",
+			"de",
+			"do"
+		    ],
+		    "siblingNodes": [
+			"ta",
+			"te",
+			"to"
+		    ],
+		    "parentNodes": [
+			"pa",
+			"pe"
+		    ],
+		    "documentation": [
+			"url1",
+			"url2"
+		    ],
+		    "description": "",
+		    "url": null,
+		    "path": "",
+		    "floatTargetHandle": false,
+		    "type": "LinkComponent",
+		    "width": 585,
+		    "height": 165
+		},
+		"type": "LinkComponent",
+		"width": 100,
+		"height": 70,
+		"position": {"x": 588, "y": 438},
+		"animated": true,
+		"style": {
+		    "zIndex": "10"
+		}
+	    },
+	    {
+		"source": "randomnode_1",
+		"sourceHandle": "bottom-handle-randomnode_1",
+		"target": "randomnode_2",
+		"targetHandle": "top-handle-randomnode_2",
+		"type": "floating",
+		"arrowHeadType": "arrow",
+		"data": {
+		    "label": "",
+		    "wiki": ""
+		},
+		"id": "reactflow__edge-randomnode_1bottom-handle-randomnode_1-randomnode_2top-handle-randomnode_2"
+	    },
+	    {
+		"source": "randomnode_1",
+		"sourceHandle": "bottom-handle-randomnode_1",
+		"target": "randomnode_3",
+		"targetHandle": "top-handle-randomnode_3",
+		"type": "floating",
+		"arrowHeadType": "arrow",
+		"data": {
+		    "label": "",
+		    "wiki": ""
+		},
+		"id": "reactflow__edge-randomnode_1bottom-handle-randomnode_1-randomnode_3top-handle-randomnode_3"
+	    }
+	]
+    }
+    
+    
+    

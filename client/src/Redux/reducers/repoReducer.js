@@ -5,11 +5,15 @@ import {
   DELETE_NODES_FROM_ARRAY,
   UPDATE_REPO_FILE,
   UPDATE_CODE_CONTENT,
+  LOAD_REPO_FROM_PUBLIC_URL,
+  SET_SOURCE_DOC_TAB,
 } from "../constants";
 
 const initialState = {
+  publicRepoURL: "",
   repoFiles: [],
   isFetchingFiles: false,
+  sourceDocTab: 0,
 };
 
 const repoReducer = (state = initialState, action) => {
@@ -67,6 +71,19 @@ const repoReducer = (state = initialState, action) => {
             code: action.newCode,
           },
         },
+      };
+    }
+    case LOAD_REPO_FROM_PUBLIC_URL: {
+      return {
+        ...state,
+        publicRepoURL: action.payload,
+        isFetchingFiles: true,
+      };
+    }
+    case SET_SOURCE_DOC_TAB: {
+      return {
+        ...state,
+        sourceDocTab: action.payload,
       };
     }
     default:

@@ -1,10 +1,12 @@
-import { getRepo } from "../../api/apiClient";
+import { getPublicRepo, getRepo } from "../../api/apiClient";
 import {
   FETCH_REPO_FILES,
   STORE_REPO_FILES,
   UPDATE_REPO_FILE,
   UPDATE_CODE_CONTENT,
 } from "../constants";
+import { reloadDiagram } from "./loadDiagram";
+import { loadingNotification, successNotification } from "./notification";
 
 async function recursiveRepoBuilder(
   repoName,
@@ -45,7 +47,10 @@ async function recursiveRepoBuilder(
 }
 
 export const getRepoFiles = (repoName, branch) => async (dispatch) => {
-  dispatch(fetchRepoFiles());
+  await dispatch(
+    loadingNotification(`Retrieving ${repoName} files from GitHub ...`)
+  );
+  await dispatch(fetchRepoFiles());
   const newRepo = await getRepo(repoName, null, branch);
   const files = newRepo.data;
   var processedRepo = {};
@@ -55,7 +60,23 @@ export const getRepoFiles = (repoName, branch) => async (dispatch) => {
     processedRepo,
     branch
   );
-  dispatch(storeRepoFiles(processedFiles));
+  await dispatch(storeRepoFiles(processedFiles));
+  await dispatch(
+    successNotification(`${repoName} files retrieved successfully!`)
+  );
+  await dispatch(reloadDiagram(true));
+};
+
+export const getPublicRepoFiles = (repoName, url) => async (dispatch) => {
+  await dispatch(
+    loadingNotification(`Retrieving ${repoName} files from GitHub ...`)
+  );
+  const processedFiles = await getPublicRepo(url);
+  await dispatch(storeRepoFiles(processedFiles));
+  await dispatch(
+    successNotification(`${repoName} files retrieved successfully!`)
+  );
+  await dispatch(reloadDiagram(true));
 };
 
 export function fetchRepoFiles() {

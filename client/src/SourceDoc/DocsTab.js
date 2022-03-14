@@ -62,8 +62,10 @@ export default function DocsTab(props) {
 
   const handleDoneOrEditClick = () => {
     if (isEditing) {
-      setWiki(selectedEL.data.wiki);
-      setNewLabel(selectedEL.data.label);
+      if (selectedEL?.data?.wiki) setWiki(selectedEL.data.wiki);
+      else setWiki("");
+      if (selectedEL?.data?.label) setNewLabel(selectedEL.data.label);
+      else setNewLabel("");
     }
     setIsEditing(!isEditing);
   };
@@ -136,7 +138,10 @@ export default function DocsTab(props) {
       )}
 
       <Typography variant="h6">
-        <a href={openArtifact && openArtifact.html_url} target="_blank"> source code link </a>
+        <a href={openArtifact && openArtifact.html_url} target="_blank">
+          {" "}
+          source code link{" "}
+        </a>
       </Typography>
       <Typography my={1} variant="h6">
         Wiki
