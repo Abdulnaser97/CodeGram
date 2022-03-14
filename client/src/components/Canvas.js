@@ -747,8 +747,18 @@ export function useReactFlowWrapper({
 
   useEffect(() => {
     if (isLoadTemplateDiagram) {
-      setElements(template.elements);
-
+      // loading the node handler functions into the nodes as
+      // actual compiled functions
+      setElements(
+        template.elements.map((el) => {
+          el.data = {
+            ...el.data,
+            nodeInputHandler: nodeInputHandler,
+            nodeLinkHandler: nodeLinkHandler,
+          };
+          return el;
+        })
+      );
       dispatch(loadTemplateDiagram(false));
       dispatch(reloadDiagram(false));
     }
@@ -807,6 +817,8 @@ export function useReactFlowWrapper({
               setElements,
               isReloadDiagram,
               dispatch,
+              nodeInputHandler,
+              nodeLinkHandler,
             }}
           />
         </ReactFlow>
@@ -918,6 +930,8 @@ export function ReactFlowStoreInterface({
   setElements,
   isReloadDiagram,
   dispatch,
+  nodeInputHandler,
+  nodeLinkHandler,
 }) {
   // Uncomment below to view reactFlowState
   //const reactFlowState = useStoreState((state) => state);
@@ -927,7 +941,23 @@ export function ReactFlowStoreInterface({
   useEffect(() => {
     if (RFState && RFState.RFState.position && isReloadDiagram) {
       const [x = 0, y = 0] = RFState.RFState.position;
-      setElements(RFState.RFState.elements || []);
+      if (RFState?.RFState?.elements) {
+        // loading the node handler functions into the nodes as
+        // actual compiled functions
+        setElements(
+          RFState.RFState.elements.map((el) => {
+            el.data = {
+              ...el.data,
+              nodeInputHandler: nodeInputHandler,
+              nodeLinkHandler: nodeLinkHandler,
+            };
+            return el;
+          })
+        );
+      } else {
+        setElements([]);
+      }
+
       transform({ x, y, zoom: RFState.RFState.zoom || 0 });
       dispatch(reloadDiagram(false));
     }

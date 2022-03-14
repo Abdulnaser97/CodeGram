@@ -48,11 +48,8 @@ const CustomNodeComponent = (props) => {
   );
   const [selected, setSelected] = useState("");
   const [isEditing, setIsEditing] = useState(true);
-  const editRef = useRef(null);
   const [handleSize, setHandleSize] = useState(Math.sqrt(height + width));
 
-  const [newNodeName, setNewNodeName] = useState("");
-  const [EBStyle, setEBStyle] = useState({ display: "none" });
   useEffect(() => {
     if (props.selected) {
       if (props.data.type === "FileNode") setSelected("highlightedNode");
@@ -85,33 +82,28 @@ const CustomNodeComponent = (props) => {
   }, [props.data]);
 
   return (
-    <div
-      onMouseEnter={(e) => {
-        setEBStyle({ display: "block" });
-      }}
-      onMouseLeave={(e) => {
-        setEBStyle({ display: "none" });
-      }}
-    >
-      <div
-        style={EBStyle}
-        className="node-button corner"
-        onClick={(event) => {
-          editButtonHandler(event);
-        }}
-      >
+    <div>
+      {props.selected && (
         <div
-          style={{
-            marginTop: `-${handleSize / 3}px`,
-            marginRight: `-${handleSize / 3}px`,
-            width: `${handleSize * 1.2}px`,
-            height: `${handleSize * 1.2}px`,
-            borderRadius: `${handleSize * 1.2}px`,
+          className="node-button corner"
+          onClick={(event) => {
+            editButtonHandler(event);
           }}
         >
-          <PlusSign className="PlusSign" />
+          <div
+            style={{
+              marginTop: `-${handleSize * 1.1}px`,
+              marginRight: `-${handleSize * 1.1}px`,
+              width: `${handleSize * 1.1}px`,
+              height: `${handleSize * 1.1}px`,
+              borderRadius: `${handleSize * 1.1}px`,
+            }}
+          >
+            <PlusSign className="PlusSign" />
+          </div>
         </div>
-      </div>
+      )}
+
       <Resizable
         className={`${props.data.type} ${selected}`}
         size={{ width, height }}
@@ -139,6 +131,8 @@ const CustomNodeComponent = (props) => {
 
           ref.className = `${props.data.type}`;
         }}
+        minWidth={60}
+        minHeight={30}
         style={{
           "border-radius": borderRadius,
         }}
@@ -274,7 +268,6 @@ const WrapperNodeComponent = (props) => {
   );
   const [selected, setSelected] = useState("");
   const [handleSize, setHandleSize] = useState(Math.sqrt(height + width));
-  const [EBStyle, setEBStyle] = useState({ display: "none" });
   const [isEditing, setIsEditing] = useState(true);
 
   useEffect(() => {
@@ -309,33 +302,28 @@ const WrapperNodeComponent = (props) => {
   }
 
   return (
-    <div
-      onMouseEnter={(e) => {
-        setEBStyle({ display: "block" });
-      }}
-      onMouseLeave={(e) => {
-        setEBStyle({ display: "none" });
-      }}
-    >
-      <div
-        style={EBStyle}
-        className="node-button corner"
-        onClick={(event) => {
-          editButtonHandler(event);
-        }}
-      >
+    <div>
+      {props.selected && (
         <div
-          style={{
-            marginTop: `-${handleSize / 3}px`,
-            marginRight: `-${handleSize / 3}px`,
-            width: `${handleSize * 1.2}px`,
-            height: `${handleSize * 1.2}px`,
-            borderRadius: `${handleSize * 1.2}px`,
+          className="node-button corner"
+          onClick={(event) => {
+            editButtonHandler(event);
           }}
         >
-          <PlusSign className="PlusSign" />
+          <div
+            style={{
+              marginTop: `-${handleSize * 1.1}px`,
+              marginRight: `-${handleSize * 1.1}px`,
+              width: `${handleSize * 1.1}px`,
+              height: `${handleSize * 1.1}px`,
+              borderRadius: `${handleSize * 1.1}px`,
+            }}
+          >
+            <PlusSign className="PlusSign" />
+          </div>
         </div>
-      </div>
+      )}
+
       <Resizable
         className={`${props.data.type} ${selected}`}
         size={{ width, height }}
@@ -501,7 +489,6 @@ const FolderNodeComponent = (props) => {
   );
   const [selected, setSelected] = useState("");
   const [handleSize, setHandleSize] = useState(Math.sqrt(height + width));
-  const [EBStyle, setEBStyle] = useState({ display: "none" });
   const [isEditing, setIsEditing] = useState(true);
 
   useEffect(() => {
@@ -540,33 +527,28 @@ const FolderNodeComponent = (props) => {
   }, [props.data]);
 
   return (
-    <div
-      onMouseEnter={(e) => {
-        setEBStyle({ display: "block" });
-      }}
-      onMouseLeave={(e) => {
-        setEBStyle({ display: "none" });
-      }}
-    >
-      <div
-        style={EBStyle}
-        className="node-button corner"
-        onClick={(event) => {
-          editButtonHandler(event);
-        }}
-      >
+    <div>
+      {props.selected && (
         <div
-          style={{
-            marginTop: `-${handleSize / 3}px`,
-            marginRight: `-${handleSize / 3}px`,
-            width: `${handleSize * 1.2}px`,
-            height: `${handleSize * 1.2}px`,
-            borderRadius: `${handleSize * 1.2}px`,
+          className="node-button corner"
+          onClick={(event) => {
+            editButtonHandler(event);
           }}
         >
-          <PlusSign className="PlusSign" />
+          <div
+            style={{
+              marginTop: `-${handleSize * 1.1}px`,
+              marginRight: `-${handleSize * 1.1}px`,
+              width: `${handleSize * 1.1}px`,
+              height: `${handleSize * 1.1}px`,
+              borderRadius: `${handleSize * 1.1}px`,
+            }}
+          >
+            <PlusSign className="PlusSign" />
+          </div>
         </div>
-      </div>
+      )}
+
       <Resizable
         className={`${props.data.type} ${selected}`}
         size={{ width, height }}

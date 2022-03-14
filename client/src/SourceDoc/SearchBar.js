@@ -27,7 +27,7 @@ function SearchBar({ handleSearch, setTabValue }) {
             fontSize: "14px",
             outline: "none",
             fontWeight: theme.typography.fontWeightBold,
-            border: `1px solid ${theme.palette.primary.main}`,
+            border: `1px solid ${theme.palette.primary.darkestGrey}`,
             color: theme.palette.primary.darkestGrey,
           }}
         />
