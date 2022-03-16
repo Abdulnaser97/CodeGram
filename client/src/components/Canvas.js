@@ -96,13 +96,11 @@ export function useReactFlowWrapper({
       sourceDocTab: state.repoFiles.sourceDocTab,
     };
   });
-  console.log(state);
 
   const nodes = useStoreState((state) => state.nodes);
 
   const [elements, setElements] = useState(initialElements);
   const [nodeName, setNodeName] = useState("");
-  console.log(elements);
   // Selected node
   const [selectedEL, setSelectedEL] = useState(initialElements[0]);
   const yPos = useRef(0);
@@ -306,8 +304,6 @@ export function useReactFlowWrapper({
     setSelectedNodeEvent(null);
     setContextFiles(null);
     setNodeName("");
-    console.log("closing");
-    console.log("rfInstance", rfInstance);
   };
 
   const handlePaneContextMenu = (event) => {
@@ -425,9 +421,6 @@ export function useReactFlowWrapper({
     if (connectionStarted && !floatTargetHandle) {
       node.data.floatTargetHandle = true;
       setFloatTargetHandle(true);
-      console.log(
-        "on Mouse Enter and connection started and NOT float target handle"
-      );
     }
   };
 
@@ -435,7 +428,6 @@ export function useReactFlowWrapper({
     if (!connectionStarted && floatTargetHandle) {
       node.data.floatTargetHandle = false;
       setFloatTargetHandle(false);
-      console.log("on Mouse Move");
     }
   };
 
@@ -498,8 +490,7 @@ export function useReactFlowWrapper({
         nodeInputHandler: nodeInputHandler,
         nodeLinkHandler: nodeLinkHandler,
       };
-      // console.log("newNode is: ", newNode);
-      // setElements((els) => els.concat(newNode));
+
       setElements([...elements, newNode]);
       dispatch(addNodeToArray(newNode));
     }
@@ -508,8 +499,6 @@ export function useReactFlowWrapper({
     }
   };
 
-  // console.log(selectedEL);
-  // console.log(repository);
   const keydownHandler = (e) => {
     // Ctrl + C (Cmd + C) for copy
     if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {

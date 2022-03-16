@@ -324,8 +324,6 @@ function SourceDoc(props) {
         const path = props.data.openArtifact
           ? props.data.openArtifact.path
           : null;
-        console.log("selectedEl, props.data", props.data);
-        console.log("state", state);
 
         // only set code in Code Tab if openArtifact is a file
         if (props.data.openArtifact.type == "file") {
