@@ -312,23 +312,6 @@ function App() {
     setLoggedIn(false);
   };
 
-  const printNodesArr = () => {
-    console.log(`nodesArr:`);
-    console.log(nodesArr);
-    const jsonNodes = JSON.stringify(nodesArr);
-    console.log("JSON String:");
-    console.log(jsonNodes);
-
-    const fs = require("browserify-fs");
-    fs.writeFile("newNodes.txt", jsonNodes, { flag: "w+" }, (err) => {
-      if (err) {
-        console.log("Error writing file", err);
-      } else {
-        console.log("Successfully wrote file");
-      }
-    });
-  };
-
   // Save Diagram: Push redux store content to github repo
   const onSave = useCallback(async () => {
     if (rfInstance) {
@@ -595,7 +578,6 @@ function App() {
           functions={{
             addNode: addNode,
             deleteNode: onElementsRemove, //TODO: Add deleteNode function to DELETE NODE button(?)
-            printNodesArr: printNodesArr,
             getPRContent: getPRContent,
             handleName: handleName,
             setSelectedEL: setSelectedEL,
