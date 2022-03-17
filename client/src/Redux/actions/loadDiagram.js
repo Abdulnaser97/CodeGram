@@ -25,7 +25,7 @@ export const loadDiagram = (repoFiles) => async (dispatch) => {
         // dispatch notification diagram Found
         dispatch(successNotification(`Diagram Found!`));
         // Populate nodesZIndex array
-        const nodesZIndex = populateZIndexArr(response.data.elements);
+        const nodesZIndex = populateZIndexArr(response.data.nodes);
 
         dispatch(
           loadDiagramToStore({ nodes: response.data, nodesZIndex: nodesZIndex })

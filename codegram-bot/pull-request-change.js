@@ -38,9 +38,9 @@ async function handlePullRequestChange(context) {
     diagram = await JSON.parse(diagram);
 
     let prFiles = new Set(feedback.files);
-    diagram.elements.forEach((element) => {
-      if (element.type && element.type === "FileNode") {
-        let path = element.data.path;
+    diagram.nodes.forEach((nodes) => {
+      if (nodes.type && nodes.type === "FileNode") {
+        let path = nodes.data.path;
 
         if (prFiles.has(path)) {
           prFiles.delete(path);

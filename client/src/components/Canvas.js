@@ -45,7 +45,7 @@ import {
   reloadDiagram,
 } from "../Redux/actions/loadDiagram";
 
-var initialElements = ControlTemplate.elements;
+var initialElements = ControlTemplate;
 
 const edgeTypes = {
   default: SmoothStepEdge,
@@ -95,11 +95,17 @@ export function useReactFlowWrapper({
     };
   });
 
-  const [nodes, setNodes] = useState(initialElements.nodes);
-  const [edges, setEdges] = useState(initialElements.edges);
+  const [nodes, setNodes] = useState(
+    initialElements.nodes ? initialElements.nodes : []
+  );
+  const [edges, setEdges] = useState(
+    initialElements.edges ? initialElements.edges : []
+  );
   const [nodeName, setNodeName] = useState("");
   // Selected node
-  const [selectedEL, setSelectedEL] = useState(initialElements[0]);
+  const [selectedEL, setSelectedEL] = useState(
+    initialElements.nodes ? initialElements.nodes[0] : null
+  );
   const yPos = useRef(0);
   const [rfInstance, setRfInstance] = useState(null);
   const [connectionStarted, setConnectionStarted] = useState(false);
@@ -748,7 +754,7 @@ export function useReactFlowWrapper({
       // if edge, use setEdges
       // I juest separated setElements to setNodes and setEdges
       setNodes(
-        template.elements.nodes.map((el) => {
+        template.nodes.map((el) => {
           el.data = {
             ...el.data,
             nodeInputHandler: nodeInputHandler,
@@ -759,7 +765,7 @@ export function useReactFlowWrapper({
       );
 
       setEdges(
-        template.elements.edges.map((el) => {
+        template.edges.map((el) => {
           el.data = {
             ...el.data,
             nodeInputHandler: nodeInputHandler,
@@ -957,12 +963,12 @@ export function ReactFlowStoreInterface({
   useEffect(() => {
     if (RFState && RFState.RFState.position && isReloadDiagram) {
       const [x = 0, y = 0] = RFState.RFState.position;
-      if (RFState?.RFState?.elements.nodes) {
+      if (RFState?.RFState?.nodes) {
         // loading the node handler functions into the nodes as
         // actual compiled functions
         // TODO: need to test if this works
         setNodes(
-          RFState.RFState.elements.nodes.map((el) => {
+          RFState.RFState.nodes.map((el) => {
             el.data = {
               ...el.data,
               nodeInputHandler: nodeInputHandler,
@@ -974,9 +980,9 @@ export function ReactFlowStoreInterface({
       } else {
         setNodes([]);
       }
-      if (RFState?.RFState?.elements.edges) {
+      if (RFState?.RFState?.edges) {
         setEdges(
-          RFState.RFState.elements.edges.map((el) => {
+          RFState.RFState.edges.map((el) => {
             el.data = {
               ...el.data,
               nodeInputHandler: nodeInputHandler,

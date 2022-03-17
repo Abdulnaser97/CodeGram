@@ -37,7 +37,7 @@ export const nodesReducer = (state = initialState, action) => {
     case LOAD_DIAGRAM_TO_STORE:
       return {
         ...state,
-        nodesArr: action.payload.nodes.elements,
+        nodesArr: action.payload.nodes.nodes,
         nodesZIndex: action.payload.nodesZIndex,
         isLoadingDiagram: false,
       };
