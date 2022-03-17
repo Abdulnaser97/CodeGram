@@ -10,14 +10,14 @@ import {
 } from "../canvas/custom_node";
 import ReactFlow, {
   addEdge,
-  removeElements,
-  useZoomPanHelper,
-  ArrowHeadType,
-  useStoreState,
+  useReactFlow,
+  MarkerType,
   SmoothStepEdge,
   StraightEdge,
   StepEdge,
-  useStoreActions,
+  applyNodeChanges,
+  applyEdgeChanges,
+  useStore,
 } from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import {
@@ -80,14 +80,12 @@ export function useReactFlowWrapper({
   const {
     RFState,
     nodesZIndex,
-    state,
     repository,
     isLoadTemplateDiagram,
     isReloadDiagram,
     sourceDocTab,
   } = useSelector((state) => {
     return {
-      state: state,
       RFState: state.RFState,
       nodesZIndex: state.nodes.nodesZIndex,
       repository: state.repoFiles.repoFiles,
@@ -97,9 +95,8 @@ export function useReactFlowWrapper({
     };
   });
 
-  const nodes = useStoreState((state) => state.nodes);
-
-  const [elements, setElements] = useState(initialElements);
+  const [nodes, setNodes] = useState(initialElements.nodes);
+  const [edges, setEdges] = useState(initialElements.edges);
   const [nodeName, setNodeName] = useState("");
   // Selected node
   const [selectedEL, setSelectedEL] = useState(initialElements[0]);
@@ -111,17 +108,12 @@ export function useReactFlowWrapper({
   const [clipBoard, setClipBoard] = useState(null);
   const [selectedNodeEvent, setSelectedNodeEvent] = useState(null);
   const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
-  const { project } = useZoomPanHelper();
+  const { project } = useReactFlow();
   const [tabValue, setTabValue] = useState(0);
   const [nameFlag, setNameFlag] = useState(false);
   const [newNodeId, setNewNodeId] = useState(null);
   const [text, setText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-
-  // react flow functions
-  const setSelectedElements = useStoreActions(
-    (actions) => actions.setSelectedElements
-  );
 
   // Projects event click position to RF coordinates
   function calculatePosition(
@@ -222,10 +214,12 @@ export function useReactFlowWrapper({
         animated: true,
       };
       dispatch(addNodeToArray(newNode));
-      setElements((els) => els.concat(newNode));
+      // TODO: Change to setNodes((ns) => applyNodeChanges(changes, ns))
+      // Need to figure out the changes type for adding a node
+      setNodes((ns) => ns.concat(newNode));
       setNewNodeId(newNode.id);
     },
-    [setElements, nodeName, dispatch, project, setSelectedElements]
+    [setNodes, nodeName, dispatch, project]
   );
 
   // Add node function
@@ -259,10 +253,10 @@ export function useReactFlowWrapper({
         animated: true,
       };
       dispatch(addNodeToArray(newText));
-      setElements((els) => els.concat(newText));
+      setNodes((ns) => ns.concat(newText));
       setNewNodeId(newText.id);
     },
-    [setElements, nodeName, dispatch, project, setSelectedElements]
+    [setNodes, nodeName, dispatch, project]
   );
 
   const handleContextMenu = (event, node) => {
@@ -349,29 +343,31 @@ export function useReactFlowWrapper({
     }
   };
 
-  // Delete Node
-  const onElementsRemove = useCallback(
-    (elementsToRemove) => {
-      if (elementsToRemove.length === 0) {
-        console.log("nothing selected");
-        return;
-      }
-      dispatch(deleteNodeFromArray(elementsToRemove));
-      setOpenArtifact("");
-      setElements((els) => removeElements(elementsToRemove, els));
-    },
-    [setElements, dispatch]
+  const onNodesChange = useCallback(
+    // TODO: determine in the change===REMOVE then use the code below
+    //dispatch(deleteNodeFromArray(elementsToRemove));
+    //      setOpenArtifact("");
+
+    (changes) => setNodes((ns) => applyNodeChanges(changes, ns)),
+    [setNodes]
+  );
+  const onEdgesChange = useCallback(
+    // TODO: determine in the change===REMOVE then use the code below
+    //dispatch(deleteNodeFromArray(elementsToRemove));
+    //      setOpenArtifact("");
+    (changes) => setEdges((es) => applyEdgeChanges(changes, es)),
+    [setEdges]
   );
 
-  const onConnect = (params) => {
-    setElements((els) =>
+  const onConnect = useCallback((connection) => {
+    setEdges((eds) =>
       addEdge(
         // TODO : lookinto styling floating edges  and smoothstep
         {
-          ...params,
+          ...connection,
           id: getNodeId(),
           type: "floating",
-          arrowHeadType: ArrowHeadType.Arrow,
+          MarkerType: MarkerType.Arrow,
           data: {
             label: "new label",
             wiki: "",
@@ -381,15 +377,15 @@ export function useReactFlowWrapper({
           labelBgStyle: { fill: "#FFCC00", color: "#fff", fillOpacity: 1 },
           labelShowBg: true,
         },
-        els
+        eds
       )
     );
-  };
+  });
 
-  // Updates zIndex of all nodes, this has an O(n^n) complexity TODO: optimize
+  // Updates zIndex of all nodes
   useEffect(() => {
-    setElements((els) =>
-      els.map((el) => {
+    setNodes((ns) =>
+      ns.map((el) => {
         nodesZIndex.forEach((nodeId, index) => {
           if (el.id === nodeId) {
             let newIndex = index + 7;
@@ -438,7 +434,8 @@ export function useReactFlowWrapper({
 
   const onNodeContextMenuDelete = (event) => {
     event.preventDefault();
-    onElementsRemove([selectedEL]);
+    //TODO: Change to onNodeChange or applyNodeChanges and pass in delete change
+    //onElementsRemove([selectedEL]);
     handleContextMenuClose();
   };
 
@@ -491,7 +488,7 @@ export function useReactFlowWrapper({
         nodeLinkHandler: nodeLinkHandler,
       };
 
-      setElements([...elements, newNode]);
+      setNodes([...nodes, newNode]);
       dispatch(addNodeToArray(newNode));
     }
     if (event) {
@@ -520,7 +517,8 @@ export function useReactFlowWrapper({
         document.activeElement.tagName !== "TEXTAREA" &&
         document.activeElement.tagName !== "DIV"
       ) {
-        onElementsRemove([selectedEL]);
+        //TODO: Change to onNodeChange or applyNodeChanges and pass in delete change
+        //onElementsRemove([selectedEL]);
       }
     }
 
@@ -567,7 +565,10 @@ export function useReactFlowWrapper({
     // }
     var oldPath = selectedEL?.data?.path;
     console.log(file.type);
-    setElements((els) =>
+    // TODO: need to check if node or edges
+    // if node, use setNodes
+    // if edge, use setEdges
+    setNodes((els) =>
       els.map((el) => {
         if (el.id === selectedEL.id) {
           // it's important that you create a new object here
@@ -607,7 +608,10 @@ export function useReactFlowWrapper({
   };
 
   const setter = (value) => {
-    setElements((els) =>
+    // TODO: need to check if node or edges
+    // if node, use setNodes
+    // if edge, use setEdges
+    setNodes((els) =>
       els.map((el) => {
         if (el.id === selectedEL.id) {
           el.data = {
@@ -727,7 +731,8 @@ export function useReactFlowWrapper({
     if (newNodeId) {
       const newlyAddedNode = nodes.find((node) => node.id === newNodeId);
       if (newlyAddedNode) {
-        setSelectedElements([newlyAddedNode]);
+        //setSelectedElements([newlyAddedNode]);
+        // TODO: replace with applyNodeChanges
         setSelectedEL(newlyAddedNode);
         setNewNodeId(null);
       }
@@ -738,8 +743,23 @@ export function useReactFlowWrapper({
     if (isLoadTemplateDiagram) {
       // loading the node handler functions into the nodes as
       // actual compiled functions
-      setElements(
-        template.elements.map((el) => {
+      // TODO: need to check if node or edges
+      // if node, use setNodes
+      // if edge, use setEdges
+      // I juest separated setElements to setNodes and setEdges
+      setNodes(
+        template.elements.nodes.map((el) => {
+          el.data = {
+            ...el.data,
+            nodeInputHandler: nodeInputHandler,
+            nodeLinkHandler: nodeLinkHandler,
+          };
+          return el;
+        })
+      );
+
+      setEdges(
+        template.elements.edges.map((el) => {
           el.data = {
             ...el.data,
             nodeInputHandler: nodeInputHandler,
@@ -774,10 +794,12 @@ export function useReactFlowWrapper({
             SignUpComponent: SignUpComponent,
             Text: TextComponent,
           }}
-          elements={elements}
+          nodes={nodes}
+          edges={edges}
           edgeTypes={edgeTypes}
           connectionLineComponent={FloatingConnectionLine}
-          onElementsRemove={onElementsRemove}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onLoad={setRfInstance}
           onElementClick={onElementClick}
@@ -803,7 +825,8 @@ export function useReactFlowWrapper({
           <ReactFlowStoreInterface
             {...{
               RFState,
-              setElements,
+              setNodes,
+              setEdges,
               isReloadDiagram,
               dispatch,
               nodeInputHandler,
@@ -899,11 +922,14 @@ export function useReactFlowWrapper({
         </Menu>
       </div>
     ),
-    elements: elements,
+    nodes: nodes,
+    edges: edges,
     addNode: addNode,
-    setElements: setElements,
+    setNodes: setNodes,
+    setEdges: setEdges,
     setNodeName: setNodeName,
-    onElementsRemove: onElementsRemove,
+    onNodesChange: onNodesChange,
+    onEdgesChange: onEdgesChange,
     initialElements: initialElements,
     selectedEL: selectedEL,
     rfInstance: rfInstance,
@@ -916,25 +942,27 @@ export function useReactFlowWrapper({
 
 export function ReactFlowStoreInterface({
   RFState,
-  setElements,
+  setNodes,
+  setEdges,
   isReloadDiagram,
   dispatch,
   nodeInputHandler,
   nodeLinkHandler,
 }) {
   // Uncomment below to view reactFlowState
-  //const reactFlowState = useStoreState((state) => state);
+  //const reactFlowState = useStore((state) => state);
 
-  const { transform } = useZoomPanHelper();
+  const { setViewport } = useReactFlow();
 
   useEffect(() => {
     if (RFState && RFState.RFState.position && isReloadDiagram) {
       const [x = 0, y = 0] = RFState.RFState.position;
-      if (RFState?.RFState?.elements) {
+      if (RFState?.RFState?.elements.nodes) {
         // loading the node handler functions into the nodes as
         // actual compiled functions
-        setElements(
-          RFState.RFState.elements.map((el) => {
+        // TODO: need to test if this works
+        setNodes(
+          RFState.RFState.elements.nodes.map((el) => {
             el.data = {
               ...el.data,
               nodeInputHandler: nodeInputHandler,
@@ -944,13 +972,27 @@ export function ReactFlowStoreInterface({
           })
         );
       } else {
-        setElements([]);
+        setNodes([]);
+      }
+      if (RFState?.RFState?.elements.edges) {
+        setEdges(
+          RFState.RFState.elements.edges.map((el) => {
+            el.data = {
+              ...el.data,
+              nodeInputHandler: nodeInputHandler,
+              nodeLinkHandler: nodeLinkHandler,
+            };
+            return el;
+          })
+        );
+      } else {
+        setEdges([]);
       }
 
-      transform({ x, y, zoom: RFState.RFState.zoom || 0 });
+      setViewport({ x, y, zoom: RFState.RFState.zoom || 0 });
       dispatch(reloadDiagram(false));
     }
-  }, [RFState, setElements, transform, isReloadDiagram]);
+  }, [RFState, setNodes, setEdges, setViewport, isReloadDiagram]);
 
   return null;
 }

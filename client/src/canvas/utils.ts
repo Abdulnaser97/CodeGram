@@ -1,4 +1,4 @@
-import { Position, ArrowHeadType, Node, XYPosition } from "react-flow-renderer";
+import { Position, MarkerType, Node, XYPosition } from "react-flow-renderer";
 
 // this helper function returns the intersection point
 // of the line between the center of the intersectionNode and the target node
@@ -168,7 +168,7 @@ export function createElements() {
       target: "target",
       source: `${i}`,
       type: "floating",
-      arrowHeadType: ArrowHeadType.Arrow,
+      MarkerType: MarkerType.Arrow,
     });
   }
 

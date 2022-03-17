@@ -2,7 +2,7 @@ import { FC, useMemo, CSSProperties } from "react";
 import {
   EdgeProps,
   getMarkerEnd,
-  useStoreState,
+  useStore,
   getSmoothStepPath,
 } from "react-flow-renderer";
 import { theme } from "../Themes";
@@ -13,12 +13,12 @@ const FloatingEdge: FC<EdgeProps> = ({
   id,
   source,
   target,
-  arrowHeadType,
+  MarkerType,
   markerEndId,
   style,
 }) => {
-  const nodes = useStoreState((state) => state.nodes);
-  const markerEnd = getMarkerEnd(arrowHeadType, markerEndId);
+  const nodes = useStore((state) => state.nodes);
+  const markerEnd = getMarkerEnd(MarkerType, markerEndId);
 
   const sourceNode = useMemo(
     () => nodes.find((n) => n.id === source),

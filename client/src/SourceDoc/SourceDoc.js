@@ -7,7 +7,6 @@ import { Resizable } from "re-resizable";
 
 // third party dependecnies
 import PropTypes from "prop-types";
-import { useStoreActions } from "react-flow-renderer";
 
 // react
 import { useState, useEffect } from "react";
@@ -83,10 +82,6 @@ function SourceDoc(props) {
 
   const [isEditing, setIsEditing] = useState("");
 
-  // react flow functions
-  const setSelectedElements = useStoreActions(
-    (actions) => actions.setSelectedElements
-  );
   // console.log(props.data.selectedEL)
   // resizeable state varaiables
   const [width, setWidth] = useState("40vw");
@@ -129,10 +124,12 @@ function SourceDoc(props) {
           node.data ? node.data.path === props.data.openArtifact.path : false
         );
         if (el) {
-          setSelectedElements(el);
+          // TODO: replace with applyNodeChanges
+          //setSelectedElements(el);
           props.functions.setSelectedEL(el);
         } else {
-          setSelectedElements([]);
+          // TODO: replace with applyNodeChanges
+          //setSelectedElements([]);
         }
       }
     } catch (e) {
