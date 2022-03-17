@@ -424,7 +424,7 @@
       "target": "randomnode_1642555106668",
       "targetHandle": "target-handle-randomnode_1642555106668",
       "type": "floating",
-      "arrowHeadType": "arrow",
+      "MarkerType": "arrow",
       "data": {
         "label": "",
         "wiki": ""
@@ -440,7 +440,7 @@
       "target": "randomnode_1643572180947",
       "targetHandle": "target-handle-randomnode_1643572180947",
       "type": "floating",
-      "arrowHeadType": "arrow",
+      "MarkerType": "arrow",
       "data": {
         "label": "",
         "wiki": ""
@@ -456,7 +456,7 @@
       "target": "randomnode_1643572424203",
       "targetHandle": "target-handle-randomnode_1643572424203",
       "type": "floating",
-      "arrowHeadType": "arrow",
+      "MarkerType": "arrow",
       "data": {
         "label": "",
         "wiki": ""
@@ -472,7 +472,7 @@
       "target": "randomnode_1643572430780",
       "targetHandle": "target-handle-randomnode_1643572430780",
       "type": "floating",
-      "arrowHeadType": "arrow",
+      "MarkerType": "arrow",
       "data": {
         "label": "",
         "wiki": ""
@@ -488,7 +488,7 @@
       "target": "randomnode_1643572438432",
       "targetHandle": "target-handle-randomnode_1643572438432",
       "type": "floating",
-      "arrowHeadType": "arrow",
+      "MarkerType": "arrow",
       "data": {
         "label": "",
         "wiki": ""
@@ -504,7 +504,7 @@
       "target": "randomnode_1643572451712",
       "targetHandle": "target-handle-randomnode_1643572451712",
       "type": "floating",
-      "arrowHeadType": "arrow",
+      "MarkerType": "arrow",
       "data": {
         "label": "",
         "wiki": ""
@@ -520,7 +520,7 @@
       "target": "randomnode_1643572468127",
       "targetHandle": "target-handle-randomnode_1643572468127",
       "type": "floating",
-      "arrowHeadType": "arrow",
+      "MarkerType": "arrow",
       "data": {
         "label": "",
         "wiki": ""
@@ -536,7 +536,7 @@
       "target": "randomnode_1643573133853",
       "targetHandle": "target-handle-randomnode_1643573133853",
       "type": "floating",
-      "arrowHeadType": "arrow",
+      "MarkerType": "arrow",
       "data": {
         "label": "",
         "wiki": ""
@@ -552,7 +552,7 @@
       "target": "randomnode_1643573133853",
       "targetHandle": "target-handle-randomnode_1643573133853",
       "type": "floating",
-      "arrowHeadType": "arrow",
+      "MarkerType": "arrow",
       "data": {
         "label": "",
         "wiki": ""
@@ -568,7 +568,7 @@
       "target": "randomnode_1642555128888",
       "targetHandle": "target-handle-randomnode_1642555128888",
       "type": "floating",
-      "arrowHeadType": "arrow",
+      "MarkerType": "arrow",
       "data": {
         "label": "",
         "wiki": ""

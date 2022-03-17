@@ -1,4 +1,4 @@
-import { Position, ArrowHeadType, Node, XYPosition } from "react-flow-renderer";
+import { Position, MarkerType, Node, XYPosition } from "react-flow-renderer";
 
 // this helper function returns the intersection point
 // of the line between the center of the intersectionNode and the target node
@@ -11,11 +11,11 @@ function getNodeIntersection(
     width: intersectionNodeWidth,
     height: intersectionNodeHeight,
     position: intersectionNodePosition,
-  } = intersectionNode.__rf;
-  const targetPosition = targetNode.__rf.position;
+  } = intersectionNode;
+  const targetPosition = targetNode.position;
 
-  const w = intersectionNodeWidth / 2;
-  const h = intersectionNodeHeight / 2;
+  const w = (intersectionNodeWidth ?? 0) / 2;
+  const h = (intersectionNodeHeight ?? 0) / 2;
 
   const x2 = intersectionNodePosition.x + w;
   const y2 = intersectionNodePosition.y + h;
@@ -42,19 +42,19 @@ function getMiddleNodeIntersection(
     width: intersectionNodeWidth,
     height: intersectionNodeHeight,
     position: intersectionNodePosition,
-  } = intersectionNode.__rf;
+  } = intersectionNode;
 
   const {
     width: targetNodeWidth,
     height: targetNodeHeight,
     position: targetNodePosition,
-  } = targetNode.__rf;
+  } = targetNode;
 
-  const iw = intersectionNodeWidth / 2;
-  const ih = intersectionNodeHeight / 2;
+  const iw = (intersectionNodeWidth ?? 0) / 2;
+  const ih = (intersectionNodeHeight ?? 0) / 2;
 
-  const tw = targetNodeWidth / 2;
-  const th = targetNodeHeight / 2;
+  const tw = (targetNodeWidth ?? 0) / 2;
+  const th = (targetNodeHeight ?? 0) / 2;
 
   const x2 = intersectionNodePosition.x + iw;
   const y2 = intersectionNodePosition.y + ih;
@@ -90,22 +90,21 @@ function getMiddleNodeIntersection(
 
 // returns the position (top,right,bottom or right) passed node compared to the intersection point
 function getEdgePosition(node: Node, intersectionPoint: XYPosition) {
-  const n = { ...node.__rf.position, ...node.__rf };
+  const n = { ...node.position, ...node };
   const nx = Math.round(n.x);
   const ny = Math.round(n.y);
   const px = Math.round(intersectionPoint.x);
   const py = Math.round(intersectionPoint.y);
-
   if (px <= nx + 1) {
     return Position.Left;
   }
-  if (px >= nx + n.width - 1) {
+  if (px >= nx + (n.width ?? 0) - 1) {
     return Position.Right;
   }
   if (py <= ny + 1) {
     return Position.Top;
   }
-  if (py >= n.y + n.height - 1) {
+  if (py >= n.y + (n.height ?? 0) - 1) {
     return Position.Bottom;
   }
 
@@ -168,7 +167,7 @@ export function createElements() {
       target: "target",
       source: `${i}`,
       type: "floating",
-      arrowHeadType: ArrowHeadType.Arrow,
+      MarkerType: MarkerType.Arrow,
     });
   }
 

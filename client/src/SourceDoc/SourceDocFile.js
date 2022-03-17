@@ -4,7 +4,7 @@ import Folder from "@mui/icons-material/Folder";
 import FolderIcon from "@mui/icons-material/Folder";
 import { mapDispatchToProps, mapStateToProps } from "../Redux/configureStore";
 import { connect } from "react-redux";
-import { useStore, useZoomPanHelper } from "react-flow-renderer";
+import { useStore, useReactFlow } from "react-flow-renderer";
 
 // export default function SourceDocFile(props) {
 function SourceDocFile(props) {
@@ -13,7 +13,7 @@ function SourceDocFile(props) {
   var { file } = props;
 
   const store = useStore();
-  const { fitBounds } = useZoomPanHelper();
+  const { fitBounds } = useReactFlow();
   const { nodes } = store.getState();
 
   if (!file) {

@@ -121,7 +121,7 @@
       "target": "randomnode_2",
       "targetHandle": "top-handle-randomnode_2",
       "type": "floating",
-      "arrowHeadType": "arrow",
+      "MarkerType": "arrow",
       "data": {
         "label": "",
         "wiki": ""
@@ -134,7 +134,7 @@
       "target": "randomnode_3",
       "targetHandle": "top-handle-randomnode_3",
       "type": "floating",
-      "arrowHeadType": "arrow",
+      "MarkerType": "arrow",
       "data": {
         "label": "",
         "wiki": ""
