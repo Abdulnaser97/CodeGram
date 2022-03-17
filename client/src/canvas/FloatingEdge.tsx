@@ -1,32 +1,25 @@
 import { FC, useMemo, CSSProperties } from "react";
 import {
   EdgeProps,
-  getMarkerEnd,
   useStore,
   getSmoothStepPath,
+  ReactFlowState,
 } from "react-flow-renderer";
-import { theme } from "../Themes";
 
 import { getEdgeParams } from "./utils";
 
-const FloatingEdge: FC<EdgeProps> = ({
-  id,
-  source,
-  target,
-  MarkerType,
-  markerEndId,
-  style,
-}) => {
-  const nodes = useStore((state) => state.nodes);
-  const markerEnd = getMarkerEnd(MarkerType, markerEndId);
+const nodeSelector = (s: ReactFlowState) => s.nodeInternals;
+
+const FloatingEdge: FC<EdgeProps> = ({ id, source, target, style }) => {
+  const nodeInternals = useStore(nodeSelector);
 
   const sourceNode = useMemo(
-    () => nodes.find((n) => n.id === source),
-    [source, nodes]
+    () => nodeInternals.get(source),
+    [source, nodeInternals]
   );
   const targetNode = useMemo(
-    () => nodes.find((n) => n.id === target),
-    [target, nodes]
+    () => nodeInternals.get(target),
+    [target, nodeInternals]
   );
 
   if (!sourceNode || !targetNode) {
@@ -54,7 +47,6 @@ const FloatingEdge: FC<EdgeProps> = ({
         id={id}
         className="react-flow__edge-path"
         d={d}
-        markerEnd={markerEnd}
         style={style as CSSProperties}
       />
     </>

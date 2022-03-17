@@ -20,6 +20,8 @@ const FloatingConnectionLine: FC<ConnectionLineComponentProps> = ({
 
   const targetNode = {
     id: "connection-target",
+    position: { x: targetX, y: targetY },
+    data: {}, //TODO: had to add the data field to prevent error
     __rf: { width: 1, height: 1, position: { x: targetX, y: targetY } },
   } as Node;
 
