@@ -1,5 +1,5 @@
 {
-  "elements": [
+  "nodes": [
     {
       "id": "1",
       "type": "input",
@@ -415,7 +415,9 @@
       "style": {
         "zIndex": "7"
       }
-    },
+    }
+  ],
+  "edges": [
     {
       "source": "randomnode_1643572180947",
       "sourceHandle": "top-handle-randomnode_1643572180947",
