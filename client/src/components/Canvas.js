@@ -19,6 +19,7 @@ import ReactFlow, {
   applyEdgeChanges,
   useStore,
 } from "react-flow-renderer";
+// import MarkerType from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import {
   addNodeToArray,
@@ -29,8 +30,8 @@ import {
 
 import { updateRepoFile } from "../Redux/actions/repoFiles";
 
-import FloatingEdge from "../canvas/FloatingEdge.tsx";
-import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
+import FloatingEdge from "../canvas/FloatingEdge.js";
+import FloatingConnectionLine from "../canvas/FloatingConnectionLine.js";
 import SourceDocFile from "../SourceDoc/SourceDocFile";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -373,7 +374,7 @@ export function useReactFlowWrapper({
           ...connection,
           id: getNodeId(),
           type: "floating",
-          MarkerType: MarkerType.Arrow,
+          markerEnd: {type: MarkerType.Arrow},
           data: {
             label: "new label",
             wiki: "",
