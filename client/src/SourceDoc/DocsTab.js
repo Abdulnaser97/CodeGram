@@ -13,10 +13,9 @@ export default function DocsTab(props) {
   const {
     isEditing,
     setIsEditing,
-    renderFiles,
     selectedEL,
     openArtifact,
-    setElements,
+    setNodes,
     setSelectedEL,
   } = props;
 
@@ -33,7 +32,8 @@ export default function DocsTab(props) {
 
   const saveWikiToNode = () => {
     var selEl = null;
-    setElements((els) =>
+    // TODO: changed setElements to setNodes, did not handle the setEdges scenario
+    setNodes((els) =>
       els.map((el) => {
         if (selectedEL && el.id === selectedEL.id) {
           // it's important that you create a new object here

@@ -37,7 +37,7 @@ export const nodesReducer = (state = initialState, action) => {
     case LOAD_DIAGRAM_TO_STORE:
       return {
         ...state,
-        nodesArr: action.payload.nodes.nodes,
+        nodesArr: action.payload.elements.nodes,
         nodesZIndex: action.payload.nodesZIndex,
         isLoadingDiagram: false,
       };
@@ -64,7 +64,7 @@ export const RFStateReducer = (state = RFinitialState, action) => {
     case LOAD_DIAGRAM_TO_STORE:
       return {
         ...state,
-        RFState: action.payload.nodes,
+        RFState: action.payload.elements,
       };
     case LOAD_TEMPLATE_DIAGRAM:
       return {

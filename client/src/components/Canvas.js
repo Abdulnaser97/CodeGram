@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import {
   CustomNodeComponent,
   WrapperNodeComponent,
@@ -17,7 +17,6 @@ import ReactFlow, {
   StepEdge,
   applyNodeChanges,
   applyEdgeChanges,
-  useStore,
 } from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import {
@@ -31,7 +30,6 @@ import { updateRepoFile } from "../Redux/actions/repoFiles";
 
 import FloatingEdge from "../canvas/FloatingEdge.tsx";
 import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
-import SourceDocFile from "../SourceDoc/SourceDocFile";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { Typography } from "@mui/material";
@@ -44,6 +42,7 @@ import {
   loadTemplateDiagram,
   reloadDiagram,
 } from "../Redux/actions/loadDiagram";
+import { errorNotification } from "../Redux/actions/notification";
 
 var initialElements = ControlTemplate;
 
@@ -120,6 +119,23 @@ export function useReactFlowWrapper({
   const [newNodeId, setNewNodeId] = useState(null);
   const [text, setText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+
+  const nodeTypes = useMemo(
+    () => ({
+      default: CustomNodeComponent,
+      FileNode: CustomNodeComponent,
+      DashedShape: WrapperNodeComponent,
+      // CircleShape: FolderNodeComponent,
+      CircleShape: CircleNodeComponent,
+      ShadowBoxShape: FolderNodeComponent,
+      circle: CustomNodeComponent,
+      home: HomeNodeComponent,
+      LinkComponent: LinkComponent,
+      SignUpComponent: SignUpComponent,
+      Text: TextComponent,
+    }),
+    []
+  );
 
   // Projects event click position to RF coordinates
   function calculatePosition(
@@ -787,19 +803,7 @@ export function useReactFlowWrapper({
     render: (
       <div className="canvas">
         <ReactFlow
-          nodeTypes={{
-            default: CustomNodeComponent,
-            FileNode: CustomNodeComponent,
-            DashedShape: WrapperNodeComponent,
-            // CircleShape: FolderNodeComponent,
-            CircleShape: CircleNodeComponent,
-            ShadowBoxShape: FolderNodeComponent,
-            circle: CustomNodeComponent,
-            home: HomeNodeComponent,
-            LinkComponent: LinkComponent,
-            SignUpComponent: SignUpComponent,
-            Text: TextComponent,
-          }}
+          nodeTypes={nodeTypes}
           nodes={nodes}
           edges={edges}
           edgeTypes={edgeTypes}
@@ -807,7 +811,7 @@ export function useReactFlowWrapper({
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
-          onLoad={setRfInstance}
+          onInit={setRfInstance}
           onElementClick={onElementClick}
           snapToGrid
           snapGrid={[15, 15]}
@@ -961,42 +965,51 @@ export function ReactFlowStoreInterface({
   const { setViewport } = useReactFlow();
 
   useEffect(() => {
-    if (RFState && RFState.RFState.position && isReloadDiagram) {
-      const [x = 0, y = 0] = RFState.RFState.position;
-      if (RFState?.RFState?.nodes) {
-        // loading the node handler functions into the nodes as
-        // actual compiled functions
-        // TODO: need to test if this works
-        setNodes(
-          RFState.RFState.nodes.map((el) => {
-            el.data = {
-              ...el.data,
-              nodeInputHandler: nodeInputHandler,
-              nodeLinkHandler: nodeLinkHandler,
-            };
-            return el;
-          })
-        );
-      } else {
-        setNodes([]);
-      }
-      if (RFState?.RFState?.edges) {
-        setEdges(
-          RFState.RFState.edges.map((el) => {
-            el.data = {
-              ...el.data,
-              nodeInputHandler: nodeInputHandler,
-              nodeLinkHandler: nodeLinkHandler,
-            };
-            return el;
-          })
-        );
-      } else {
-        setEdges([]);
-      }
+    try {
+      if (RFState && RFState.RFState.viewport && isReloadDiagram) {
+        const { x, y, zoom } = RFState.RFState.viewport;
+        if (RFState?.RFState?.nodes) {
+          // loading the node handler functions into the nodes as
+          // actual compiled functions
+          // TODO: need to test if this works
+          setNodes(
+            RFState.RFState.nodes.map((el) => {
+              el.data = {
+                ...el.data,
+                nodeInputHandler: nodeInputHandler,
+                nodeLinkHandler: nodeLinkHandler,
+              };
+              return el;
+            })
+          );
+        } else {
+          setNodes([]);
+        }
+        if (RFState?.RFState?.edges) {
+          setEdges(
+            RFState.RFState.edges.map((el) => {
+              el.data = {
+                ...el.data,
+                nodeInputHandler: nodeInputHandler,
+                nodeLinkHandler: nodeLinkHandler,
+              };
+              return el;
+            })
+          );
+        } else {
+          setEdges([]);
+        }
 
-      setViewport({ x, y, zoom: RFState.RFState.zoom || 0 });
-      dispatch(reloadDiagram(false));
+        setViewport({
+          x: x || 0,
+          y: y || 0,
+          zoom: zoom || 0,
+        });
+        dispatch(reloadDiagram(false));
+      }
+    } catch (err) {
+      console.log(err);
+      dispatch(errorNotification(`Error parsing saved diagram!`));
     }
   }, [RFState, setNodes, setEdges, setViewport, isReloadDiagram]);
 

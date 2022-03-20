@@ -1,20 +1,23 @@
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import CodeIcon from "@mui/icons-material/Code";
-import Folder from "@mui/icons-material/Folder";
 import FolderIcon from "@mui/icons-material/Folder";
 import { mapDispatchToProps, mapStateToProps } from "../Redux/configureStore";
 import { connect } from "react-redux";
-import { useStore, useReactFlow } from "react-flow-renderer";
+import { useReactFlow } from "react-flow-renderer";
 
 // export default function SourceDocFile(props) {
 function SourceDocFile(props) {
-  const { addNode, setOpenArtifact, openArtifact, addFileToNode, selectedEL } =
-    props;
+  const {
+    addNode,
+    setOpenArtifact,
+    openArtifact,
+    addFileToNode,
+    selectedEL,
+    nodes,
+  } = props;
   var { file } = props;
 
-  const store = useStore();
   const { fitBounds } = useReactFlow();
-  const { nodes } = store.getState();
 
   if (!file) {
     return <> </>;

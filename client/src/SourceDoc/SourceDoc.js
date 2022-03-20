@@ -154,6 +154,7 @@ function SourceDoc(props) {
             openArtifact={props.data.openArtifact}
             selectedEL={filteredSelectedEL}
             addFileToNode={props.functions.addFileToNode}
+            nodes={props.data.nodes}
           />
         );
       }
@@ -515,7 +516,8 @@ function SourceDoc(props) {
             openArtifact={props.data.openArtifact}
             setIsEditing={setIsEditing}
             renderFiles={renderFiles}
-            setElements={props.functions.setElements}
+            setNodes={props.functions.setNodes}
+            setEdges={props.functions.setEdges}
             setSelectedEL={props.functions.setSelectedEL}
           />
         </TabPanel>

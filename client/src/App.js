@@ -126,8 +126,10 @@ function App() {
   } = useToolBar();
   const {
     render,
+    nodes: nodes,
     addNode,
-    setElements,
+    setNodes: setNodes,
+    setEdges: setEdges,
     setNodeName,
     onElementsRemove,
     initialElements,
@@ -204,7 +206,8 @@ function App() {
 
   // set new repo from drop down menu
   const handleRepoChange = (event) => {
-    setElements(initialElements);
+    setNodes(initialElements.nodes);
+    setEdges(initialElements.edges);
     setRepo(event.target.value);
     setSelectedEL(initialElements[0]);
     setBranch("");
@@ -236,7 +239,8 @@ function App() {
           "https://api.github.com/" + userName + "/" + repoName;
 
         setRepos([...repos, { name: repoName }]);
-        setElements(initialElements);
+        setNodes(initialElements.nodes);
+        setEdges(initialElements.edges);
         dispatch(getPublicRepoFiles(repoName, formattedURL));
         setRepo(repoName);
         setSelectedEL(initialElements[0]);
@@ -256,7 +260,8 @@ function App() {
 
   // set new branch from drop down menu
   const handleBranchChange = (event) => {
-    setElements(initialElements);
+    setNodes(initialElements.nodes);
+    setEdges(initialElements.edges);
     dispatch(getRepoFiles(repo, event.target.value));
     setSelectedEL(initialElements[0]);
     setBranch(event.target.value);
@@ -582,7 +587,8 @@ function App() {
             handleName: handleName,
             setSelectedEL: setSelectedEL,
             setIsOpenSD: setIsOpenSD,
-            setElements: setElements,
+            setNodes: setNodes,
+            setEdges: setEdges,
             setOpenArtifact: setOpenArtifact,
             addFileToNode: addFileToNode,
             setTabValue: setTabValue,
@@ -601,6 +607,7 @@ function App() {
             branch: branch,
             openArtifact: openArtifact,
             tabValue: tabValue,
+            nodes: nodes,
           }}
         />
         <NotifDiagramLoading />

@@ -28,7 +28,10 @@ export const loadDiagram = (repoFiles) => async (dispatch) => {
         const nodesZIndex = populateZIndexArr(response.data.nodes);
 
         dispatch(
-          loadDiagramToStore({ nodes: response.data, nodesZIndex: nodesZIndex })
+          loadDiagramToStore({
+            elements: response.data,
+            nodesZIndex: nodesZIndex,
+          })
         );
         dispatch(setSourceDocTab(0));
       })
