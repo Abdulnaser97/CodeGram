@@ -95,8 +95,23 @@ const FloatingEdge: FC<EdgeProps> = ({
         d={d}
         markerEnd={markerEnd}
         style={style as CSSProperties}
+        fill="#222"
+        stroke= "#222" 
+        strokeWidth={100}
+      
       />
-      {data.hoveredOver && EdgeButton()}
+      {!data.hoveredOver && <text>
+        <textPath
+          href={`#${id}`}
+          style={{ fontSize: '12px' }}
+          startOffset="50%"
+          textAnchor="middle"
+        >
+          {data.label}
+        </textPath>
+      </text>}
+      {data.hoveredOver && <EdgeButton/>}
+      
     </>
   );
 };
