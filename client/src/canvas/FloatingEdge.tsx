@@ -95,9 +95,9 @@ const FloatingEdge: FC<EdgeProps> = ({
         d={d}
         markerEnd={markerEnd}
         style={style as CSSProperties}
-        fill="#222"
-        stroke= "#222" 
-        strokeWidth={100}
+        fill="#767676"
+        stroke= "#767676" 
+        strokeWidth= '20px'
       
       />
       {!data.hoveredOver && <text>
