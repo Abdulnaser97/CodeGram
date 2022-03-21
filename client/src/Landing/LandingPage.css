@@ -2,14 +2,14 @@
   font-size: 1vw;
   width: 11vw;
   border-radius: 3vw;
-  border: 1px solid #ffaea6;
+  border: 1px solid #FF6161;
   background-color: transparent;
-  color: #ffaea6;
+  color: #FF6161;
   font-family: "Poppins-Light";
 }
 
 .SubmitButton:hover {
-  background-color: #ffaea6;
+  background-color: #FF6161;
   color: #fff;
   font-family: "Poppins-Medium";
   cursor: pointer;
@@ -23,7 +23,7 @@
   border-radius: 3vw;
   margin-right: 30px;
   margin-left: 11vw;
-  border: 1px solid #ffaea6;
+  border: 1px solid #FF6161;
   -webkit-transition: 0.1s;
   transition: 0.1s;
   outline: none;
@@ -36,13 +36,13 @@
 }
 
 .EmailInput:focus {
-  border: 2px solid #ffaea6;
+  border: 2px solid #FF6161;
 }
 
 .SubscribeMessage {
   font-family: "Poppins-Medium";
   padding-bottom: 10px;
-  color: #ffaea6;
+  color: #FF6161;
 }
 
 .SubscribeWrapper {

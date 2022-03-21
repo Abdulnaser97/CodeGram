@@ -1,35 +1,35 @@
 .ToolBarButton:hover .Rect {
-  stroke: #ffaea6;
+  stroke: #FF6161;
 }
 
 .ToolBarButton:hover .options {
-  fill: #ffaea6;
+  fill: #FF6161;
 }
 
 .ToolBarButton:hover .TextIcon {
-  fill: #ffaea6;
+  fill: #FF6161;
 }
 
 .ToolBarButton:hover path {
-  fill: #ffaea6;
+  fill: #FF6161;
 }
 
 .PopupButton:hover rect {
-  stroke: #ffaea6;
+  stroke: #FF6161;
 }
 
 .PopupButton:hover .CircleShape {
-  stroke: #ffaea6;
+  stroke: #FF6161;
 }
 
 .ToolBarButton:hover .DashedShape {
-  stroke: #ffaea6;
+  stroke: #FF6161;
 }
 
 .ToolBarButton:hover .ShadowBoxShape,
 .PopupButton:hover .ShadowBoxShape {
-  stroke: #ffaea6;
-  fill: #ffaea6;
+  stroke: #FF6161;
+  fill: #FF6161;
 }
 
 .ShapesGrid {

@@ -45,7 +45,7 @@
   align-items: center;
   z-index: 9999;
   cursor: pointer;
-  border: 1px solid #ffaea6;
+  border: 1px solid #FF6161;
   border-radius: 25px;
 }
 
@@ -53,7 +53,7 @@
   position: relative;
   height: 1px;
   width: 40%;
-  background-color: #ffaea6;
+  background-color: #FF6161;
   border-radius: 6px;
   z-index: 9999;
 }
@@ -63,7 +63,7 @@
 }
 
 .SDMinimizeWrapper:hover {
-  background-color: #ffaea6;
+  background-color: #FF6161;
 }
 
 .search-bar img {
@@ -86,9 +86,9 @@
   padding: 10px;
   padding-left: 33px;
   border-radius: 1vw;
-  color: black;
+  color: none;
 }
 
 .search-input::placeholder {
-  color: grey;
+  color: lightGrey;
 }
