@@ -17,6 +17,7 @@ import ReactFlow, {
   StepEdge,
   applyNodeChanges,
   applyEdgeChanges,
+  MiniMap,
 } from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import {
@@ -36,7 +37,7 @@ import { Typography } from "@mui/material";
 import CanvasFile from "./CanvasFile";
 import { TextComponent } from "../canvas/text";
 
-import template from "../Templates/FullStackTemplate.json";
+// import template from "../Templates/FullStackTemplate.json";
 import ControlTemplate from "../Templates/ControlTemplate.json";
 import {
   loadTemplateDiagram,
@@ -100,6 +101,7 @@ export function useReactFlowWrapper({
   const [edges, setEdges] = useState(
     initialElements.edges ? initialElements.edges : []
   );
+
   const [nodeName, setNodeName] = useState("");
   // Selected node
   const [selectedEL, setSelectedEL] = useState(
@@ -366,18 +368,48 @@ export function useReactFlowWrapper({
   };
 
   const onNodesChange = useCallback(
-    // TODO: determine in the change===REMOVE then use the code below
-    //dispatch(deleteNodeFromArray(elementsToRemove));
-    //      setOpenArtifact("");
+    (changes) => {
+      try {
+        changes.forEach((change) => {
+          switch (change.type) {
+            case "remove":
+              const nodeToRemove = nodes.find((node) => node.id === change.id);
+              dispatch(deleteNodeFromArray([nodeToRemove]));
+              setOpenArtifact("");
+              break;
+            default:
+              break;
+          }
+        });
 
-    (changes) => setNodes((ns) => applyNodeChanges(changes, ns)),
+        setNodes((ns) => applyNodeChanges(changes, ns));
+      } catch (e) {
+        console.log(e);
+      }
+    },
     [setNodes]
   );
+
   const onEdgesChange = useCallback(
-    // TODO: determine in the change===REMOVE then use the code below
-    //dispatch(deleteNodeFromArray(elementsToRemove));
-    //      setOpenArtifact("");
-    (changes) => setEdges((es) => applyEdgeChanges(changes, es)),
+    (changes) => {
+      try {
+        changes.forEach((change) => {
+          switch (change.type) {
+            case "remove":
+              const edgeToRemove = nodes.find((node) => node.id === change.id);
+              dispatch(deleteNodeFromArray([edgeToRemove]));
+              setOpenArtifact("");
+              break;
+            default:
+              break;
+          }
+        });
+
+        setEdges((es) => applyEdgeChanges(changes, es));
+      } catch (e) {
+        console.log(e);
+      }
+    },
     [setEdges]
   );
 
@@ -765,30 +797,30 @@ export function useReactFlowWrapper({
     if (isLoadTemplateDiagram) {
       // loading the node handler functions into the nodes as
       // actual compiled functions
-      // TODO: need to check if node or edges
-      // if node, use setNodes
-      // if edge, use setEdges
-      // I juest separated setElements to setNodes and setEdges
+      // TODO:need to recreate template diagram
+      // then uncomment the stuff below
       setNodes(
-        template.nodes.map((el) => {
-          el.data = {
-            ...el.data,
-            nodeInputHandler: nodeInputHandler,
-            nodeLinkHandler: nodeLinkHandler,
-          };
-          return el;
-        })
+        // template.nodes.map((el) => {
+        //   el.data = {
+        //     ...el.data,
+        //     nodeInputHandler: nodeInputHandler,
+        //     nodeLinkHandler: nodeLinkHandler,
+        //   };
+        //   return el;
+        // })
+        []
       );
 
       setEdges(
-        template.edges.map((el) => {
-          el.data = {
-            ...el.data,
-            nodeInputHandler: nodeInputHandler,
-            nodeLinkHandler: nodeLinkHandler,
-          };
-          return el;
-        })
+        //   template.edges.map((el) => {
+        //     el.data = {
+        //       ...el.data,
+        //       nodeInputHandler: nodeInputHandler,
+        //       nodeLinkHandler: nodeLinkHandler,
+        //     };
+        //     return el;
+        //   })
+        []
       );
       dispatch(loadTemplateDiagram(false));
       dispatch(reloadDiagram(false));
@@ -832,6 +864,13 @@ export function useReactFlowWrapper({
           maxZoom={4}
           onNodeDoubleClick={handleNodeDoubleClick}
         >
+          <MiniMap
+            style={{
+              position: "absolute",
+              left: "30px",
+              borderRadius: "30px",
+            }}
+          />
           <ReactFlowStoreInterface
             {...{
               RFState,
