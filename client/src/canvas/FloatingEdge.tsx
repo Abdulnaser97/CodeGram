@@ -10,7 +10,7 @@ import { getEdgeParams } from "./utils";
 
 const nodeSelector = (s: ReactFlowState) => s.nodeInternals;
 
-const FloatingEdge: FC<EdgeProps> = ({ id, source, target, style }) => {
+const FloatingEdge: FC<EdgeProps> = ({ id, source, target, style, markerEnd }) => {
   const nodeInternals = useStore(nodeSelector);
 
   const sourceNode = useMemo(
@@ -48,6 +48,7 @@ const FloatingEdge: FC<EdgeProps> = ({ id, source, target, style }) => {
         className="react-flow__edge-path"
         d={d}
         style={style as CSSProperties}
+        markerEnd={markerEnd}
       />
     </>
   );

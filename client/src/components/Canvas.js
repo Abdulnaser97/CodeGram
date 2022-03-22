@@ -120,6 +120,17 @@ export function useReactFlowWrapper({
   const [text, setText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
+  const edgeTypes = useMemo(
+    () => ({
+      default: SmoothStepEdge,
+      straight: StraightEdge,
+      step: StepEdge,
+      smoothstep: SmoothStepEdge,
+      floating: FloatingEdge,
+    }),
+    []
+  );
+
   const nodeTypes = useMemo(
     () => ({
       default: CustomNodeComponent,
@@ -389,7 +400,9 @@ export function useReactFlowWrapper({
           ...connection,
           id: getNodeId(),
           type: "floating",
-          MarkerType: MarkerType.Arrow,
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+          },
           data: {
             label: "new label",
             wiki: "",
