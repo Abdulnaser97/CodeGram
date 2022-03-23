@@ -29,8 +29,8 @@ import {
 
 import { updateRepoFile } from "../Redux/actions/repoFiles";
 
-import FloatingEdge from "../canvas/FloatingEdge.tsx";
-import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
+import FloatingEdge from "../canvas/FloatingEdge";
+import FloatingConnectionLine from "../canvas/FloatingConnectionLine";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { Typography } from "@mui/material";
@@ -380,12 +380,13 @@ export function useReactFlowWrapper({
 
   const onNodesChange = useCallback(
     (changes) => {
+      console.log(changes);
       try {
         changes.forEach((change) => {
           switch (change.type) {
             case "remove":
-              const nodeToRemove = nodes.find((node) => node.id === change.id);
-              dispatch(deleteNodeFromArray([nodeToRemove]));
+              // const nodeToRemove = nodes.find((node) => node.id === change.id);
+              // dispatch(deleteNodeFromArray([nodeToRemove]));
               setOpenArtifact("");
               break;
             default:
@@ -423,6 +424,10 @@ export function useReactFlowWrapper({
     },
     [setEdges]
   );
+
+  const onNodesDelete = (nodes) => {
+    console.log("onNodesDelete", nodes);
+  };
 
   const onConnect = useCallback((connection) => {
     setEdges((eds) =>
