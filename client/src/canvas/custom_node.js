@@ -1027,7 +1027,7 @@ const SignUpComponent = (props) => {
       <Handle
         className="handle source"
         id={`top-handle-${props.id}`}
-        type="source"
+        type="destination"
         position="top"
         style={{
           ...sourceHandleStyle,

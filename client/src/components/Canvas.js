@@ -18,6 +18,7 @@ import ReactFlow, {
   applyNodeChanges,
   applyEdgeChanges,
   MiniMap,
+  useStore,
 } from "react-flow-renderer";
 import { useSelector } from "react-redux";
 import {
@@ -39,13 +40,14 @@ import { TextComponent } from "../canvas/text";
 
 // import template from "../Templates/FullStackTemplate.json";
 import ControlTemplate from "../Templates/ControlTemplate.json";
+import ControlTemplate2 from "../Templates/ControlTemplate2.json";
 import {
   loadTemplateDiagram,
   reloadDiagram,
 } from "../Redux/actions/loadDiagram";
 import { errorNotification } from "../Redux/actions/notification";
 
-var initialElements = ControlTemplate;
+var initialElements = ControlTemplate2;
 
 const edgeTypes = {
   default: SmoothStepEdge,
@@ -875,6 +877,8 @@ export function useReactFlowWrapper({
           onPaneContextMenu={handlePaneContextMenu}
           minZoom={0.1}
           maxZoom={4}
+          onNodeClick={onElementClick}
+          onEdgeClick={onElementClick}
           onNodeDoubleClick={handleNodeDoubleClick}
         >
           <MiniMap
@@ -974,7 +978,8 @@ export function useReactFlowWrapper({
                   maxHeight: "40vh",
                   minHeight: "10vh",
                   width: "15vw",
-                  "overflow-y": "scroll",
+                  "overflow-y": "none",
+                  "overflow-x": "none",
                 }}
               >
                 {contextFiles}
@@ -1012,8 +1017,7 @@ export function ReactFlowStoreInterface({
   nodeLinkHandler,
 }) {
   // Uncomment below to view reactFlowState
-  //const reactFlowState = useStore((state) => state);
-
+  const reactFlowState = useStore((state) => state);
   const { setViewport } = useReactFlow();
 
   useEffect(() => {

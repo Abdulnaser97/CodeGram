@@ -101,7 +101,7 @@ function App() {
   const [fuse, setFuse] = useState(null);
   const [homePath, setHomePath] = useState(null);
   const [openArtifact, setOpenArtifact] = useState("");
-  const [search, setSearch] = useState("search");
+  const [search, setSearch] = useState("");
   const [cursor, setCursor] = useState("default");
   const [branch, setBranch] = useState("");
   const [repoBranches, setRepoBranches] = useState([]);
@@ -273,7 +273,6 @@ function App() {
   const handleName = (event, newValue) => {
     setNodeName(event.target.value);
   };
-
   const renderRepos = () => {
     var repoChoiceItems = [];
 

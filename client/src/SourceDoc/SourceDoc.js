@@ -71,7 +71,7 @@ function SourceDoc(props) {
   });
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
-
+  // console.log(props.data.nodes);
   const [curCode, setCurCode] = useState("Select a node to view file");
 
   // state for selected file
@@ -137,7 +137,6 @@ function SourceDoc(props) {
       dispatch(errorNotification(`Error loading repo file`));
     }
   }, [props.data.openArtifact]);
-
   // set content of sourceDoc
   useEffect(() => {
     if (SDContent === null || SDContent === undefined) {
@@ -171,6 +170,7 @@ function SourceDoc(props) {
             openArtifact={props.data.openArtifact}
             selectedEL={filteredSelectedEL}
             addFileToNode={props.functions.addFileToNode}
+            nodes={props.data.nodes}
           />
         );
       }
@@ -182,6 +182,7 @@ function SourceDoc(props) {
     props.data.openArtifact,
     repository,
     state.repoFiles.isFetchingFiles,
+    props.data.nodes,
   ]);
 
   useEffect(() => {
@@ -305,6 +306,7 @@ function SourceDoc(props) {
   // Tabs: handlers for state of tabs
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    props.functions.setTabValue(newValue);
   };
 
   useEffect(() => {
@@ -318,7 +320,7 @@ function SourceDoc(props) {
       } else if (!selectedEL.data.label) {
         setValue(0);
       } else if (filteredSelectedEL.data.label) {
-        setValue(2);
+        // setValue(2);
         const path = props.data.openArtifact
           ? props.data.openArtifact.path
           : null;
