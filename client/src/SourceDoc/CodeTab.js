@@ -55,7 +55,7 @@ function getLangFromFilename(filename) {
     case "c":
       return "c";
     case "h":
-        return "c";
+      return "c";
     case "go":
       return "go";
     case "swift":
@@ -88,9 +88,11 @@ function CodeTab({ rawCode, fileName }) {
   return (
     <SyntaxHighlighter
       language={lang}
-      style={a11yLight}
+      style={{ ...a11yLight, backgroundColor: "transparent" }}
       showLineNumbers={true}
-      wrapLongLines={true}
+      showInLineNumbers={true}
+      lineProps={{ style: { wordBreak: "break-word", whiteSpace: "pre-wrap" } }}
+      wrapLines={true}
     >
       {rawCode}
     </SyntaxHighlighter>
