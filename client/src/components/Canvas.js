@@ -115,7 +115,7 @@ export function useReactFlowWrapper({
   const [clipBoard, setClipBoard] = useState(null);
   const [selectedNodeEvent, setSelectedNodeEvent] = useState(null);
   const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
-  const { project } = useReactFlow();
+  const { project, addNodes, getNodes } = useReactFlow();
   const [tabValue, setTabValue] = useState(0);
   const [nameFlag, setNameFlag] = useState(false);
   const [newNodeId, setNewNodeId] = useState(null);
@@ -248,10 +248,13 @@ export function useReactFlowWrapper({
         }),
         animated: true,
       };
-      dispatch(addNodeToArray(newNode));
+      // dispatch(addNodeToArray(newNode));
       // TODO: Change to setNodes((ns) => applyNodeChanges(changes, ns))
       // Need to figure out the changes type for adding a node
-      setNodes((ns) => ns.concat(newNode));
+      // setNodes((ns) => ns.concat(newNode));
+      
+      addNodes(newNode);
+
       setNewNodeId(newNode.id);
     },
     [setNodes, nodeName, dispatch, project]
@@ -287,14 +290,16 @@ export function useReactFlowWrapper({
         }),
         animated: true,
       };
-      dispatch(addNodeToArray(newText));
-      setNodes((ns) => ns.concat(newText));
+      // dispatch(addNodeToArray(newText));
+      // setNodes((ns) => ns.concat(newText));
+      addNodes(newText);
       setNewNodeId(newText.id);
     },
     [setNodes, nodeName, dispatch, project]
   );
 
   const handleContextMenu = (event, node) => {
+    console.log(getNodes());
     event.preventDefault();
     setSelectedEL(node);
     setSelectedNodeEvent(event);
@@ -378,6 +383,14 @@ export function useReactFlowWrapper({
     }
   };
 
+  const onDeleteSourceDocFile = (change) => {
+    // const idsToRemove = changes.map(node => {
+    //   return node.id;
+    // });
+
+    console.log("onDeleteSourceDocFile", change);
+  }
+
   const onNodesChange = useCallback(
     (changes) => {
       console.log(changes);
@@ -387,6 +400,7 @@ export function useReactFlowWrapper({
             case "remove":
               // const nodeToRemove = nodes.find((node) => node.id === change.id);
               // dispatch(deleteNodeFromArray([nodeToRemove]));
+              onDeleteSourceDocFile(change);
               setOpenArtifact("");
               break;
             default:
@@ -408,8 +422,8 @@ export function useReactFlowWrapper({
         changes.forEach((change) => {
           switch (change.type) {
             case "remove":
-              const edgeToRemove = nodes.find((node) => node.id === change.id);
-              dispatch(deleteNodeFromArray([edgeToRemove]));
+              // const edgeToRemove = nodes.find((node) => node.id === change.id);
+              // dispatch(deleteNodeFromArray([edgeToRemove]));
               setOpenArtifact("");
               break;
             default:
@@ -424,10 +438,6 @@ export function useReactFlowWrapper({
     },
     [setEdges]
   );
-
-  const onNodesDelete = (nodes) => {
-    console.log("onNodesDelete", nodes);
-  };
 
   const onConnect = useCallback((connection) => {
     setEdges((eds) =>
@@ -560,8 +570,9 @@ export function useReactFlowWrapper({
         nodeLinkHandler: nodeLinkHandler,
       };
 
-      setNodes([...nodes, newNode]);
-      dispatch(addNodeToArray(newNode));
+      addNodes(newNode);
+      // setNodes([...nodes, newNode]);
+      // dispatch(addNodeToArray(newNode));
     }
     if (event) {
       handleContextMenuClose();
@@ -889,7 +900,7 @@ export function useReactFlowWrapper({
               borderRadius: "30px",
             }}
           />
-          <ReactFlowStoreInterface
+          {/* <ReactFlowStoreInterface
             {...{
               RFState,
               setNodes,
@@ -899,7 +910,7 @@ export function useReactFlowWrapper({
               nodeInputHandler,
               nodeLinkHandler,
             }}
-          />
+          /> */}
         </ReactFlow>
         <Menu
           variant="menu"
