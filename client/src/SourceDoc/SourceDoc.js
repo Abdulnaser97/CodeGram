@@ -116,6 +116,8 @@ function SourceDoc(props) {
     }
   }, [filteredSelectedEL]);
 
+  // console.log(props.data.nodes);
+
   // highlight node on canvas if exists -> may need optimizing. Indeed it needed :)
   useEffect(() => {
     try {

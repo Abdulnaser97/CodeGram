@@ -22,9 +22,9 @@ export function deleteNodeFromArray(elementsToRemove) {
       return node.data.path;
     });
 
-    const newNodesArr = nodes.nodesArr.filter((node) => {
-      return !idsToRemove.includes(node.id);
-    });
+    // const newNodesArr = nodes.nodesArr.filter((node) => {
+    //   return !idsToRemove.includes(node.id);
+    // });
 
     const newNodesZIndex = nodes.nodesZIndex.filter((node) => {
       return !idsToRemove.includes(node.id);
@@ -35,10 +35,11 @@ export function deleteNodeFromArray(elementsToRemove) {
         repoFiles.repoFiles[file].linked = false;
       }
     });
+    // console.log(filesToUnlink);
 
     dispatch({
       type: DELETE_NODES_FROM_ARRAY,
-      nodesArr: newNodesArr,
+      // nodesArr: newNodesArr,
       repoFiles: repoFiles.repoFiles,
       nodesZIndex: newNodesZIndex,
     });

@@ -96,7 +96,7 @@ export function useReactFlowWrapper({
       sourceDocTab: state.repoFiles.sourceDocTab,
     };
   });
-
+  const rf = useReactFlow();
   const [nodes, setNodes] = useState(
     initialElements.nodes ? initialElements.nodes : []
   );
@@ -254,6 +254,8 @@ export function useReactFlowWrapper({
       // TODO: Change to setNodes((ns) => applyNodeChanges(changes, ns))
       // Need to figure out the changes type for adding a node
       setNodes((ns) => ns.concat(newNode));
+      // setNodes((ns) => applyNodeChanges(changes, ns));
+      // rf.addNodes(newNode);
       setNewNodeId(newNode.id);
     },
     [setNodes, nodeName, dispatch, project]
@@ -383,9 +385,14 @@ export function useReactFlowWrapper({
   const onNodesChange = useCallback(
     (changes) => {
       try {
+        // console.log(changes);
+        // console.log(nodes);
         changes.forEach((change) => {
           switch (change.type) {
             case "remove":
+              // const nodeToRemove = setNodes((nodes) =>
+              //   nodes.find((node) => node.id === change.id)
+              // );
               const nodeToRemove = nodes.find((node) => node.id === change.id);
               dispatch(deleteNodeFromArray([nodeToRemove]));
               setOpenArtifact("");
@@ -676,6 +683,21 @@ export function useReactFlowWrapper({
     dispatch(updateRepoFile(selEl, oldPath));
   };
 
+  // const onNodesDelete = useCallback()
+
+  // const onNodesDelete = useCallback(
+  //   (elementsToRemove) => {
+  //     if (elementsToRemove.length === 0) {
+  //       console.log("nothing selected");
+  //       return;
+  //     }
+  //     dispatch(deleteNodeFromArray(elementsToRemove));
+  //     setOpenArtifact("");
+  //     setElements((els) => removeElements(elementsToRemove, els));
+  //   },
+  //   [setElements, dispatch]
+  // );
+
   const setter = (value) => {
     // TODO: need to check if node or edges
     // if node, use setNodes
@@ -880,6 +902,7 @@ export function useReactFlowWrapper({
           onNodeClick={onElementClick}
           onEdgeClick={onElementClick}
           onNodeDoubleClick={handleNodeDoubleClick}
+          // onNodesDelete={onNodesDelete}
         >
           <MiniMap
             style={{
@@ -1019,6 +1042,8 @@ export function ReactFlowStoreInterface({
   // Uncomment below to view reactFlowState
   const reactFlowState = useStore((state) => state);
   const { setViewport } = useReactFlow();
+  const rf = useReactFlow();
+  console.log(rf.getNodes());
 
   useEffect(() => {
     try {
