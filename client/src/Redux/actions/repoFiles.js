@@ -4,7 +4,7 @@ import {
   STORE_REPO_FILES,
   UPDATE_REPO_FILE,
   UPDATE_CODE_CONTENT,
-  UNLINK_REPO_FILE,
+  UPDATE_REPO_FILE_LINK,
 } from "../constants";
 import { reloadDiagram } from "./loadDiagram";
 import { loadingNotification, successNotification } from "./notification";
@@ -117,17 +117,17 @@ export function updateRepoFileCodeContent(path, newCode) {
   };
 }
 
-export function unlinkRepoFile(path) {
+export function updatedRepoFileLinked(path, isLinked) {
   return (dispatch, getState) => {
     const { repoFiles } = getState();
 
     if (repoFiles.repoFiles[path]) {
-      repoFiles.repoFiles[path].linked = false;
-      console.log(`${path} set to false`);
+      repoFiles.repoFiles[path].linked = isLinked;
+      console.log(`${path} set to ${isLinked}`);
     };
 
     dispatch({
-      type: UNLINK_REPO_FILE,
+      type: UPDATE_REPO_FILE_LINK,
       repoFiles: repoFiles.repoFiles
     });
   };

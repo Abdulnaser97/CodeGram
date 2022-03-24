@@ -30,6 +30,9 @@ import SearchBar from "./SearchBar";
 import axios from "axios";
 import { getRepo } from "../api/apiClient";
 
+import { useReactFlow } from "react-flow-renderer";
+
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -90,6 +93,8 @@ function SourceDoc(props) {
   // only updates if selectedEL is not text
   const [filteredSelectedEL, setFilteredSelectedEL] = useState(null);
 
+  const { getNodes } = useReactFlow();
+
   const dispatch = useDispatch();
 
   const { search, repository, fuse, homePath, selectedEL } = props.data;
@@ -120,17 +125,16 @@ function SourceDoc(props) {
   useEffect(() => {
     try {
       if (props.data.openArtifact) {
-        var el = state.nodes.nodesArr.find((node) =>
-          node.data ? node.data.path === props.data.openArtifact.path : false
-        );
-        if (el) {
-          // TODO: replace with applyNodeChanges
-          //setSelectedElements(el);
-          props.functions.setSelectedEL(el);
-        } else {
-          // TODO: replace with applyNodeChanges
-          //setSelectedElements([]);
-        }
+          var el = getNodes().find((node) =>
+            node.data ? node.data.path === props.data.openArtifact.path : false
+          );
+
+          if (el) {
+            props.functions.setSelectedEL(el);
+          }
+          else {
+            props.functions.setSelectedEL(null);
+          }
       }
     } catch (e) {
       console.log(e);
@@ -154,7 +158,6 @@ function SourceDoc(props) {
             openArtifact={props.data.openArtifact}
             selectedEL={filteredSelectedEL}
             addFileToNode={props.functions.addFileToNode}
-            nodes={props.data.nodes}
           />
         );
       }

@@ -27,7 +27,7 @@ import {
   sendToBack,
 } from "../Redux/actions/nodes";
 
-import { updateRepoFile, unlinkRepoFile } from "../Redux/actions/repoFiles";
+import { updateRepoFile, updatedRepoFileLinked } from "../Redux/actions/repoFiles";
 
 import FloatingEdge from "../canvas/FloatingEdge";
 import FloatingConnectionLine from "../canvas/FloatingConnectionLine";
@@ -392,7 +392,7 @@ export function useReactFlowWrapper({
     // back to gray
     if (nodeToRemove && nodeToRemove.data && nodeToRemove.data.path) {
       const pathToUnlink = nodeToRemove.data.path;
-      dispatch(unlinkRepoFile(pathToUnlink));
+      dispatch(updatedRepoFileLinked(pathToUnlink, false));
     }
     setOpenArtifact("");
   }
@@ -903,7 +903,7 @@ export function useReactFlowWrapper({
               borderRadius: "30px",
             }}
           />
-          {/* <ReactFlowStoreInterface
+          <ReactFlowStoreInterface
             {...{
               RFState,
               setNodes,
@@ -913,7 +913,7 @@ export function useReactFlowWrapper({
               nodeInputHandler,
               nodeLinkHandler,
             }}
-          /> */}
+          />
         </ReactFlow>
         <Menu
           variant="menu"

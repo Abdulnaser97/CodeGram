@@ -8,7 +8,7 @@ export const FETCH_REPO_FILES = "FETCH_REPO_FILES";
 export const STORE_REPO_FILES = "STORE_REPO_FILES";
 export const UPDATE_REPO_FILE = "UPDATE_REPO_FILE";
 export const UPDATE_CODE_CONTENT = "UPDATE_CODE_CONTENT";
-export const UNLINK_REPO_FILE = "UNLINK_REPO_FILE";
+export const UPDATE_REPO_FILE_LINK = "UPDATE_REPO_FILE_LINK";
 
 // Load existing diagram from github repo
 export const LOAD_DIAGRAM_TO_STORE = "LOAD_DIAGRAM_TO_STORE";

@@ -7,7 +7,7 @@ import {
   UPDATE_CODE_CONTENT,
   LOAD_REPO_FROM_PUBLIC_URL,
   SET_SOURCE_DOC_TAB,
-  UNLINK_REPO_FILE,
+  UPDATE_REPO_FILE_LINK,
 } from "../constants";
 
 const initialState = {
@@ -56,7 +56,7 @@ const repoReducer = (state = initialState, action) => {
         },
       };
     }
-    case UNLINK_REPO_FILE: {
+    case UPDATE_REPO_FILE_LINK: {
       return {
         ...state,
         repoFiles: action.repoFiles,

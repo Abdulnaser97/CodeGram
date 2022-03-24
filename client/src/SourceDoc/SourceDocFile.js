@@ -13,11 +13,10 @@ function SourceDocFile(props) {
     openArtifact,
     addFileToNode,
     selectedEL,
-    nodes,
   } = props;
   var { file } = props;
 
-  const { fitBounds } = useReactFlow();
+  const { fitBounds, getNodes } = useReactFlow();
 
   if (!file) {
     return <> </>;
@@ -54,7 +53,7 @@ function SourceDocFile(props) {
     setOpenArtifact(file);
 
     if (file) {
-      var el = nodes.find((node) =>
+      var el = getNodes().find((node) =>
         node.data ? node.data.path === file.path : false
       );
       if (el) {
