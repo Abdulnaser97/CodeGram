@@ -248,7 +248,7 @@ export function useReactFlowWrapper({
         }),
         animated: true,
       };
-      // dispatch(addNodeToArray(newNode));
+      dispatch(addNodeToArray(newNode));
       // TODO: Change to setNodes((ns) => applyNodeChanges(changes, ns))
       // Need to figure out the changes type for adding a node
       // setNodes((ns) => ns.concat(newNode));
@@ -521,6 +521,12 @@ export function useReactFlowWrapper({
     event.preventDefault();
     //TODO: Change to onNodeChange or applyNodeChanges and pass in delete change
     //onElementsRemove([selectedEL]);
+    const changes = [{
+      "id": selectedEL.id,
+      "type": "remove"
+    }];
+
+    onNodesChange(changes);
     handleContextMenuClose();
   };
 
