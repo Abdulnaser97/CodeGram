@@ -27,7 +27,7 @@ import {
   sendToBack,
 } from "../Redux/actions/nodes";
 
-import { updateRepoFile } from "../Redux/actions/repoFiles";
+import { updateRepoFile, unlinkRepoFile } from "../Redux/actions/repoFiles";
 
 import FloatingEdge from "../canvas/FloatingEdge";
 import FloatingConnectionLine from "../canvas/FloatingConnectionLine";
@@ -115,7 +115,7 @@ export function useReactFlowWrapper({
   const [clipBoard, setClipBoard] = useState(null);
   const [selectedNodeEvent, setSelectedNodeEvent] = useState(null);
   const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
-  const { project, addNodes, getNodes } = useReactFlow();
+  const { project, addNodes, getNode, getNodes } = useReactFlow();
   const [tabValue, setTabValue] = useState(0);
   const [nameFlag, setNameFlag] = useState(false);
   const [newNodeId, setNewNodeId] = useState(null);
@@ -384,11 +384,17 @@ export function useReactFlowWrapper({
   };
 
   const onDeleteSourceDocFile = (change) => {
-    // const idsToRemove = changes.map(node => {
-    //   return node.id;
-    // });
 
     console.log("onDeleteSourceDocFile", change);
+    const nodeToRemove = getNode(change.id);
+
+    // set the value for 'linked' in repoFiles[path] to false to get file
+    // back to gray
+    if (nodeToRemove && nodeToRemove.data && nodeToRemove.data.path) {
+      const pathToUnlink = nodeToRemove.data.path;
+      dispatch(unlinkRepoFile(pathToUnlink));
+    }
+    setOpenArtifact("");
   }
 
   const onNodesChange = useCallback(
@@ -398,10 +404,7 @@ export function useReactFlowWrapper({
         changes.forEach((change) => {
           switch (change.type) {
             case "remove":
-              // const nodeToRemove = nodes.find((node) => node.id === change.id);
-              // dispatch(deleteNodeFromArray([nodeToRemove]));
               onDeleteSourceDocFile(change);
-              setOpenArtifact("");
               break;
             default:
               break;

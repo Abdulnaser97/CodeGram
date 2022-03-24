@@ -7,6 +7,7 @@ import {
   UPDATE_CODE_CONTENT,
   LOAD_REPO_FROM_PUBLIC_URL,
   SET_SOURCE_DOC_TAB,
+  UNLINK_REPO_FILE,
 } from "../constants";
 
 const initialState = {
@@ -53,6 +54,12 @@ const repoReducer = (state = initialState, action) => {
             linked: true,
           },
         },
+      };
+    }
+    case UNLINK_REPO_FILE: {
+      return {
+        ...state,
+        repoFiles: action.repoFiles,
       };
     }
     case DELETE_NODES_FROM_ARRAY: {
