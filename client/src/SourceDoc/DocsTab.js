@@ -16,6 +16,7 @@ export default function DocsTab(props) {
     selectedEL,
     openArtifact,
     setNodes,
+    setEdges,
     setSelectedEL,
   } = props;
 
@@ -33,22 +34,42 @@ export default function DocsTab(props) {
   const saveWikiToNode = () => {
     var selEl = null;
     // TODO: changed setElements to setNodes, did not handle the setEdges scenario
-    setNodes((els) =>
-      els.map((el) => {
-        if (selectedEL && el.id === selectedEL.id) {
-          // it's important that you create a new object here
-          // in order to notify react flow about the change
-          el.data = {
-            ...el.data,
-            label: newLabel.toString(),
-            wiki: wiki,
-          };
-          selEl = el;
-        }
+    if (selectedEL?.source) {
+      setEdges((els) =>
+        els.map((el) => {
+          if (selectedEL && el.id === selectedEL.id) {
+            // it's important that you create a new object here
+            // in order to notify react flow about the change
+            el.data = {
+              ...el.data,
+              label: newLabel.toString(),
+              wiki: wiki,
+            };
+            selEl = el;
+          }
 
-        return el;
-      })
-    );
+          return el;
+        })
+      );
+    } else {
+      setNodes((els) =>
+        els.map((el) => {
+          if (selectedEL && el.id === selectedEL.id) {
+            // it's important that you create a new object here
+            // in order to notify react flow about the change
+            el.data = {
+              ...el.data,
+              label: newLabel.toString(),
+              wiki: wiki,
+            };
+            selEl = el;
+          }
+
+          return el;
+        })
+      );
+    }
+
     setSelectedEL(selEl);
   };
 

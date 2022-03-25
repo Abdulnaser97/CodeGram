@@ -562,7 +562,7 @@ export function useReactFlowWrapper({
             type: MarkerType.ArrowClosed,
           },
           data: {
-            label: "new label",
+            label: "",
             wiki: "",
           },
           labelBgPadding: [8, 4],
