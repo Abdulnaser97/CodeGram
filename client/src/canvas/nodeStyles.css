@@ -33,12 +33,12 @@
 }
 
 .FileNode {
-  display: flex;
+  /* display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center; */
   border: 1px solid #adadad;
   border-radius: 20px;
-  background-color: #ffffff;
+  /* background-color: #ffffff; */
   color: grey;
   /* transition: ease-in-out 0.2s; */
 }

@@ -235,6 +235,7 @@ export function useReactFlowWrapper({
               : Math.floor(70 / 15) * 15,
           nodeInputHandler: nodeInputHandler,
           nodeLinkHandler: nodeLinkHandler,
+          zoomSensitivity: 0.6,
         },
         type: shapeType,
         width:
@@ -253,6 +254,20 @@ export function useReactFlowWrapper({
         }),
         animated: true,
       };
+
+      if (props.isChild) {
+        console.log(selectedEL.id);
+        // newNode.width = newNode.width / 2;
+        // newNode.height = newNode.height / 2;
+        // newNode.data.width = newNode.width / 2;
+        // newNode.data.height = newNode.height / 2;
+        newNode.data.zoomSensitivity = selectedEL.data.zoomSensitivity * 1.15;
+        newNode.position = { x: 15, y: 120 };
+        newNode.extent = "parent";
+        newNode.draggabale = true;
+        newNode.parentNode = selectedEL.id;
+      }
+
       dispatch(addNodeToArray(newNode));
       // TODO: Change to setNodes((ns) => applyNodeChanges(changes, ns))
       // Need to figure out the changes type for adding a node
@@ -265,6 +280,80 @@ export function useReactFlowWrapper({
       // setNewNodeId(newNode.id);
     },
     [setNodes, nodeName, dispatch, project]
+  );
+
+  const addChildNode = useCallback(
+    (props) => {
+      var file = props.file ? props.file : null;
+      var event = props.event ? props.event : null;
+      var label = "";
+      var position = calculatePosition(event, rfInstance);
+
+      var shapeType = selectedShapeName.current;
+      if (file) {
+        shapeType = file.type === "dir" ? "DashedShape" : "FileNode";
+      }
+
+      let url =
+        file && file.download_url !== undefined
+          ? file.download_url
+          : file && file.url !== undefined
+          ? file.url
+          : null;
+
+      const html_url = file && file.html_url ? file.html_url : null;
+
+      const newNode = {
+        id: getNodeId(),
+        data: {
+          label: file && file.name !== undefined ? file.name : label,
+          name: file && file.name !== undefined ? file.name : label,
+          linkedFiles: ["aa.py", "gg.py", "kookoo.py"],
+          childNodes: ["da", "de", "do"],
+          siblingNodes: ["ta", "te", "to"],
+          parentNodes: ["pa", "pe"],
+          documentation: ["url1", "url2"],
+          description: "",
+          url: url,
+          html_url: html_url,
+          path: file && file.path ? file.path : "",
+          floatTargetHandle: false,
+
+          // can set this type to whatever is selected in the tool bar for now
+          // but the type will probably be set from a few different places
+          type: event ? shapeType : "FileNode",
+          width: selectedEL.width / 3,
+          height: selectedEL.height / 3,
+          nodeInputHandler: nodeInputHandler,
+          nodeLinkHandler: nodeLinkHandler,
+          childFlag: true,
+          zoomSensitivity: selectedEL.data.zoomSensitivity * 1.3,
+        },
+        type: event ? shapeType : "FileNode",
+        parentNode: selectedEL.id,
+        extent: "parent",
+        width: selectedEL.width / 3,
+        height: selectedEL.height / 3,
+        draggable: true,
+        // position: project({
+        //   x: props.fromSD ? position.x : event?.clientX,
+        //   y: props.fromSD ? position.y : event?.clientY,
+        // }),
+        position: { x: selectedEL.width / 10, y: selectedEL.height / 10 },
+        animated: true,
+      };
+      dispatch(addNodeToArray(newNode));
+      // TODO: Change to setNodes((ns) => applyNodeChanges(changes, ns))
+      // Need to figure out the changes type for adding a node
+      // setNodes((ns) => applyNodeChanges(changes, ns));
+      // rf.addNodes(newNode);
+      // setNodes((ns) => ns.concat(newNode));
+
+      addNodes(newNode);
+
+      // setNewNodeId(newNode.id);
+    },
+    [setNodes, selectedEL, nodeName, dispatch, project]
   );
 
   // Add node function
@@ -306,8 +395,8 @@ export function useReactFlowWrapper({
   );
 
   const handleContextMenu = (event, node) => {
-    console.log(getNodes());
-    event.preventDefault();
+    // console.log(getNodes());
+    // event.preventDefault();
     setSelectedEL(node);
     setSelectedNodeEvent(event);
     setContextMenu(
@@ -368,9 +457,13 @@ export function useReactFlowWrapper({
     );
   };
   // get stat
-  const onElementClick = (event, element) => {
+  const onElementClick = async (event, element) => {
     console.log("click", element);
     setSelectedEL(element);
+    if (activeToolBarButton === "selectShape") {
+      await addChildNode({ event: event });
+      setActiveToolBarButton("cursor");
+    }
     // element.data.selected = true;
   };
 
@@ -953,6 +1046,16 @@ export function useReactFlowWrapper({
     setTabValue(sourceDocTab);
   }, [sourceDocTab]);
 
+  useEffect(() => {
+    onNodesChange([
+      {
+        id: selectedEL?.id,
+        type: "select",
+        selected: true,
+      },
+    ]);
+  }, [selectedEL]);
+
   return {
     render: (
       <div className="canvas">
@@ -1054,6 +1157,13 @@ export function useReactFlowWrapper({
               <div className="menu-item">
                 <div className="menu-text">Copy Shape</div>
                 <div className="shortcut-key">cmd/ctrl+c</div>
+              </div>
+            </MenuItem>
+          )}
+          {contextMenu !== null && contextMenu.type === "elementMenu" && (
+            <MenuItem onClick={(e) => addChildNode({ fromSD: false })}>
+              <div className="menu-item">
+                <div className="menu-text">Add Internal Node</div>
               </div>
             </MenuItem>
           )}
