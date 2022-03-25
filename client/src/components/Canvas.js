@@ -28,7 +28,10 @@ import {
   sendToBack,
 } from "../Redux/actions/nodes";
 
-import { updateRepoFile } from "../Redux/actions/repoFiles";
+import {
+  updateRepoFile,
+  updatedRepoFileLinked,
+} from "../Redux/actions/repoFiles";
 
 import FloatingEdge from "../canvas/FloatingEdge.tsx";
 import FloatingConnectionLine from "../canvas/FloatingConnectionLine.tsx";
@@ -117,7 +120,7 @@ export function useReactFlowWrapper({
   const [clipBoard, setClipBoard] = useState(null);
   const [selectedNodeEvent, setSelectedNodeEvent] = useState(null);
   const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
-  const { project } = useReactFlow();
+  const { project, addNodes, getNode, getNodes } = useReactFlow();
   const [tabValue, setTabValue] = useState(0);
   const [nameFlag, setNameFlag] = useState(false);
   const [newNodeId, setNewNodeId] = useState(null);
@@ -253,10 +256,13 @@ export function useReactFlowWrapper({
       dispatch(addNodeToArray(newNode));
       // TODO: Change to setNodes((ns) => applyNodeChanges(changes, ns))
       // Need to figure out the changes type for adding a node
-      setNodes((ns) => ns.concat(newNode));
       // setNodes((ns) => applyNodeChanges(changes, ns));
       // rf.addNodes(newNode);
-      setNewNodeId(newNode.id);
+      // setNodes((ns) => ns.concat(newNode));
+
+      addNodes(newNode);
+
+      // setNewNodeId(newNode.id);
     },
     [setNodes, nodeName, dispatch, project]
   );
@@ -291,14 +297,16 @@ export function useReactFlowWrapper({
         }),
         animated: true,
       };
-      dispatch(addNodeToArray(newText));
-      setNodes((ns) => ns.concat(newText));
+      // dispatch(addNodeToArray(newText));
+      // setNodes((ns) => ns.concat(newText));
+      addNodes(newText);
       setNewNodeId(newText.id);
     },
     [setNodes, nodeName, dispatch, project]
   );
 
   const handleContextMenu = (event, node) => {
+    console.log(getNodes());
     event.preventDefault();
     setSelectedEL(node);
     setSelectedNodeEvent(event);
@@ -363,7 +371,7 @@ export function useReactFlowWrapper({
   const onElementClick = (event, element) => {
     console.log("click", element);
     setSelectedEL(element);
-    element.data.selected = true;
+    // element.data.selected = true;
   };
 
   const onPaneClick = async (event) => {
@@ -382,8 +390,23 @@ export function useReactFlowWrapper({
     }
   };
 
+  const onDeleteSourceDocFile = (change) => {
+    console.log("onDeleteSourceDocFile", change);
+    const nodeToRemove = getNode(change.id);
+
+    // set the value for 'linked' in repoFiles[path] to false to get file
+    // back to gray
+    if (nodeToRemove && nodeToRemove.data && nodeToRemove.data.path) {
+      const pathToUnlink = nodeToRemove.data.path;
+      dispatch(updatedRepoFileLinked(pathToUnlink, false));
+    }
+    setOpenArtifact("");
+  };
+  console.log(selectedEL);
+
   const onNodesChange = useCallback(
     (changes) => {
+      console.log(changes);
       try {
         // console.log(changes);
         // console.log(nodes);
@@ -393,9 +416,10 @@ export function useReactFlowWrapper({
               // const nodeToRemove = setNodes((nodes) =>
               //   nodes.find((node) => node.id === change.id)
               // );
-              const nodeToRemove = nodes.find((node) => node.id === change.id);
-              dispatch(deleteNodeFromArray([nodeToRemove]));
-              setOpenArtifact("");
+              // const nodeToRemove = nodes.find((node) => node.id === change.id);
+              // dispatch(deleteNodeFromArray([nodeToRemove]));
+              // setOpenArtifact("");
+              onDeleteSourceDocFile(change);
               break;
             default:
               break;
@@ -416,8 +440,8 @@ export function useReactFlowWrapper({
         changes.forEach((change) => {
           switch (change.type) {
             case "remove":
-              const edgeToRemove = nodes.find((node) => node.id === change.id);
-              dispatch(deleteNodeFromArray([edgeToRemove]));
+              // const edgeToRemove = nodes.find((node) => node.id === change.id);
+              // dispatch(deleteNodeFromArray([edgeToRemove]));
               setOpenArtifact("");
               break;
             default:
@@ -512,6 +536,14 @@ export function useReactFlowWrapper({
     event.preventDefault();
     //TODO: Change to onNodeChange or applyNodeChanges and pass in delete change
     //onElementsRemove([selectedEL]);
+    const changes = [
+      {
+        id: selectedEL.id,
+        type: "remove",
+      },
+    ];
+
+    onNodesChange(changes);
     handleContextMenuClose();
   };
 
@@ -536,12 +568,16 @@ export function useReactFlowWrapper({
       document.activeElement.tagName !== "INPUT" &&
       document.activeElement.tagName !== "DIV"
     ) {
-      if (event) {
-        event.preventDefault();
-      }
+      // if (event) {
+      //   event.preventDefault();
+      // }
 
       let copyEl = JSON.parse(JSON.stringify(selectedEL));
       setClipBoard(copyEl);
+      // setClipBoard({
+      //   ...selectedEL,
+      //   selected: false,
+      // });
 
       if (event) {
         handleContextMenuClose();
@@ -549,28 +585,77 @@ export function useReactFlowWrapper({
     }
   };
 
-  const onPaste = (event = null) => {
-    if (event) {
-      event.preventDefault();
-    }
-    if (clipBoard) {
-      let newNode = clipBoard;
-      newNode.id = getNodeId();
-      newNode.position = calculatePosition(event, rfInstance, newNode.position);
-      newNode.data = {
-        ...newNode.data,
-        path: "",
-        nodeInputHandler: nodeInputHandler,
-        nodeLinkHandler: nodeLinkHandler,
-      };
+  const onPaste =
+    // useCallback(
+    (event = null) => {
+      if (event) {
+        event.preventDefault();
+      }
+      if (clipBoard) {
+        var newId = getNodeId();
+        const newNode = {
+          ...clipBoard,
+          id: newId,
+          position: calculatePosition(event, rfInstance, clipBoard.position),
+          data: {
+            ...clipBoard.data,
+            path: "",
+            nodeInputHandler: nodeInputHandler,
+            nodeLinkHandler: nodeLinkHandler,
+            url: "",
+            html_url: "",
+          },
+          handleBounds: {
+            source: [
+              {
+                id: `top-handle-${newId}`,
+                position: "top",
+              },
+              {
+                id: `bottom-handle-${newId}`,
+                position: "bottom",
+              },
+              {
+                id: `left-handle-${newId}`,
+                position: "left",
+              },
+              {
+                id: `right-handle-${newId}`,
+                position: "right",
+              },
+            ],
+            target: [
+              {
+                id: `target-handle-${newId}`,
+                position: "top",
+              },
+            ],
+          },
+        };
+        // newNode.id = getNodeId();
+        // newNode.position = calculatePosition(event, rfInstance, newNode.position);
+        // newNode.data = {
+        //   ...newNode.data,
+        //   path: "",
+        //   nodeInputHandler: nodeInputHandler,
+        //   nodeLinkHandler: nodeLinkHandler,
+        // };
 
-      setNodes([...nodes, newNode]);
-      dispatch(addNodeToArray(newNode));
-    }
-    if (event) {
-      handleContextMenuClose();
-    }
-  };
+        // selectedEL.selected = false;
+        // addNode(newNode);
+        // setSelectedEL(newNode);
+        addNodes(newNode);
+        // addNode({ event: event });
+        // setNewNodeId(newNode.id);
+        // setNodes([...nodes, newNode]);
+        // dispatch(addNodeToArray(newNode));
+      }
+      if (event) {
+        handleContextMenuClose();
+      }
+    };
+  //   [addNodes]
+  // );
 
   const keydownHandler = (e) => {
     // Ctrl + C (Cmd + C) for copy
@@ -881,7 +966,7 @@ export function useReactFlowWrapper({
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onInit={setRfInstance}
-          onElementClick={onElementClick}
+          // onElementClick={onElementClick}
           snapToGrid
           snapGrid={[15, 15]}
           key="floating"
@@ -974,7 +1059,7 @@ export function useReactFlowWrapper({
           )}
           {contextMenu !== null && contextMenu.type === "paneMenu" && (
             <MenuItem
-              onClick={onPaste}
+              onClick={(e) => onPaste()}
               style={{ position: "relative", width: "15vw" }}
             >
               <div className="menu-item">

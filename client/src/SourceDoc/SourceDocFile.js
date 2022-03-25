@@ -7,17 +7,12 @@ import { useReactFlow } from "react-flow-renderer";
 
 // export default function SourceDocFile(props) {
 function SourceDocFile(props) {
-  const {
-    addNode,
-    setOpenArtifact,
-    openArtifact,
-    addFileToNode,
-    selectedEL,
-    nodes,
-  } = props;
+  const { addNode, setOpenArtifact, openArtifact, addFileToNode, selectedEL } =
+    props;
   var { file } = props;
 
-  const { fitBounds } = useReactFlow();
+  const { fitBounds, getNodes } = useReactFlow();
+
   if (!file) {
     return <> </>;
   }
@@ -53,7 +48,7 @@ function SourceDocFile(props) {
     setOpenArtifact(file);
 
     if (file) {
-      var el = nodes.nodesArr.find((node) =>
+      var el = getNodes().find((node) =>
         node.data ? node.data.path === file.path : false
       );
       if (el) {

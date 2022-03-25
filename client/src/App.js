@@ -32,7 +32,7 @@ import { theme } from "./Themes";
 import { loadDiagram } from "./Redux/actions/loadDiagram";
 import { storeRepoFiles } from "./Redux/actions/repoFiles";
 import SourceDoc from "./SourceDoc/SourceDoc";
-
+import { useReactFlow } from "react-flow-renderer";
 import Fuse from "fuse.js";
 
 // pages
@@ -72,6 +72,7 @@ const LogoTopNav = styled.div`
  *
  *
  */
+
 function App() {
   const {
     nodesArr,
@@ -80,6 +81,7 @@ function App() {
     publicRepoURL,
     isFetchingFiles,
     isReloadDiagram,
+    RFState,
   } = useSelector((state) => {
     return {
       nodesArr: state.nodes.nodesArr,
@@ -88,9 +90,10 @@ function App() {
       publicRepoURL: state.repoFiles.publicRepoURL,
       isFetchingFiles: state.repoFiles.isFetchingFiles,
       isReloadDiagram: state.RFState.reloadDiagram,
+      RFState: state.RFState,
     };
   });
-
+  const rf = useReactFlow();
   const [user, setUser] = useState([]);
   const [content, setContent] = useState([]);
   const [repos, setRepos] = useState([]);
@@ -376,7 +379,8 @@ function App() {
         repoFiles &&
         Object.keys(repoFiles).length > 0 &&
         !isFetchingFiles &&
-        (branch || publicRepoURL)
+        (branch || publicRepoURL) &&
+        !isLoadingDiagram
       ) {
         var homeDir = [];
 
@@ -386,14 +390,17 @@ function App() {
         for (const [key, val] of Object.entries(repoFiles)) {
           key.split("/").length === 1 && homeDir.push(val);
         }
+        console.log("hello");
 
         // set files in pulled repo to be linked if files
         // in current react flow elements
-        for (const node of nodesArr) {
+        for (const node of RFState.RFState.nodes) {
+          console.log(node);
           if (!node.data) {
             continue;
           }
           if (repoFiles[node.data.path]) {
+            console.log(node.label);
             repoFiles[node.data.path].linked = true;
           }
         }

@@ -197,12 +197,12 @@ body {
 }
 
 .unlinked {
-  background-color: #f3f3f3;
+  background-color: #eeeeee;
   color: #626262;
 }
 
 .linked {
-  background-color: rgb(241, 241, 241);
+  background-color: rgb(248, 248, 248);
   color: black;
 }
 
