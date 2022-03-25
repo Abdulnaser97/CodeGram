@@ -235,7 +235,7 @@ export function useReactFlowWrapper({
               : Math.floor(70 / 15) * 15,
           nodeInputHandler: nodeInputHandler,
           nodeLinkHandler: nodeLinkHandler,
-          zoomSensitivity: 1.5,
+          zoomSensitivity: 0.6,
         },
         type: shapeType,
         width:
@@ -395,8 +395,8 @@ export function useReactFlowWrapper({
   );
 
   const handleContextMenu = (event, node) => {
-    console.log(getNodes());
-    event.preventDefault();
+    // console.log(getNodes());
+    // event.preventDefault();
     setSelectedEL(node);
     setSelectedNodeEvent(event);
     setContextMenu(
