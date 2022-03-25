@@ -32,7 +32,6 @@ import { getRepo } from "../api/apiClient";
 
 import { useReactFlow } from "react-flow-renderer";
 
-
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -127,16 +126,16 @@ function SourceDoc(props) {
   useEffect(() => {
     try {
       if (props.data.openArtifact) {
-          var el = getNodes().find((node) =>
-            node.data ? node.data.path === props.data.openArtifact.path : false
-          );
+        var el = getNodes().find((node) =>
+          node.data ? node.data.path === props.data.openArtifact.path : false
+        );
 
-          if (el) {
-            props.functions.setSelectedEL(el);
-          }
-          else {
-            props.functions.setSelectedEL(null);
-          }
+        if (el) {
+          console.log(el);
+          props.functions.setSelectedEL(el);
+        } else {
+          props.functions.setSelectedEL(null);
+        }
       }
     } catch (e) {
       console.log(e);

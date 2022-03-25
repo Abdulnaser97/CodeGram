@@ -1,4 +1,4 @@
-import { Handle } from "react-flow-renderer";
+import { Handle, useStore } from "react-flow-renderer";
 import { Resizable } from "re-resizable";
 import styled from "styled-components";
 
@@ -34,10 +34,12 @@ const sourceHandleStyle = {
   height: "10px",
   width: "10px",
 };
-
+const zoomSelector = (s) => s.transform[2];
 // TODO: need to store data from here in state then dispatch to
 // the react elemnts array when done typing/editing
 const CustomNodeComponent = (props) => {
+  const zoom = useStore(zoomSelector);
+  const showContent = zoom >= props.data.zoomSensitivity;
   const [width, setWidth] = useState(props.data.width ? props.data.width : 120);
   const [height, setHeight] = useState(
     props.data.height ? props.data.height : 70
@@ -82,7 +84,16 @@ const CustomNodeComponent = (props) => {
   }, [props.data]);
 
   return (
-    <div>
+    <div
+      style={{
+        backgroundColor: showContent ? "transparent" : "white",
+        borderRadius: `${handleSize * 1.1}px`,
+        display:
+          zoom >= props.data.zoomSensitivity / 1.3 || !props.data.childFlag
+            ? "block"
+            : "none",
+      }}
+    >
       {props.selected && (
         <div
           className="node-button corner"
@@ -166,37 +177,73 @@ const CustomNodeComponent = (props) => {
           topLeft: false,
         }}
       >
-        {
-          <Typography
-            fontWeight="Medium"
-            style={{ "font-size": fontSize }}
-            textAlign="center"
-          >
-            {!isEditing && props.data.label ? (
-              props.data.label
+        {showContent && (
+          <div className="node-label corner">
+            {props.data.label && !isEditing ? (
+              <>{props.data.label}</>
             ) : (
               <input
-                placeholder="__"
-                autoFocus
+                placeholder="wrapper"
+                // onChange={handleSearch}
                 onKeyUp={handleNewNodeName}
-                key="input"
+                autoFocus
                 style={{
                   "z-index": 0,
                   border: "none",
-                  textAlign: "center",
-                  fontSize: "100%",
+                  fontSize: "70%",
                   outline: "none",
-                  width: "80%",
-                  padding: "none",
+                  width: "100%",
                   background: "transparent",
                   fontFamily: theme.typography.fontFamily,
-                  fontWeight: theme.typography.fontWeightMedium,
+                  fontWeight: theme.typography.fontWeightRegular,
                   color: theme.palette.primary.darkestGrey,
                 }}
               />
             )}
-          </Typography>
-        }
+          </div>
+        )}
+
+        {!showContent && (
+          <div
+            style={{
+              display: "flex",
+              "justify-content": "center",
+              "align-items": "center",
+              height: "100%",
+              width: "100%",
+            }}
+          >
+            <Typography
+              fontWeight="Medium"
+              style={{ "font-size": fontSize }}
+              textAlign="center"
+            >
+              {!isEditing && props.data.label ? (
+                props.data.label
+              ) : (
+                <input
+                  placeholder="__"
+                  autoFocus
+                  onKeyUp={handleNewNodeName}
+                  key="input"
+                  style={{
+                    "z-index": 0,
+                    border: "none",
+                    textAlign: "center",
+                    fontSize: "100%",
+                    outline: "none",
+                    width: "80%",
+                    padding: "none",
+                    background: "transparent",
+                    fontFamily: theme.typography.fontFamily,
+                    fontWeight: theme.typography.fontWeightMedium,
+                    color: theme.palette.primary.darkestGrey,
+                  }}
+                />
+              )}
+            </Typography>
+          </div>
+        )}
         <Handle
           className="handle target"
           id={`target-handle-${props.id}`}
@@ -262,6 +309,7 @@ const WrapperNodeComponent = (props) => {
   const [height, setHeight] = useState(
     props.data.height ? props.data.height : 200
   );
+  const zoom = useStore(zoomSelector);
   const [fontSize, setFontSize] = useState(`${width / 180}em`);
   const [borderRadius, setBorderRadius] = useState(
     `${Math.min(width, height) / 12}px`
@@ -302,7 +350,14 @@ const WrapperNodeComponent = (props) => {
   }
 
   return (
-    <div>
+    <div
+      style={{
+        display:
+          zoom >= props.data.zoomSensitivity / 1.3 || !props.data.childFlag
+            ? "block"
+            : "none",
+      }}
+    >
       {props.selected && (
         <div
           className="node-button corner"
@@ -483,6 +538,7 @@ const FolderNodeComponent = (props) => {
   const [height, setHeight] = useState(
     props.data.height ? props.data.height : 200
   );
+  const zoom = useStore(zoomSelector);
   const [fontSize, setFontSize] = useState(`${width / 180}em`);
   const [borderRadius, setBorderRadius] = useState(
     `${Math.min(width, height) / 12}px`
@@ -527,7 +583,14 @@ const FolderNodeComponent = (props) => {
   }, [props.data]);
 
   return (
-    <div>
+    <div
+      style={{
+        display:
+          zoom >= props.data.zoomSensitivity / 1.3 || !props.data.childFlag
+            ? "block"
+            : "none",
+      }}
+    >
       {props.selected && (
         <div
           className="node-button corner"
