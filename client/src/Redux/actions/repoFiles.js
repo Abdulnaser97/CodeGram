@@ -6,7 +6,7 @@ import {
   UPDATE_CODE_CONTENT,
   UPDATE_REPO_FILE_LINK,
 } from "../constants";
-import { reloadDiagram } from "./loadDiagram";
+import { reloadDiagram, setIsLoadingDiagram } from "./loadDiagram";
 import { loadingNotification, successNotification } from "./notification";
 
 async function recursiveRepoBuilder(
@@ -52,6 +52,7 @@ export const getRepoFiles = (repoName, branch) => async (dispatch) => {
     loadingNotification(`Retrieving ${repoName} files from GitHub ...`)
   );
   await dispatch(fetchRepoFiles());
+  await dispatch(setIsLoadingDiagram(true));
   const newRepo = await getRepo(repoName, null, branch);
   const files = newRepo.data;
   var processedRepo = {};
@@ -124,11 +125,11 @@ export function updatedRepoFileLinked(path, isLinked) {
     if (repoFiles.repoFiles[path]) {
       repoFiles.repoFiles[path].linked = isLinked;
       console.log(`${path} set to ${isLinked}`);
-    };
+    }
 
     dispatch({
       type: UPDATE_REPO_FILE_LINK,
-      repoFiles: repoFiles.repoFiles
+      repoFiles: repoFiles.repoFiles,
     });
   };
 }

@@ -392,7 +392,6 @@ function App() {
         for (const [key, val] of Object.entries(repoFiles)) {
           key.split("/").length === 1 && homeDir.push(val);
         }
-        console.log("hello");
 
         // set files in pulled repo to be linked if files
         // in current react flow elements

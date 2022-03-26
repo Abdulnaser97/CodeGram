@@ -26,6 +26,7 @@ import {
   loadTemplateDiagram,
   reloadDiagram,
   setSourceDocTab,
+  setIsLoadingDiagram,
 } from "./actions/loadDiagram";
 import { notificationReducer } from "./reducers/notificationReducer";
 import {
@@ -68,7 +69,8 @@ const ActionCreators = Object.assign(
   loadRepoFromPublicURL,
   loadTemplateDiagram,
   reloadDiagram,
-  setSourceDocTab
+  setSourceDocTab,
+  setIsLoadingDiagram
 );
 export const mapStateToProps = (state) => ({
   nodes: state.nodes,

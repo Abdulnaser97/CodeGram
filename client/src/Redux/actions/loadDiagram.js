@@ -5,6 +5,7 @@ import {
   LOAD_TEMPLATE_DIAGRAM,
   RELOAD_DIAGRAM,
   SET_SOURCE_DOC_TAB,
+  SET_IS_LOADING_DIAGRAM,
 } from "../constants";
 import { successNotification } from "./notification";
 
@@ -44,6 +45,7 @@ export const loadDiagram = (repoFiles) => async (dispatch) => {
     dispatch(loadTemplateDiagram(true));
     dispatch(setSourceDocTab(0));
   }
+  dispatch(setIsLoadingDiagram(false));
 };
 
 export function loadDiagramToStore(payload) {
@@ -56,6 +58,13 @@ export function loadDiagramToStore(payload) {
 export function loadTemplateDiagram(payload) {
   return {
     type: LOAD_TEMPLATE_DIAGRAM,
+    payload: payload,
+  };
+}
+
+export function setIsLoadingDiagram(payload) {
+  return {
+    type: SET_IS_LOADING_DIAGRAM,
     payload: payload,
   };
 }
