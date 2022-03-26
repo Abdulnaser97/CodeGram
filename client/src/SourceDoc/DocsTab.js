@@ -33,7 +33,7 @@ export default function DocsTab(props) {
 
   const saveWikiToNode = () => {
     var selEl = null;
-    // TODO: changed setElements to setNodes, did not handle the setEdges scenario
+    // CHecks if edge with source attribute
     if (selectedEL?.source) {
       setEdges((els) =>
         els.map((el) => {

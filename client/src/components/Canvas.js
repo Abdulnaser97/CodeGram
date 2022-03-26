@@ -255,29 +255,15 @@ export function useReactFlowWrapper({
         animated: true,
       };
 
-      if (props.isChild) {
-        console.log(selectedEL.id);
-        // newNode.width = newNode.width / 2;
-        // newNode.height = newNode.height / 2;
-        // newNode.data.width = newNode.width / 2;
-        // newNode.data.height = newNode.height / 2;
-        newNode.data.zoomSensitivity = selectedEL.data.zoomSensitivity * 1.15;
-        newNode.position = { x: 15, y: 120 };
-        newNode.extent = "parent";
-        newNode.draggabale = true;
-        newNode.parentNode = selectedEL.id;
-      }
-
       dispatch(addNodeToArray(newNode));
       // TODO: Change to setNodes((ns) => applyNodeChanges(changes, ns))
       // Need to figure out the changes type for adding a node
       // setNodes((ns) => applyNodeChanges(changes, ns));
-      // rf.addNodes(newNode);
       // setNodes((ns) => ns.concat(newNode));
 
       addNodes(newNode);
 
-      // setNewNodeId(newNode.id);
+      setNewNodeId(newNode.id);
     },
     [setNodes, nodeName, dispatch, project]
   );
@@ -331,6 +317,8 @@ export function useReactFlowWrapper({
         },
         type: event ? shapeType : "FileNode",
         parentNode: selectedEL.id,
+        // hold and drag against side for over 0.3 seconds
+        // remove extent so it can come out of group
         extent: "parent",
         width: selectedEL.width / 3,
         height: selectedEL.height / 3,
@@ -346,12 +334,10 @@ export function useReactFlowWrapper({
       // TODO: Change to setNodes((ns) => applyNodeChanges(changes, ns))
       // Need to figure out the changes type for adding a node
       // setNodes((ns) => applyNodeChanges(changes, ns));
-      // rf.addNodes(newNode);
       // setNodes((ns) => ns.concat(newNode));
-
       addNodes(newNode);
 
-      // setNewNodeId(newNode.id);
+      setNewNodeId(newNode.id);
     },
     [setNodes, selectedEL, nodeName, dispatch, project]
   );
@@ -495,11 +481,9 @@ export function useReactFlowWrapper({
     }
     setOpenArtifact("");
   };
-  console.log(selectedEL);
 
   const onNodesChange = useCallback(
     (changes) => {
-      console.log(changes);
       try {
         // console.log(changes);
         // console.log(nodes);
@@ -725,23 +709,9 @@ export function useReactFlowWrapper({
             ],
           },
         };
-        // newNode.id = getNodeId();
-        // newNode.position = calculatePosition(event, rfInstance, newNode.position);
-        // newNode.data = {
-        //   ...newNode.data,
-        //   path: "",
-        //   nodeInputHandler: nodeInputHandler,
-        //   nodeLinkHandler: nodeLinkHandler,
-        // };
 
-        // selectedEL.selected = false;
-        // addNode(newNode);
-        // setSelectedEL(newNode);
         addNodes(newNode);
-        // addNode({ event: event });
-        // setNewNodeId(newNode.id);
-        // setNodes([...nodes, newNode]);
-        // dispatch(addNodeToArray(newNode));
+        setNewNodeId(newNode.id);
       }
       if (event) {
         handleContextMenuClose();
@@ -838,17 +808,6 @@ export function useReactFlowWrapper({
                 : null,
             path: file && file.path ? file.path : "",
             floatTargetHandle: false,
-
-            // can set this type to whatever is selected in the tool bar for now
-            // but the type will probably be set from a few different places
-            // will have to reload the node as a new component if its not the same
-            // type: () => {
-            //   if (file.type == "file") return "FileNode";
-            //   else return el.data.type;
-            //   // else if (file.type == "dir") return "DashedShape";
-            //   // else return el.data.type;
-            //   // file ? "FileNode" : selectedShapeName.current
-            // },
           };
           selEl = el;
         }
@@ -860,21 +819,6 @@ export function useReactFlowWrapper({
     setSelectedEL(selEl);
     dispatch(updateRepoFile(selEl, oldPath));
   };
-
-  // const onNodesDelete = useCallback()
-
-  // const onNodesDelete = useCallback(
-  //   (elementsToRemove) => {
-  //     if (elementsToRemove.length === 0) {
-  //       console.log("nothing selected");
-  //       return;
-  //     }
-  //     dispatch(deleteNodeFromArray(elementsToRemove));
-  //     setOpenArtifact("");
-  //     setElements((els) => removeElements(elementsToRemove, els));
-  //   },
-  //   [setElements, dispatch]
-  // );
 
   const setter = (value) => {
     // TODO: need to check if node or edges
@@ -1055,7 +999,7 @@ export function useReactFlowWrapper({
       },
     ]);
   }, [selectedEL]);
-
+  console.log(repository);
   return {
     render: (
       <div className="canvas">

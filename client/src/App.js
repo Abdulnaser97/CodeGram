@@ -372,7 +372,9 @@ function App() {
     }
   }, [isReloadDiagram, repoFiles]);
   // create home path, and search engine after all loads
+
   useEffect(() => {
+    console.log(repoFiles);
     try {
       if (
         repo &&
@@ -394,14 +396,15 @@ function App() {
 
         // set files in pulled repo to be linked if files
         // in current react flow elements
-        for (const node of RFState.RFState.nodes) {
-          console.log(node);
-          if (!node.data) {
-            continue;
-          }
-          if (repoFiles[node.data.path]) {
-            console.log(node.label);
-            repoFiles[node.data.path].linked = true;
+        if (RFState?.RFState?.nodes) {
+          for (const node of RFState?.RFState?.nodes) {
+            if (!node.data) {
+              continue;
+            }
+            if (repoFiles[node.data.path]) {
+              console.log(node.label);
+              repoFiles[node.data.path].linked = true;
+            }
           }
         }
 
@@ -410,7 +413,6 @@ function App() {
           dir: homeDir,
           path: repo,
         };
-
         const myFuse = new Fuse(Object.values(repoFiles), options);
         setHomePath(hPath);
         setFuse(myFuse);
@@ -420,7 +422,7 @@ function App() {
       console.log(err);
       dispatch(errorNotification(`Error loading repository ${repo}`));
     }
-  }, [isFetchingFiles, isLoadingDiagram, branch, publicRepoURL]);
+  }, [repoFiles, isFetchingFiles, isLoadingDiagram, branch, publicRepoURL]);
 
   // Retrieves user details once authenticated
   useEffect(() => {
