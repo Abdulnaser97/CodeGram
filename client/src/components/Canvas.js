@@ -706,18 +706,18 @@ export function useReactFlowWrapper({
     }
   };
 
-  const onPaste =
-    // useCallback(
+  const onPaste = useCallback(
     (event = null) => {
       if (event) {
         event.preventDefault();
       }
       if (clipBoard) {
         var newId = getNodeId();
+        var position = calculatePosition(event, rfInstance, clipBoard.position);
         const newNode = {
           ...clipBoard,
           id: newId,
-          position: calculatePosition(event, rfInstance, clipBoard.position),
+          position: position,
           data: {
             ...clipBoard.data,
             path: "",
@@ -754,15 +754,17 @@ export function useReactFlowWrapper({
           },
         };
 
+        dispatch(addNodeToArray(newNode));
+
         addNodes(newNode);
         setNewNodeId(newNode.id);
       }
       if (event) {
         handleContextMenuClose();
       }
-    };
-  //   [addNodes]
-  // );
+    },
+    [clipBoard, dispatch]
+  );
 
   const keydownHandler = (e) => {
     // Ctrl + C (Cmd + C) for copy
@@ -1157,7 +1159,7 @@ export function useReactFlowWrapper({
           )}
           {contextMenu !== null && contextMenu.type === "paneMenu" && (
             <MenuItem
-              onClick={(e) => onPaste()}
+              onClick={onPaste}
               style={{ position: "relative", width: "15vw" }}
             >
               <div className="menu-item">
