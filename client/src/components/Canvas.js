@@ -666,7 +666,6 @@ export function useReactFlowWrapper({
     ];
 
     onNodesChange(changes);
-    //createCustomChange('remove', selectedEL.id, selectedEL.source ? 'edge' : 'node');
     handleContextMenuClose();
   };
 
