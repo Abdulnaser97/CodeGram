@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getFileSHA } from "../../api/apiClient";
 import {
   LOAD_DIAGRAM_TO_STORE,
   LOAD_REPO_FROM_PUBLIC_URL,
@@ -19,12 +20,23 @@ export const loadDiagram = (repoFiles) => async (dispatch) => {
   }
 
   if (diagramFile && diagramFile.url !== undefined) {
+    const fileSHA = await getFileSHA(diagramFile.url);
+    // Replace the branchName with the SHA to retrieve latest diagram data (to avoid github caching when not supplying a SHA)
+    // Old url format: https://raw.githubusercontent.com/user/repo/branchName/Diagram1.CodeGram
+    // New url format: https://raw.githubusercontent.com/user/repo/SHA/Diagram1.CodeGram
+    var splitUrl = diagramFile.url.split("/");
+    var path = splitUrl.pop();
+    var branch = splitUrl.pop();
+    var repo = splitUrl.pop();
+    var username = splitUrl.pop();
+    const fileURLWithSHA = `${splitUrl.join("/")}/${username}/${repo}/${
+      fileSHA.sha
+    }/${path}`;
+
     // Calls node url to get file content
-    axios
-      .get(diagramFile.url)
+    await axios
+      .get(fileURLWithSHA)
       .then(function (response) {
-        // dispatch notification diagram Found
-        dispatch(successNotification(`Diagram Found!`));
         // Populate nodesZIndex array
         const nodesZIndex = populateZIndexArr(response.data.nodes);
 
@@ -35,6 +47,8 @@ export const loadDiagram = (repoFiles) => async (dispatch) => {
           })
         );
         dispatch(setSourceDocTab(0));
+        // dispatch notification diagram Found
+        dispatch(successNotification(`Diagram Found!`));
       })
 
       .catch(function (error) {

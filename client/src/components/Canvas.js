@@ -120,7 +120,7 @@ export function useReactFlowWrapper({
   const [clipBoard, setClipBoard] = useState(null);
   const [selectedNodeEvent, setSelectedNodeEvent] = useState(null);
   const [requestUpdateZIndex, setRequestUpdateZIndex] = useState(false);
-  const { project, addNodes, getNode, getNodes } = useReactFlow();
+  const { project, addNodes, getNode, getNodes, getEdges } = useReactFlow();
   const [tabValue, setTabValue] = useState(0);
   const [nameFlag, setNameFlag] = useState(false);
   const [newNodeId, setNewNodeId] = useState(null);
@@ -155,6 +155,50 @@ export function useReactFlowWrapper({
     []
   );
 
+  const createCustomChange = useCallback(
+    (changeType, id = "", type = "node") => {
+      try {
+        let changes = [
+          {
+            id: id,
+            type: changeType,
+          },
+        ];
+        switch (changeType) {
+          case "deselectAll":
+            let nodes = getNodes();
+            nodes.filter((node) => node.selected === true);
+            changes = nodes.map((node) => {
+              return {
+                id: node.id,
+                selected: false,
+              };
+            });
+            onNodesChange(changes);
+            let edges = getEdges();
+            edges.filter((edge) => edge.selected === true);
+            changes = edges.map((edge) => {
+              return {
+                id: edge.id,
+                selected: false,
+              };
+            });
+            onEdgesChange(changes);
+            break;
+          default:
+            if (type === "node") {
+              onNodesChange(changes);
+            } else {
+              onEdgesChange(changes);
+            }
+            break;
+        }
+      } catch (e) {
+        console.log("Error in createCustomNode", e);
+      }
+    },
+    []
+  );
   // Projects event click position to RF coordinates
   function calculatePosition(
     event = null,
@@ -381,8 +425,8 @@ export function useReactFlowWrapper({
   );
 
   const handleContextMenu = (event, node) => {
-    // console.log(getNodes());
-    // event.preventDefault();
+    event.preventDefault();
+    createCustomChange("select", node.id);
     setSelectedEL(node);
     setSelectedNodeEvent(event);
     setContextMenu(
@@ -401,6 +445,7 @@ export function useReactFlowWrapper({
 
   const handleEdgeContextMenu = (event, edge) => {
     event.preventDefault();
+    createCustomChange("select", edge.id, "edge");
     setSelectedEL(edge);
     setContextMenu(
       contextMenu === null
@@ -498,6 +543,7 @@ export function useReactFlowWrapper({
               // setOpenArtifact("");
               onDeleteSourceDocFile(change);
               break;
+
             default:
               break;
           }
@@ -611,8 +657,6 @@ export function useReactFlowWrapper({
 
   const onNodeContextMenuDelete = (event) => {
     event.preventDefault();
-    //TODO: Change to onNodeChange or applyNodeChanges and pass in delete change
-    //onElementsRemove([selectedEL]);
     const changes = [
       {
         id: selectedEL.id,
