@@ -758,6 +758,7 @@ export function useReactFlowWrapper({
 
         addNodes(newNode);
         setSelectedEL(null);
+
         setNewNodeId(newNode.id);
       }
       if (event) {
