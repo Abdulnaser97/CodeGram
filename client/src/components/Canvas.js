@@ -757,6 +757,7 @@ export function useReactFlowWrapper({
         dispatch(addNodeToArray(newNode));
 
         addNodes(newNode);
+        setSelectedEL(null);
         setNewNodeId(newNode.id);
       }
       if (event) {
@@ -787,8 +788,11 @@ export function useReactFlowWrapper({
         document.activeElement.tagName !== "TEXTAREA" &&
         document.activeElement.tagName !== "DIV"
       ) {
-        //TODO: Change to onNodeChange or applyNodeChanges and pass in delete change
-        //onElementsRemove([selectedEL]);
+        createCustomChange(
+          "remove",
+          selectedEL.id,
+          selectedEL.source ? "edge" : "node"
+        );
       }
     }
 
@@ -1080,6 +1084,9 @@ export function useReactFlowWrapper({
           onNodeClick={onElementClick}
           onEdgeClick={onElementClick}
           onNodeDoubleClick={handleNodeDoubleClick}
+          multiSelectionKeyCode={null}
+          zoomActivationKeyCode={null}
+          deleteKeyCode={null}
           // onNodesDelete={onNodesDelete}
         >
           <MiniMap
