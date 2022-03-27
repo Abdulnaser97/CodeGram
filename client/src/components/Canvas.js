@@ -170,6 +170,7 @@ export function useReactFlowWrapper({
             nodes.filter((node) => node.selected === true);
             changes = nodes.map((node) => {
               return {
+                type: "select",
                 id: node.id,
                 selected: false,
               };
@@ -179,6 +180,7 @@ export function useReactFlowWrapper({
             edges.filter((edge) => edge.selected === true);
             changes = edges.map((edge) => {
               return {
+                type: "select",
                 id: edge.id,
                 selected: false,
               };
@@ -530,8 +532,9 @@ export function useReactFlowWrapper({
   const onNodesChange = useCallback(
     (changes) => {
       try {
-        // console.log(changes);
-        // console.log(nodes);
+        console.log(changes);
+        //console.log(nodes);
+
         changes.forEach((change) => {
           switch (change.type) {
             case "remove":
@@ -543,7 +546,6 @@ export function useReactFlowWrapper({
               // setOpenArtifact("");
               onDeleteSourceDocFile(change);
               break;
-
             default:
               break;
           }
@@ -755,11 +757,14 @@ export function useReactFlowWrapper({
         };
 
         dispatch(addNodeToArray(newNode));
+        setSelectedEL(null);
+        createCustomChange("deselectAll");
 
         addNodes(newNode);
-        setSelectedEL(null);
 
         setNewNodeId(newNode.id);
+        dispatch(bringToFront({ id: newNode.id }));
+        setRequestUpdateZIndex(true);
       }
       if (event) {
         handleContextMenuClose();
