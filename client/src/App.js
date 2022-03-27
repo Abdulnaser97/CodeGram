@@ -374,7 +374,6 @@ function App() {
   // create home path, and search engine after all loads
 
   useEffect(() => {
-    console.log(repoFiles);
     try {
       if (
         repo &&

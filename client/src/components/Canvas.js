@@ -50,6 +50,8 @@ import {
 } from "../Redux/actions/loadDiagram";
 import { errorNotification } from "../Redux/actions/notification";
 
+const multiSelectionKeyCode = "Shift";
+
 var initialElements = ControlTemplate2;
 
 const edgeTypes = {
@@ -127,6 +129,8 @@ export function useReactFlowWrapper({
   const [text, setText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
+  const selectedElIdRef = useRef(null);
+
   const edgeTypes = useMemo(
     () => ({
       default: SmoothStepEdge,
@@ -170,6 +174,7 @@ export function useReactFlowWrapper({
             nodes.filter((node) => node.selected === true);
             changes = nodes.map((node) => {
               return {
+                type: "select",
                 id: node.id,
                 selected: false,
               };
@@ -179,6 +184,7 @@ export function useReactFlowWrapper({
             edges.filter((edge) => edge.selected === true);
             changes = edges.map((edge) => {
               return {
+                type: "select",
                 id: edge.id,
                 selected: false,
               };
@@ -300,13 +306,8 @@ export function useReactFlowWrapper({
       };
 
       dispatch(addNodeToArray(newNode));
-      // TODO: Change to setNodes((ns) => applyNodeChanges(changes, ns))
-      // Need to figure out the changes type for adding a node
-      // setNodes((ns) => applyNodeChanges(changes, ns));
-      // setNodes((ns) => ns.concat(newNode));
-
       addNodes(newNode);
-
+      createCustomChange("select", newNode.id, "node");
       setNewNodeId(newNode.id);
     },
     [setNodes, nodeName, dispatch, project]
@@ -375,11 +376,8 @@ export function useReactFlowWrapper({
         animated: true,
       };
       dispatch(addNodeToArray(newNode));
-      // TODO: Change to setNodes((ns) => applyNodeChanges(changes, ns))
-      // Need to figure out the changes type for adding a node
-      // setNodes((ns) => applyNodeChanges(changes, ns));
-      // setNodes((ns) => ns.concat(newNode));
       addNodes(newNode);
+      createCustomChange("select", newNode.id, "node");
 
       setNewNodeId(newNode.id);
     },
@@ -411,14 +409,14 @@ export function useReactFlowWrapper({
         height: Math.floor(150 / 15) * 15,
         width: Math.floor(350 / 15) * 15,
         position: project({
-          x: position.x,
-          y: position.y,
+          x: event ? event.clientX : position.x,
+          y: event ? event.clientY : position.y,
         }),
         animated: true,
       };
-      // dispatch(addNodeToArray(newText));
-      // setNodes((ns) => ns.concat(newText));
+      dispatch(addNodeToArray(newText));
       addNodes(newText);
+      createCustomChange("select", newText.id, "node");
       setNewNodeId(newText.id);
     },
     [setNodes, nodeName, dispatch, project]
@@ -530,8 +528,9 @@ export function useReactFlowWrapper({
   const onNodesChange = useCallback(
     (changes) => {
       try {
-        // console.log(changes);
+        console.log(changes);
         // console.log(nodes);
+
         changes.forEach((change) => {
           switch (change.type) {
             case "remove":
@@ -542,6 +541,16 @@ export function useReactFlowWrapper({
               // dispatch(deleteNodeFromArray([nodeToRemove]));
               // setOpenArtifact("");
               onDeleteSourceDocFile(change);
+              break;
+            case "select":
+              if (change.selected === true) {
+                selectedElIdRef.current = change.id;
+              } else if (
+                change.selected === false &&
+                selectedElIdRef.current === change.id
+              ) {
+                selectedElIdRef.current = null;
+              }
               break;
 
             default:
@@ -685,20 +694,15 @@ export function useReactFlowWrapper({
 
   const onCopy = (event = null) => {
     if (
+      selectedElIdRef.current &&
       selectedEL &&
       document.activeElement.tagName !== "INPUT" &&
       document.activeElement.tagName !== "DIV"
     ) {
-      // if (event) {
-      //   event.preventDefault();
-      // }
+      const el = getNode(selectedElIdRef.current);
 
-      let copyEl = JSON.parse(JSON.stringify(selectedEL));
+      let copyEl = JSON.parse(JSON.stringify(el));
       setClipBoard(copyEl);
-      // setClipBoard({
-      //   ...selectedEL,
-      //   selected: false,
-      // });
 
       if (event) {
         handleContextMenuClose();
@@ -706,18 +710,18 @@ export function useReactFlowWrapper({
     }
   };
 
-  const onPaste =
-    // useCallback(
+  const onPaste = useCallback(
     (event = null) => {
       if (event) {
         event.preventDefault();
       }
       if (clipBoard) {
         var newId = getNodeId();
+        var position = calculatePosition(event, rfInstance, clipBoard.position);
         const newNode = {
           ...clipBoard,
           id: newId,
-          position: calculatePosition(event, rfInstance, clipBoard.position),
+          position: position,
           data: {
             ...clipBoard.data,
             path: "",
@@ -754,15 +758,22 @@ export function useReactFlowWrapper({
           },
         };
 
+        dispatch(addNodeToArray(newNode));
+        setSelectedEL(null);
+        createCustomChange("deselectAll");
+
         addNodes(newNode);
+
         setNewNodeId(newNode.id);
+        dispatch(bringToFront({ id: newNode.id }));
+        setRequestUpdateZIndex(true);
       }
       if (event) {
         handleContextMenuClose();
       }
-    };
-  //   [addNodes]
-  // );
+    },
+    [clipBoard, dispatch]
+  );
 
   const keydownHandler = (e) => {
     // Ctrl + C (Cmd + C) for copy
@@ -785,8 +796,11 @@ export function useReactFlowWrapper({
         document.activeElement.tagName !== "TEXTAREA" &&
         document.activeElement.tagName !== "DIV"
       ) {
-        //TODO: Change to onNodeChange or applyNodeChanges and pass in delete change
-        //onElementsRemove([selectedEL]);
+        createCustomChange(
+          "remove",
+          selectedEL.id,
+          selectedEL.source ? "edge" : "node"
+        );
       }
     }
 
@@ -1043,7 +1057,6 @@ export function useReactFlowWrapper({
       },
     ]);
   }, [selectedEL]);
-  console.log(repository);
   return {
     render: (
       <div className="canvas">
@@ -1078,6 +1091,10 @@ export function useReactFlowWrapper({
           onNodeClick={onElementClick}
           onEdgeClick={onElementClick}
           onNodeDoubleClick={handleNodeDoubleClick}
+          multiSelectionKeyCode={multiSelectionKeyCode}
+          zoomActivationKeyCode={null}
+          deleteKeyCode={null}
+          selectionKeyCode={multiSelectionKeyCode}
           // onNodesDelete={onNodesDelete}
         >
           <MiniMap
@@ -1157,7 +1174,7 @@ export function useReactFlowWrapper({
           )}
           {contextMenu !== null && contextMenu.type === "paneMenu" && (
             <MenuItem
-              onClick={(e) => onPaste()}
+              onClick={onPaste}
               style={{ position: "relative", width: "15vw" }}
             >
               <div className="menu-item">
@@ -1226,7 +1243,7 @@ export function ReactFlowStoreInterface({
   const reactFlowState = useStore((state) => state);
   const { setViewport } = useReactFlow();
   const rf = useReactFlow();
-  console.log(rf.getNodes());
+  //console.log(rf.getNodes());
 
   useEffect(() => {
     try {
