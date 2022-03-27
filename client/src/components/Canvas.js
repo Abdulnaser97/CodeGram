@@ -655,7 +655,6 @@ export function useReactFlowWrapper({
     setFloatTargetHandle(false);
   };
 
-  console.log("selectedEL", selectedEL);
   const onNodeContextMenuDelete = (event) => {
     event.preventDefault();
     const changes = [
