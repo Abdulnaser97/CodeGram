@@ -182,14 +182,14 @@ body {
   border: 1px solid #ff8b8b;
 }
 
-.canvasLinked{
+.canvasLinked {
   background-color: #f3f3f3;
   color: #626262;
 }
 
-.canvasUnlinked{
+.canvasUnlinked {
   background-color: white;
-  color:black;
+  color: black;
 }
 
 .canvasUnlinked:hover {
@@ -294,14 +294,13 @@ pre {
   align-items: center;
 }
 
-.PlusSign { 
+.PlusSign {
   position: fixed;
   z-index: 10000;
 }
 
 .PlusSign:hover {
   cursor: pointer;
- 
 }
 
 .pathContainer {
@@ -379,4 +378,25 @@ pre {
 
 .ck-editor__editable_inline {
   min-height: 20vh;
+}
+
+.LearnMoreButtonWrapper {
+  position: relative;
+  height: 15%;
+  padding-top: 5%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.LearnMoreButtonWrapper:hover .LearnMoreButton {
+  fill: #ffaea6;
+  cursor: pointer;
+}
+
+.LearnMoreButtonWrapper:hover .LearnMoreText {
+  fill: #ffffff;
+  cursor: pointer;
 }

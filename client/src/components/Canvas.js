@@ -7,6 +7,7 @@ import {
   LinkComponent,
   SignUpComponent,
   CircleNodeComponent,
+  DocumentationComponent,
 } from "../canvas/custom_node";
 import ReactFlow, {
   addEdge,
@@ -155,6 +156,7 @@ export function useReactFlowWrapper({
       LinkComponent: LinkComponent,
       SignUpComponent: SignUpComponent,
       Text: TextComponent,
+      DocumentationComponent: DocumentationComponent,
     }),
     []
   );
@@ -315,6 +317,7 @@ export function useReactFlowWrapper({
 
   const addChildNode = useCallback(
     (props) => {
+      props.event.preventDefault();
       var file = props.file ? props.file : null;
       var event = props.event ? props.event : null;
       var label = "";
@@ -540,6 +543,7 @@ export function useReactFlowWrapper({
               // const nodeToRemove = nodes.find((node) => node.id === change.id);
               // dispatch(deleteNodeFromArray([nodeToRemove]));
               // setOpenArtifact("");
+
               onDeleteSourceDocFile(change);
               break;
             case "select":
@@ -1166,7 +1170,9 @@ export function useReactFlowWrapper({
             </MenuItem>
           )}
           {contextMenu !== null && contextMenu.type === "elementMenu" && (
-            <MenuItem onClick={(e) => addChildNode({ fromSD: false })}>
+            <MenuItem
+              onClick={(e) => addChildNode({ fromSD: false, event: e })}
+            >
               <div className="menu-item">
                 <div className="menu-text">Add Internal Node</div>
               </div>
