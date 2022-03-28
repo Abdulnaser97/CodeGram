@@ -10,8 +10,8 @@
         "height": 1
       },
       "position": {
-        "x": 0,
-        "y": 0
+        "x": 150,
+        "y": 45
       },
       "animated": true,
       "style": {
@@ -24,7 +24,14 @@
         "justifyContent": "center",
         "alignItems": "center",
         "zIndex": "11"
-      }
+      },
+      "positionAbsolute": {
+        "x": 150,
+        "y": 45
+      },
+      "z": 0,
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "randomnode_1",
@@ -45,16 +52,36 @@
         "height": 165
       },
       "type": "home",
-      "width": 100,
-      "height": 70,
+      "width": 585,
+      "height": 165,
       "position": {
-        "x": 203,
-        "y": 101
+        "x": 353,
+        "y": 146
       },
       "animated": true,
       "style": {
         "zIndex": "10"
-      }
+      },
+      "positionAbsolute": {
+        "x": 353,
+        "y": 146
+      },
+      "z": 0,
+      "handleBounds": {
+        "source": [
+          {
+            "id": "bottom-handle-randomnode_1",
+            "position": "bottom",
+            "x": -204,
+            "y": -202.09375,
+            "width": 0,
+            "height": 0
+          }
+        ],
+        "target": null
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "randomnode_2",
@@ -75,137 +102,215 @@
         "height": 165
       },
       "type": "SignUpComponent",
-      "width": 100,
-      "height": 70,
+      "width": 300,
+      "height": 77,
       "position": {
-        "x": 128,
-        "y": 381
+        "x": 203,
+        "y": 411
       },
       "animated": true,
       "style": {
         "zIndex": "10"
-      }
+      },
+      "positionAbsolute": {
+        "x": 203,
+        "y": 411
+      },
+      "z": 0,
+      "handleBounds": {
+        "source": [
+          {
+            "id": "top-handle-randomnode_2",
+            "position": "top",
+            "x": 145,
+            "y": -4,
+            "width": 10,
+            "height": 10
+          }
+        ],
+        "target": null
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "randomnode_3",
       "data": {
-          "label": "Public Link Component",
-          "name": "",
-          "linkedFiles": [
-              "aa.py",
-              "gg.py",
-              "kookoo.py"
-          ],
-          "childNodes": [
-              "da",
-              "de",
-              "do"
-          ],
-          "siblingNodes": [
-              "ta",
-              "te",
-              "to"
-          ],
-          "parentNodes": [
-              "pa",
-              "pe"
-          ],
-          "documentation": [
-              "url1",
-              "url2"
-          ],
-          "description": "",
-          "url": null,
-          "path": "",
-          "floatTargetHandle": false,
-          "type": "LinkComponent",
-          "width": 585,
-          "height": 165
+        "label": "Public Link Component",
+        "name": "",
+        "linkedFiles": ["aa.py", "gg.py", "kookoo.py"],
+        "childNodes": ["da", "de", "do"],
+        "siblingNodes": ["ta", "te", "to"],
+        "parentNodes": ["pa", "pe"],
+        "documentation": ["url1", "url2"],
+        "description": "",
+        "url": null,
+        "path": "",
+        "floatTargetHandle": false,
+        "type": "LinkComponent",
+        "width": 585,
+        "height": 165
       },
       "type": "LinkComponent",
       "width": 463,
       "height": 49,
       "position": {
-          "x": 453,
-          "y": 393
+        "x": 288,
+        "y": 663
       },
       "animated": true,
       "style": {
-          "zIndex": "10"
+        "zIndex": "10"
       },
       "positionAbsolute": {
-          "x": 453,
-          "y": 393
+        "x": 288,
+        "y": 663
       },
-      "z": 1000,
+      "z": 0,
       "handleBounds": {
-          "source": [
-              {
-                  "id": "top-handle-randomnode_3",
-                  "position": "top",
-                  "x": 226.49999648171257,
-                  "y": -10.000002749153156,
-                  "width": 10,
-                  "height": 10
-              }
-          ],
-          "target": null
+        "source": [
+          {
+            "id": "top-handle-randomnode_3",
+            "position": "top",
+            "x": 226.49999648171257,
+            "y": -10.000002749153156,
+            "width": 10,
+            "height": 10
+          }
+        ],
+        "target": null
       },
+      "dragging": false,
+      "selected": false
+    },
+    {
+      "id": "randomnode_4",
+      "data": {
+        "label": "Documentation Component",
+        "name": "",
+        "linkedFiles": ["aa.py", "gg.py", "kookoo.py"],
+        "childNodes": ["da", "de", "do"],
+        "siblingNodes": ["ta", "te", "to"],
+        "parentNodes": ["pa", "pe"],
+        "documentation": ["url1", "url2"],
+        "description": "",
+        "url": null,
+        "path": "",
+        "floatTargetHandle": false,
+        "type": "DocumentationComponent",
+        "width": 585,
+        "height": 165
+      },
+      "type": "DocumentationComponent",
+      "width": 300,
+      "height": 71,
+      "position": {
+        "x": 805,
+        "y": 496
+      },
+      "animated": true,
+      "style": {
+        "zIndex": "10"
+      },
+      "positionAbsolute": {
+        "x": 805,
+        "y": 496
+      },
+      "z": 0,
+      "handleBounds": {
+        "source": [
+          {
+            "id": "top-handle-randomnode_4",
+            "position": "top",
+            "x": 145,
+            "y": -4,
+            "width": 10,
+            "height": 10
+          }
+        ],
+        "target": null
+      },
+      "selected": false,
       "dragging": false
-  }
+    }
   ],
   "edges": [
-      {
-          "source": "randomnode_1",
-          "sourceHandle": "bottom-handle-randomnode_1",
-          "target": "randomnode_2",
-          "targetHandle": "top-handle-randomnode_2",
-          "id": "randomnode_1648073873547",
-          "type": "floating",
-          "markerEnd": {
-              "type": "arrowclosed"
-          },
-          "data": {
-              "label": "new label",
-              "wiki": ""
-          },
-          "labelBgPadding": [
-              8,
-              4
-          ],
-          "labelBgBorderRadius": 4,
-          "labelBgStyle": {
-              "fill": "#FFCC00",
-              "color": "#fff",
-              "fillOpacity": 1
-          },
-          "labelShowBg": true
+    {
+      "source": "randomnode_1",
+      "sourceHandle": "bottom-handle-randomnode_1",
+      "target": "randomnode_2",
+      "targetHandle": "top-handle-randomnode_2",
+      "id": "randomnode_1648073873547",
+      "type": "floating",
+      "markerEnd": {
+        "type": "arrowclosed"
       },
-      {
-          "source": "randomnode_1",
-          "sourceHandle": "bottom-handle-randomnode_1",
-          "target": "randomnode_3",
-          "targetHandle": "top-handle-randomnode_3",
-          "id": "randomnode_1648073876235",
-          "type": "floating",
-          "markerEnd": {
-              "type": "arrowclosed"
-          },
-          "data": {
-              "label": "new label",
-              "wiki": ""
-          },
-          "labelBgPadding": [
-              8,
-              4
-          ],
-          "labelBgBorderRadius": 4,
-          "labelBgStyle": {
-              "fill": "#FFCC00",
-              "color": "#fff",
-              "fillOpacity": 1
-          },
-          "labelShowBg": true
-      }
-  ]
+      "data": {
+        "label": "new label",
+        "wiki": ""
+      },
+      "labelBgPadding": [8, 4],
+      "labelBgBorderRadius": 4,
+      "labelBgStyle": {
+        "fill": "#FFCC00",
+        "color": "#fff",
+        "fillOpacity": 1
+      },
+      "labelShowBg": true,
+      "selected": false
+    },
+    {
+      "source": "randomnode_1",
+      "sourceHandle": "bottom-handle-randomnode_1",
+      "target": "randomnode_3",
+      "targetHandle": "top-handle-randomnode_3",
+      "id": "randomnode_1648073876235",
+      "type": "floating",
+      "markerEnd": {
+        "type": "arrowclosed"
+      },
+      "data": {
+        "label": "new label",
+        "wiki": ""
+      },
+      "labelBgPadding": [8, 4],
+      "labelBgBorderRadius": 4,
+      "labelBgStyle": {
+        "fill": "#FFCC00",
+        "color": "#fff",
+        "fillOpacity": 1
+      },
+      "labelShowBg": true,
+      "selected": false
+    },
+    {
+      "source": "randomnode_1",
+      "sourceHandle": "bottom-handle-randomnode_1",
+      "target": "randomnode_4",
+      "targetHandle": "top-handle-randomnode_4",
+      "id": "randomnode_1648432058092",
+      "type": "floating",
+      "markerEnd": {
+        "type": "arrowclosed"
+      },
+      "data": {
+        "label": "",
+        "wiki": ""
+      },
+      "labelBgPadding": [8, 4],
+      "labelBgBorderRadius": 4,
+      "labelBgStyle": {
+        "fill": "#FFCC00",
+        "color": "#fff",
+        "fillOpacity": 1
+      },
+      "labelShowBg": true,
+      "selected": false
+    }
+  ],
+  "viewport": {
+    "x": 0,
+    "y": 0,
+    "zoom": 1
+  }
 }

@@ -13,6 +13,7 @@ import GitHub from "../Landing/GitHub";
 
 import { loadRepoFromPublicURL } from "../Redux/actions/loadDiagram";
 import PlusSign from "../Media/PlusSign";
+import LearnMore from "../Landing/LearnMoreButton";
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const targetHandleStyle = {
@@ -939,8 +940,17 @@ const HomeNodeComponent = (props) => {
         ref.className = `FileNode`;
       }}
       grid={[15, 15]}
+      style={{ background: "white" }}
     >
-      <div>
+      <div
+        style={{
+          position: "relative",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
         <Typography
           fontWeight="fontWeightMedium"
           style={{ "font-size": "40px" }}
@@ -1102,6 +1112,58 @@ const SignUpComponent = (props) => {
   );
 };
 
+const DocumentationComponent = (props) => {
+  const [width, setWidth] = useState(props.data.width ? props.data.width : 120);
+  const [height, setHeight] = useState(
+    props.data.height ? props.data.height : 80
+  );
+  const [selected, setSelected] = useState("");
+  useEffect(() => {
+    if (props.selected) {
+      if (props.data.type === "CircleShape") setSelected("highlightedNode");
+    } else {
+      setSelected("");
+    }
+  }, [props.selected]);
+  const [fontSize, setFontSize] = useState(`${width / 180}em`);
+  useEffect(() => {
+    props.data.height = height;
+    props.data.width = width;
+  }, [height, width]);
+
+  function handleNewNodeName(event) {
+    props.data.nodeInputHandler(event);
+  }
+
+  function goNotion() {
+    window.location.assign(
+      `https://pie-crepe-38f.notion.site/Documentation-cf20cbdf134247cb93bf6366d9055076`
+    );
+  }
+
+  return (
+    <>
+      <div
+        style={{ height: "80%", width: "80%", marginTop: "-40px" }}
+        className="LearnMoreButtonWrapper"
+        onClick={goNotion}
+      >
+        <LearnMore className="LearnMore" />
+      </div>
+      <Handle
+        className="handle source"
+        id={`top-handle-${props.id}`}
+        type="destination"
+        position="top"
+        style={{
+          ...sourceHandleStyle,
+          backgroundColor: "transparent",
+        }}
+      />
+    </>
+  );
+};
+
 export {
   CustomNodeComponent,
   WrapperNodeComponent,
@@ -1110,4 +1172,5 @@ export {
   SignUpComponent,
   LinkComponent,
   CircleNodeComponent,
+  DocumentationComponent,
 };
