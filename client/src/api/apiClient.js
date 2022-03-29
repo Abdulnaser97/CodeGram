@@ -47,8 +47,9 @@ export async function invalidateToken() {
   return result.success;
 }
 
-export async function getRepo(repo, path, branch) {
+export async function getRepo(repo, path, branch, owner = "sameUser") {
   const data = {
+    owner: owner && owner !== "sameUser" ? owner : "sameUser",
     repo: repo,
     path: path,
     branch: branch,
@@ -56,9 +57,10 @@ export async function getRepo(repo, path, branch) {
   return await perform("post", `/getcontent`, data);
 }
 
-export async function getBranches(repo) {
+export async function getBranches(repo, owner = "sameUser") {
   const data = {
     repo: repo,
+    owner: owner && owner !== "sameUser" ? owner : "sameUser",
   };
   return await perform("post", `/getbranches`, data);
 }
@@ -95,4 +97,18 @@ export async function save(repo, branch, content) {
     content: content,
   };
   return await perform("put", `/save`, data);
+}
+
+export async function getPublicRepo(url) {
+  const data = {
+    url: url,
+  };
+  return await perform("post", `/getpubliccontent`, data);
+}
+
+export async function getFileSHA(url) {
+  const data = {
+    url: url,
+  };
+  return await perform("post", `/getfilesha`, data);
 }

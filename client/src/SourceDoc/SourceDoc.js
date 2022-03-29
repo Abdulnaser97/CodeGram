@@ -7,7 +7,6 @@ import { Resizable } from "re-resizable";
 
 // third party dependecnies
 import PropTypes from "prop-types";
-import { useStoreActions } from "react-flow-renderer";
 
 // react
 import { useState, useEffect } from "react";
@@ -30,6 +29,8 @@ import SearchBar from "./SearchBar";
 
 import axios from "axios";
 import { getRepo } from "../api/apiClient";
+
+import { useReactFlow } from "react-flow-renderer";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -67,10 +68,12 @@ function a11yProps(index) {
 }
 
 function SourceDoc(props) {
-  const state = useSelector((state) => state);
+  const { state } = useSelector((state) => {
+    return { state: state };
+  });
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
-
+  // console.log(props.data.nodes);
   const [curCode, setCurCode] = useState("Select a node to view file");
 
   // state for selected file
@@ -81,10 +84,6 @@ function SourceDoc(props) {
 
   const [isEditing, setIsEditing] = useState("");
 
-  // react flow functions
-  const setSelectedElements = useStoreActions(
-    (actions) => actions.setSelectedElements
-  );
   // console.log(props.data.selectedEL)
   // resizeable state varaiables
   const [width, setWidth] = useState("40vw");
@@ -93,11 +92,13 @@ function SourceDoc(props) {
   // only updates if selectedEL is not text
   const [filteredSelectedEL, setFilteredSelectedEL] = useState(null);
 
+  const { getNodes } = useReactFlow();
+
   const dispatch = useDispatch();
 
   const { search, repository, fuse, homePath, selectedEL } = props.data;
   useEffect(() => {
-    if (!state.repoFiles.repoFiles.isFetchingFiles) {
+    if (!state.repoFiles.isFetchingFiles) {
       props.functions.setOpenArtifact("");
       setSourceFiles(null);
       setPath([]);
@@ -105,7 +106,7 @@ function SourceDoc(props) {
       setSDContent("");
       setIsEditing("");
     }
-  }, [props.data.repo, props.data.branch]);
+  }, [props.data.repo, props.data.branch, state.repoFiles.isFetchingFiles]);
 
   // change open artifact to be the file from react flow
   useEffect(() => {
@@ -119,18 +120,21 @@ function SourceDoc(props) {
     }
   }, [filteredSelectedEL]);
 
+  // console.log(props.data.nodes);
+
   // highlight node on canvas if exists -> may need optimizing. Indeed it needed :)
   useEffect(() => {
     try {
       if (props.data.openArtifact) {
-        var el = state.nodes.nodesArr.find((node) =>
+        var el = getNodes().find((node) =>
           node.data ? node.data.path === props.data.openArtifact.path : false
         );
+
         if (el) {
-          setSelectedElements(el);
+          console.log(el);
           props.functions.setSelectedEL(el);
         } else {
-          setSelectedElements([]);
+          props.functions.setSelectedEL(null);
         }
       }
     } catch (e) {
@@ -138,7 +142,6 @@ function SourceDoc(props) {
       dispatch(errorNotification(`Error loading repo file`));
     }
   }, [props.data.openArtifact]);
-
   // set content of sourceDoc
   useEffect(() => {
     if (SDContent === null || SDContent === undefined) {
@@ -171,12 +174,20 @@ function SourceDoc(props) {
             openArtifact={props.data.openArtifact}
             selectedEL={filteredSelectedEL}
             addFileToNode={props.functions.addFileToNode}
+            nodes={props.data.nodes}
           />
         );
       }
       setSourceFiles(repoList);
     }
-  }, [SDContent, filteredSelectedEL, props.data.openArtifact, repository]);
+  }, [
+    SDContent,
+    filteredSelectedEL,
+    props.data.openArtifact,
+    repository,
+    state.repoFiles.isFetchingFiles,
+    props.data.nodes,
+  ]);
 
   useEffect(() => {
     if (repository && homePath) {
@@ -299,6 +310,7 @@ function SourceDoc(props) {
   // Tabs: handlers for state of tabs
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    props.functions.setTabValue(newValue);
   };
 
   useEffect(() => {
@@ -311,13 +323,14 @@ function SourceDoc(props) {
         setValue(0);
       } else if (!selectedEL.data.label) {
         setValue(0);
+        setCurCode(
+          "Select a node with a file to view a source code or add a file to this node!"
+        );
       } else if (filteredSelectedEL.data.label) {
-        setValue(2);
+        // setValue(2);
         const path = props.data.openArtifact
           ? props.data.openArtifact.path
           : null;
-        console.log("selectedEl, props.data", props.data);
-        console.log("state", state);
 
         // only set code in Code Tab if openArtifact is a file
         if (props.data.openArtifact.type == "file") {
@@ -367,6 +380,7 @@ function SourceDoc(props) {
                 setCurCode(response.data);
               })
               .catch((error) => {
+                setCurCode(null);
                 console.log(error);
                 dispatch(
                   errorNotification(`Github error retrieving file content`)
@@ -376,12 +390,17 @@ function SourceDoc(props) {
             console.log(
               "Already retrieved file code contents, calling from store"
             );
+            setCurCode(
+              "Select a node with a file to view a source code or add a file to this node!"
+            );
+
             if (path) {
               setCurCode(state.repoFiles.repoFiles[path].code);
             }
           }
         } else {
-          setCurCode("Select a nnode to view a file");
+          console.log("not a file");
+          setCurCode("Select a node to view a file");
         }
       }
     } catch (error) {
@@ -390,14 +409,10 @@ function SourceDoc(props) {
   }, [filteredSelectedEL, selectedEL]);
 
   useEffect(() => {
-    props.functions.setTabValue(value);
-  }, [value]);
-
-  useEffect(() => {
     if (props.data.tabValue != value) setValue(props.data.tabValue);
   }, [props.data.tabValue]);
 
-  // search method called whenevr search var changes
+  // search method called whenever search var changes
   useEffect(() => {
     props.functions.setOpenArtifact("");
     if (!search.length) {
@@ -516,7 +531,8 @@ function SourceDoc(props) {
             openArtifact={props.data.openArtifact}
             setIsEditing={setIsEditing}
             renderFiles={renderFiles}
-            setElements={props.functions.setElements}
+            setNodes={props.functions.setNodes}
+            setEdges={props.functions.setEdges}
             setSelectedEL={props.functions.setSelectedEL}
           />
         </TabPanel>

@@ -13,10 +13,10 @@ export default function DocsTab(props) {
   const {
     isEditing,
     setIsEditing,
-    renderFiles,
     selectedEL,
     openArtifact,
-    setElements,
+    setNodes,
+    setEdges,
     setSelectedEL,
   } = props;
 
@@ -33,22 +33,43 @@ export default function DocsTab(props) {
 
   const saveWikiToNode = () => {
     var selEl = null;
-    setElements((els) =>
-      els.map((el) => {
-        if (selectedEL && el.id === selectedEL.id) {
-          // it's important that you create a new object here
-          // in order to notify react flow about the change
-          el.data = {
-            ...el.data,
-            label: newLabel.toString(),
-            wiki: wiki,
-          };
-          selEl = el;
-        }
+    // CHecks if edge with source attribute
+    if (selectedEL?.source) {
+      setEdges((els) =>
+        els.map((el) => {
+          if (selectedEL && el.id === selectedEL.id) {
+            // it's important that you create a new object here
+            // in order to notify react flow about the change
+            el.data = {
+              ...el.data,
+              label: newLabel.toString(),
+              wiki: wiki,
+            };
+            selEl = el;
+          }
 
-        return el;
-      })
-    );
+          return el;
+        })
+      );
+    } else {
+      setNodes((els) =>
+        els.map((el) => {
+          if (selectedEL && el.id === selectedEL.id) {
+            // it's important that you create a new object here
+            // in order to notify react flow about the change
+            el.data = {
+              ...el.data,
+              label: newLabel.toString(),
+              wiki: wiki,
+            };
+            selEl = el;
+          }
+
+          return el;
+        })
+      );
+    }
+
     setSelectedEL(selEl);
   };
 
@@ -62,8 +83,10 @@ export default function DocsTab(props) {
 
   const handleDoneOrEditClick = () => {
     if (isEditing) {
-      setWiki(selectedEL.data.wiki);
-      setNewLabel(selectedEL.data.label);
+      if (selectedEL?.data?.wiki) setWiki(selectedEL.data.wiki);
+      else setWiki("");
+      if (selectedEL?.data?.label) setNewLabel(selectedEL.data.label);
+      else setNewLabel("");
     }
     setIsEditing(!isEditing);
   };
@@ -136,7 +159,10 @@ export default function DocsTab(props) {
       )}
 
       <Typography variant="h6">
-        <a href={openArtifact && openArtifact.html_url} target="_blank"> source code link </a>
+        <a href={openArtifact && openArtifact.html_url} target="_blank">
+          {" "}
+          source code link{" "}
+        </a>
       </Typography>
       <Typography my={1} variant="h6">
         Wiki

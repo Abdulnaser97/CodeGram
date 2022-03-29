@@ -12,7 +12,7 @@ export const theme = createTheme({
       deepestDarkestGrey: "#4d4d4d",
     },
     secondary: {
-      main: "#FFEBEB",
+      main: "#ffadad",
     },
   },
   typography: {

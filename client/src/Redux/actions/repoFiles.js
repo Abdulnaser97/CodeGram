@@ -1,10 +1,13 @@
-import { getRepo } from "../../api/apiClient";
+import { getPublicRepo, getRepo } from "../../api/apiClient";
 import {
   FETCH_REPO_FILES,
   STORE_REPO_FILES,
   UPDATE_REPO_FILE,
   UPDATE_CODE_CONTENT,
+  UPDATE_REPO_FILE_LINK,
 } from "../constants";
+import { reloadDiagram, setIsLoadingDiagram } from "./loadDiagram";
+import { loadingNotification, successNotification } from "./notification";
 
 async function recursiveRepoBuilder(
   repoName,
@@ -45,7 +48,11 @@ async function recursiveRepoBuilder(
 }
 
 export const getRepoFiles = (repoName, branch) => async (dispatch) => {
-  dispatch(fetchRepoFiles());
+  await dispatch(
+    loadingNotification(`Retrieving ${repoName} files from GitHub ...`)
+  );
+  await dispatch(fetchRepoFiles());
+  await dispatch(setIsLoadingDiagram(true));
   const newRepo = await getRepo(repoName, null, branch);
   const files = newRepo.data;
   var processedRepo = {};
@@ -55,7 +62,23 @@ export const getRepoFiles = (repoName, branch) => async (dispatch) => {
     processedRepo,
     branch
   );
-  dispatch(storeRepoFiles(processedFiles));
+  await dispatch(storeRepoFiles(processedFiles));
+  await dispatch(
+    successNotification(`${repoName} files retrieved successfully!`)
+  );
+  await dispatch(reloadDiagram(true));
+};
+
+export const getPublicRepoFiles = (repoName, url) => async (dispatch) => {
+  await dispatch(
+    loadingNotification(`Retrieving ${repoName} files from GitHub ...`)
+  );
+  const processedFiles = await getPublicRepo(url);
+  await dispatch(storeRepoFiles(processedFiles));
+  await dispatch(
+    successNotification(`${repoName} files retrieved successfully!`)
+  );
+  await dispatch(reloadDiagram(true));
 };
 
 export function fetchRepoFiles() {
@@ -72,10 +95,18 @@ export function storeRepoFiles(repoFiles) {
 }
 
 // unused but leaving as example for now
-export function updateRepoFile(node){ 
-  return {
-    type: UPDATE_REPO_FILE,
-    payload: node,
+export function updateRepoFile(node, oldPath) {
+  return (dispatch, getState) => {
+    const { repoFiles } = getState();
+
+    console.log(oldPath);
+    if (oldPath) repoFiles.repoFiles[oldPath].linked = false;
+
+    dispatch({
+      type: UPDATE_REPO_FILE,
+      payload: node,
+      repoFiles: repoFiles.repoFiles,
+    });
   };
 }
 
@@ -84,5 +115,21 @@ export function updateRepoFileCodeContent(path, newCode) {
     type: UPDATE_CODE_CONTENT,
     path: path,
     newCode: newCode,
+  };
+}
+
+export function updatedRepoFileLinked(path, isLinked) {
+  return (dispatch, getState) => {
+    const { repoFiles } = getState();
+
+    if (repoFiles.repoFiles[path]) {
+      repoFiles.repoFiles[path].linked = isLinked;
+      console.log(`${path} set to ${isLinked}`);
+    }
+
+    dispatch({
+      type: UPDATE_REPO_FILE_LINK,
+      repoFiles: repoFiles.repoFiles,
+    });
   };
 }

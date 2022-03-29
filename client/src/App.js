@@ -21,24 +21,21 @@ import {
   Toolbar,
   MenuItem,
   FormControl,
-  circularProgressClasses,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 
 import { useDispatch } from "react-redux";
 import { mapDispatchToProps, mapStateToProps } from "./Redux/configureStore";
-import { getRepoFiles } from "./Redux/actions/repoFiles";
+import { getPublicRepoFiles, getRepoFiles } from "./Redux/actions/repoFiles";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./Themes";
 import { loadDiagram } from "./Redux/actions/loadDiagram";
 import { storeRepoFiles } from "./Redux/actions/repoFiles";
 import SourceDoc from "./SourceDoc/SourceDoc";
-
+import { useReactFlow } from "react-flow-renderer";
 import Fuse from "fuse.js";
 
 // pages
-import { LandingPage } from "./Landing/LandingPage";
-
 import SourceDocButton from "./Media/SourceDocButton";
 import useToolBar from "./components/ToolBar.js";
 import {
@@ -49,7 +46,6 @@ import {
 import {
   errorNotification,
   successNotification,
-  loadingNotification,
 } from "./Redux/actions/notification";
 
 //templates
@@ -76,18 +72,28 @@ const LogoTopNav = styled.div`
  *
  *
  */
-function App() {
-  const { nodesArr, repoFiles, repository, isLoadingDiagram } = useSelector(
-    (state) => {
-      return {
-        nodesArr: state.nodes.nodesArr,
-        isLoadingDiagram: state.nodes.isLoadingDiagram,
-        repoFiles: state.repoFiles,
-        repository: state.repoFiles.repoFiles,
-      };
-    }
-  );
 
+function App() {
+  const {
+    nodesArr,
+    repoFiles,
+    isLoadingDiagram,
+    publicRepoURL,
+    isFetchingFiles,
+    isReloadDiagram,
+    RFState,
+  } = useSelector((state) => {
+    return {
+      nodesArr: state.nodes.nodesArr,
+      isLoadingDiagram: state.nodes.isLoadingDiagram,
+      repoFiles: state.repoFiles.repoFiles,
+      publicRepoURL: state.repoFiles.publicRepoURL,
+      isFetchingFiles: state.repoFiles.isFetchingFiles,
+      isReloadDiagram: state.RFState.reloadDiagram,
+      RFState: state.RFState,
+    };
+  });
+  const rf = useReactFlow();
   const [user, setUser] = useState([]);
   const [content, setContent] = useState([]);
   const [repos, setRepos] = useState([]);
@@ -98,7 +104,7 @@ function App() {
   const [fuse, setFuse] = useState(null);
   const [homePath, setHomePath] = useState(null);
   const [openArtifact, setOpenArtifact] = useState("");
-  const [search, setSearch] = useState("search");
+  const [search, setSearch] = useState("");
   const [cursor, setCursor] = useState("default");
   const [branch, setBranch] = useState("");
   const [repoBranches, setRepoBranches] = useState([]);
@@ -123,8 +129,10 @@ function App() {
   } = useToolBar();
   const {
     render,
+    nodes: nodes,
     addNode,
-    setElements,
+    setNodes: setNodes,
+    setEdges: setEdges,
     setNodeName,
     onElementsRemove,
     initialElements,
@@ -139,6 +147,7 @@ function App() {
     selectedShapeName,
     activeToolBarButton,
     setActiveToolBarButton,
+    openArtifact,
     setOpenArtifact,
     search,
     setSearch,
@@ -166,8 +175,8 @@ function App() {
   };
 
   // get all branches in repo
-  const getBranchesList = async (repo) => {
-    const repoBranches = await getBranches(repo);
+  const getBranchesList = async (repo, owner = null) => {
+    const repoBranches = await getBranches(repo, owner);
     setRepoBranches(repoBranches.data);
   };
 
@@ -200,29 +209,73 @@ function App() {
 
   // set new repo from drop down menu
   const handleRepoChange = (event) => {
-    // if (event.target.value){
-    // getBranchesList(event.target.value)
-    setElements(initialElements);
-    getBranchesList(event.target.value);
+    setNodes(initialElements.nodes);
+    setEdges(initialElements.edges);
     setRepo(event.target.value);
     setSelectedEL(initialElements[0]);
     setBranch("");
 
-    // }
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("branch")) {
+      url.searchParams.delete("branch");
+    }
+    url.searchParams.set("repo", event.target.value);
+    window.history.replaceState(null, null, url);
   };
+
+  useEffect(() => {
+    if (publicRepoURL && publicRepoURL.length > 0 && repoFiles.length === 0) {
+      // extract repo name from public url
+      try {
+        const url = new URL(window.location.href);
+        if (url.searchParams.get("repo")) {
+          url.searchParams.delete("repo");
+        }
+        if (url.searchParams.get("branch")) {
+          url.searchParams.delete("branch");
+        }
+
+        window.history.replaceState(null, null, url);
+        const repoName = publicRepoURL.split("/")[4];
+        const userName = publicRepoURL.split("/")[3];
+        const formattedURL =
+          "https://api.github.com/" + userName + "/" + repoName;
+
+        setRepos([...repos, { name: repoName }]);
+        setNodes(initialElements.nodes);
+        setEdges(initialElements.edges);
+        dispatch(getPublicRepoFiles(repoName, formattedURL));
+        setRepo(repoName);
+        setSelectedEL(initialElements[0]);
+        setBranch("");
+        url.searchParams.set("repo", repoName);
+        window.history.replaceState(null, null, url);
+      } catch (e) {
+        console.log(e);
+        dispatch(
+          errorNotification(
+            `Failed to retrieve repo from url, issue is reported.`
+          )
+        );
+      }
+    }
+  }, [publicRepoURL, initialElements, repoFiles, repo]);
 
   // set new branch from drop down menu
   const handleBranchChange = (event) => {
-    setElements(initialElements);
+    setNodes(initialElements.nodes);
+    setEdges(initialElements.edges);
     dispatch(getRepoFiles(repo, event.target.value));
     setSelectedEL(initialElements[0]);
     setBranch(event.target.value);
+    const url = new URL(window.location.href);
+    url.searchParams.set("branch", event.target.value);
+    window.history.replaceState(null, null, url);
   };
 
   const handleName = (event, newValue) => {
     setNodeName(event.target.value);
   };
-
   const renderRepos = () => {
     var repoChoiceItems = [];
 
@@ -266,25 +319,14 @@ function App() {
     setLoggedIn(false);
   };
 
-  const printNodesArr = () => {
-    console.log(`nodesArr:`);
-    console.log(nodesArr);
-    const jsonNodes = JSON.stringify(nodesArr);
-    console.log("JSON String:");
-    console.log(jsonNodes);
-
-    const fs = require("browserify-fs");
-    fs.writeFile("newNodes.txt", jsonNodes, { flag: "w+" }, (err) => {
-      if (err) {
-        console.log("Error writing file", err);
-      } else {
-        console.log("Successfully wrote file");
-      }
-    });
-  };
-
   // Save Diagram: Push redux store content to github repo
   const onSave = useCallback(async () => {
+
+    if (!loggedIn) {
+      const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+      window.location.assign(`${REACT_APP_BACKEND_URL}/auth/github`);
+    }
+
     if (rfInstance) {
       const flow = rfInstance.toObject();
       const result = await save(repo, branch, flow);
@@ -299,10 +341,17 @@ function App() {
 
   /** useEffect Hools ************************************************* useEffect Hooks *****************************************************************/
 
+  // get branch lists whenever repo changes
+  useEffect(() => {
+    if (repo) {
+      getBranchesList(repo);
+    }
+  }, [repo]);
+
   // If redirect from github Checks, get the repo from the url params
   useEffect(() => {
-    if (!repo && params.repo && params.branch && params.sha) {
-      getBranchesList(params.repo);
+    if (!repo && params.repo) {
+      // extend repos state to include the repo in the url params
       setRepo(params.repo);
 
       //dispatch(getRepoFiles(params.get("repo"), params.get("branch")));
@@ -311,49 +360,55 @@ function App() {
 
   // If redirect from github Checks, get the branch from the url params
   useEffect(() => {
-    if (
-      repo &&
-      params.branch &&
-      repoBranches != undefined &&
-      repoBranches.length !== 0
-    ) {
-      setElements(initialElements);
+    if (repo && repoBranches && params.branch && !branch) {
       setBranch(params.branch);
-      dispatch(getRepoFiles(repo, params.branch));
-      setSelectedEL(initialElements[0]);
     }
-  }, [repoBranches, params.branch, repo]);
+  }, [repoBranches, params.branch, repo, branch]);
 
-  // Load saved diagram when new repo is selected
   useEffect(() => {
-    if (repo && !repoFiles.isFetchingFiles && repoFiles.repoFiles && branch) {
-      dispatch(loadDiagram(repoFiles.repoFiles));
-      getCheckRunFiles(repo, params.sha);
+    // if repo and branch and not isFetchingFiles, retrieve repo files
+    if (repo && branch) {
+      dispatch(getRepoFiles(repo, branch));
     }
-  }, [repo, dispatch, repoFiles.isFetchingFiles, branch, params.sha]);
+  }, [repo, branch]);
 
+  useEffect(() => {
+    if (isReloadDiagram && Object.keys(repoFiles).length > 0) {
+      dispatch(loadDiagram(repoFiles));
+    }
+  }, [isReloadDiagram, repoFiles]);
   // create home path, and search engine after all loads
+
   useEffect(() => {
     try {
-      if (repo && repository && !repoFiles.isFetchingFiles && branch) {
+      if (
+        repo &&
+        repoFiles &&
+        Object.keys(repoFiles).length > 0 &&
+        !isFetchingFiles &&
+        (branch || publicRepoURL) &&
+        !isLoadingDiagram
+      ) {
         var homeDir = [];
 
-        dispatch(loadingNotification(repo + " is being loaded"));
-        console.log("Loading Diagram!");
+        console.log("Loading Diagram...");
 
         // push home directory files into home path as array
-        for (const [key, val] of Object.entries(repository)) {
+        for (const [key, val] of Object.entries(repoFiles)) {
           key.split("/").length === 1 && homeDir.push(val);
         }
 
         // set files in pulled repo to be linked if files
         // in current react flow elements
-        for (const node of nodesArr) {
-          if (!node.data) {
-            continue;
-          }
-          if (repository[node.data.path]) {
-            repository[node.data.path].linked = true;
+        if (RFState?.RFState?.nodes) {
+          for (const node of RFState?.RFState?.nodes) {
+            if (!node.data) {
+              continue;
+            }
+            if (repoFiles[node.data.path]) {
+              console.log(node.label);
+              repoFiles[node.data.path].linked = true;
+            }
           }
         }
 
@@ -362,18 +417,16 @@ function App() {
           dir: homeDir,
           path: repo,
         };
-
-        const myFuse = new Fuse(Object.values(repository), options);
+        const myFuse = new Fuse(Object.values(repoFiles), options);
         setHomePath(hPath);
         setFuse(myFuse);
-        dispatch(storeRepoFiles(repository));
-        dispatch(successNotification(repo + " has been loaded!"));
+        dispatch(storeRepoFiles(repoFiles));
       }
     } catch (err) {
       console.log(err);
       dispatch(errorNotification(`Error loading repository ${repo}`));
     }
-  }, [repoFiles.isFetchingFiles, isLoadingDiagram, branch]);
+  }, [repoFiles, isFetchingFiles, isLoadingDiagram, branch, publicRepoURL]);
 
   // Retrieves user details once authenticated
   useEffect(() => {
@@ -401,182 +454,180 @@ function App() {
     // set null during search so any clicks after a serach still trigger rerender
     setSearch(event.target.value);
   };
+  return (
+    <ThemeProvider theme={theme}>
+      <NotifError />
 
-  if (loggedIn) {
-    return (
-      <ThemeProvider theme={theme}>
-        <NotifError />
-
-        <div className="App" style={{ cursor: cursor }}>
-          {!isOpenSD && (
-            <div
-              className="SourceDocButtonWrapper"
-              onClick={() => setIsOpenSD((prevIsOpenSD) => !prevIsOpenSD)}
+      <div className="App" style={{ cursor: cursor }}>
+        {!isOpenSD && (
+          <div
+            className="SourceDocButtonWrapper"
+            onClick={() => setIsOpenSD((prevIsOpenSD) => !prevIsOpenSD)}
+          >
+            <SourceDocButton />
+          </div>
+        )}
+        {/* move app bar to its own navigation component  */}
+        <AppBar
+          elevation={0}
+          position="sticky"
+          sx={{
+            backgroundColor: "#f7f7f7",
+            borderColor: "black",
+            borderWidth: "1",
+            height: "8vh",
+          }}
+        >
+          <Toolbar>
+            <MenuItem
+              sx={{ flexGrow: 3 }}
+              style={{ backgroundColor: "transparent" }}
             >
-              <SourceDocButton />
-            </div>
-          )}
-          {/* move app bar to its own navigation component  */}
-          <AppBar
-            elevation={0}
-            position="sticky"
-            sx={{
-              backgroundColor: "#f7f7f7",
-              borderColor: "black",
-              borderWidth: "1",
-              height: "8vh",
-            }}
-          >
-            <Toolbar>
-              <MenuItem
-                sx={{ flexGrow: 3 }}
-                style={{ backgroundColor: "transparent" }}
+              {/* redirect to home page */}
+              <div
+                className="LogoWrapper"
+                onClick={() => (window.location = window.location.origin)}
               >
-                <div className="LogoWrapper">
-                  <LogoTopNav className="LogoTopNav" />
-                  <h2
-                    style={{
-                      fontFamily: "Poppins-Thin",
-                      color: "#FFAEA6",
-                    }}
-                  >
-                    CodeGram
-                  </h2>
-                </div>
-              </MenuItem>
-              <Box sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}>
-                <FormControl fullWidth variant="outlined">
-                  <select
-                    className=""
-                    value={repo}
-                    label="Repository"
-                    onChange={handleRepoChange}
-                    placeholder="Choose your repository"
-                    style={{
-                      borderRadius: "0.6vw",
-                      "padding-left": "20px",
-                      "padding-right": "20px",
-                      outline: "none",
-                      height: "4vh",
-                      border: "1px solid #ffaea6",
-                      color: "#FFAEA6",
-                      background: "transparent",
-                      appearance: "none",
-                      cursor: "pointer",
-                      boxShadow: !repo ? "-2.5px 4px 5px #c9c9c9" : "",
-                    }}
-                  >
-                    {renderRepos()}
-                  </select>
-                </FormControl>
-              </Box>
-
-              <Box sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}>
-                <FormControl fullWidth variant="outlined">
-                  <select
-                    className=""
-                    value={branch}
-                    label="Branch"
-                    onChange={handleBranchChange}
-                    placeholder="Choose your repository"
-                    style={{
-                      borderRadius: "0.6vw",
-                      "padding-left": "20px",
-                      "padding-right": "20px",
-                      outline: "none",
-                      height: "4vh",
-                      border: "1px solid #ffaea6",
-                      color: "#FFAEA6",
-                      background: "transparent",
-                      appearance: "none",
-                      cursor: "pointer",
-                      boxShadow:
-                        repo && !branch ? "-2.5px 4px 5px #c9c9c9" : "",
-                    }}
-                  >
-                    {renderBranches()}
-                  </select>
-                </FormControl>
-              </Box>
-
-              <Box mx={2} sx={{ "box-shadow": 0 }}>
-                <div
-                  className="navbar-button github"
-                  style={{ backgroundColor: "transparent" }}
-                  onClick={() => onSave()}
+                <LogoTopNav className="LogoTopNav" />
+                <h2
+                  style={{
+                    fontFamily: "Poppins-Thin",
+                    color: "#FFAEA6",
+                  }}
                 >
-                  <Box className="SaveButtonWrapper">
-                    <Typography
-                      mx={1}
-                      my={0.8}
-                      fontSize=".8vw"
-                      fontWeight="Thin"
-                      color="primary"
-                    >
-                      Save
-                    </Typography>
-                  </Box>
-                </div>
-              </Box>
+                  CodeGram
+                </h2>
+              </div>
+            </MenuItem>
+            <Box sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}>
+              <FormControl fullWidth variant="outlined">
+                <select
+                  className=""
+                  value={repo}
+                  label="Repository"
+                  onChange={handleRepoChange}
+                  placeholder="Choose your repository"
+                  style={{
+                    borderRadius: "0.6vw",
+                    "padding-left": "20px",
+                    "padding-right": "20px",
+                    outline: "none",
+                    height: "4vh",
+                    border: "1px solid #ffaea6",
+                    color: "#FFAEA6",
+                    background: "transparent",
+                    appearance: "none",
+                    cursor: "pointer",
+                    boxShadow: !repo ? "-2.5px 4px 5px #c9c9c9" : "",
+                  }}
+                >
+                  {renderRepos()}
+                </select>
+              </FormControl>
+            </Box>
 
-              <Box sx={{ "box-shadow": 0 }}>
-                <div className="navbar-button github" onClick={() => logout()}>
-                  <LogoutIcon color="primary"> </LogoutIcon>
-                </div>
-              </Box>
-            </Toolbar>
-          </AppBar>
-          {/* everything from here down can be in a cashboard component */}
+            <Box sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}>
+              <FormControl fullWidth variant="outlined">
+                <select
+                  className=""
+                  value={branch}
+                  label="Branch"
+                  onChange={handleBranchChange}
+                  placeholder="Choose your repository"
+                  style={{
+                    borderRadius: "0.6vw",
+                    "padding-left": "20px",
+                    "padding-right": "20px",
+                    outline: "none",
+                    height: "4vh",
+                    border: "1px solid #ffaea6",
+                    color: "#FFAEA6",
+                    background: "transparent",
+                    appearance: "none",
+                    cursor: "pointer",
+                    boxShadow: repo && !branch ? "-2.5px 4px 5px #c9c9c9" : "",
+                  }}
+                >
+                  {renderBranches()}
+                </select>
+              </FormControl>
+            </Box>
 
-          <Typography
-            className="welcomeMessage"
-            fontWeight="light"
-            color="primary.grey"
-            fontWeight={"2vh"}
-          >
-            Welcome to CodeGram demo {user.username}!
-          </Typography>
-          {toolBarRender}
-          <Container className="canvasContainer">{render}</Container>
-          <SourceDoc
-            functions={{
-              addNode: addNode,
-              deleteNode: onElementsRemove, //TODO: Add deleteNode function to DELETE NODE button(?)
-              printNodesArr: printNodesArr,
-              getPRContent: getPRContent,
-              handleName: handleName,
-              setSelectedEL: setSelectedEL,
-              setIsOpenSD: setIsOpenSD,
-              setElements: setElements,
-              setOpenArtifact: setOpenArtifact,
-              addFileToNode: addFileToNode,
-              setTabValue: setTabValue,
-              handleSearch: handleSearch,
-              getRepoFiles: getRepoFiles,
-            }}
-            data={{
-              repo: repo,
-              repoData: repoData,
-              selectedEL: selectedEL,
-              isOpenSD: isOpenSD,
-              fuse: fuse,
-              repository: repository,
-              search: search,
-              homePath: homePath,
-              branch: branch,
-              openArtifact: openArtifact,
-              tabValue: tabValue,
-            }}
-          />
-          <NotifDiagramLoading />
+            <Box mx={2} sx={{ "box-shadow": 0 }}>
+              <div
+                className="navbar-button github"
+                style={{ backgroundColor: "transparent" }}
+                onClick={() => onSave()}
+              >
+                <Box className="SaveButtonWrapper">
+                  <Typography
+                    mx={1}
+                    my={0.8}
+                    fontSize=".8vw"
+                    fontWeight="Thin"
+                    color="primary"
+                  >
+                    {loggedIn ? "Save" : "Login to Save"}
+                  </Typography>
+                </Box>
+              </div>
+            </Box>
+            {loggedIn &&
+            <Box sx={{ "box-shadow": 0 }}>
+              <div className="navbar-button github" onClick={() => logout()}>
+                <LogoutIcon color="primary"> </LogoutIcon>
+              </div>
+            </Box>}
+          </Toolbar>
+        </AppBar>
+        {/* everything from here down can be in a cashboard component */}
 
-          <NotifDiagramLoaded />
-        </div>
-      </ThemeProvider>
-    );
-  } else {
-    return <LandingPage />;
-  }
+        <Typography
+          className="welcomeMessage"
+          fontWeight="2vh"
+          color="primary.grey"
+        >
+          Welcome to CodeGram demo {user.username}!
+        </Typography>
+        {toolBarRender}
+        <Container className="canvasContainer">{render}</Container>
+        <SourceDoc
+          functions={{
+            addNode: addNode,
+            deleteNode: onElementsRemove, //TODO: Add deleteNode function to DELETE NODE button(?)
+            getPRContent: getPRContent,
+            handleName: handleName,
+            setSelectedEL: setSelectedEL,
+            setIsOpenSD: setIsOpenSD,
+            setNodes: setNodes,
+            setEdges: setEdges,
+            setOpenArtifact: setOpenArtifact,
+            addFileToNode: addFileToNode,
+            setTabValue: setTabValue,
+            handleSearch: handleSearch,
+            getRepoFiles: getRepoFiles,
+          }}
+          data={{
+            repo: repo,
+            repoData: repoData,
+            selectedEL: selectedEL,
+            isOpenSD: isOpenSD,
+            fuse: fuse,
+            repository: repoFiles,
+            search: search,
+            homePath: homePath,
+            branch: branch,
+            openArtifact: openArtifact,
+            tabValue: tabValue,
+            nodes: nodes,
+          }}
+        />
+        <NotifDiagramLoading />
+
+        <NotifDiagramLoaded />
+      </div>
+    </ThemeProvider>
+  );
 }
 
 const connectedApp = connect(mapStateToProps, mapDispatchToProps)(App);

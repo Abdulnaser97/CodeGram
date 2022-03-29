@@ -17,18 +17,12 @@ class TextEditor extends React.Component {
         <CKEditor
           editor={ClassicEditor}
           data={this.props.content}
-          onReady={(editor) => {
-            //console.log("Editor is ready to use!", editor);
-          }}
+          onReady={(editor) => {}}
           onChange={(event, editor) => {
             this.props.onChange(editor.getData());
           }}
-          onBlur={(event, editor) => {
-            //console.log("Blur.", editor);
-          }}
-          onFocus={(event, editor) => {
-            //console.log("Focus.", editor);
-          }}
+          onBlur={(event, editor) => {}}
+          onFocus={(event, editor) => {}}
         />
       </div>
     );
