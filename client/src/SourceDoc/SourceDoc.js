@@ -323,6 +323,9 @@ function SourceDoc(props) {
         setValue(0);
       } else if (!selectedEL.data.label) {
         setValue(0);
+        setCurCode(
+          "Select a node with a file to view a source code or add a file to this node!"
+        );
       } else if (filteredSelectedEL.data.label) {
         // setValue(2);
         const path = props.data.openArtifact
@@ -377,6 +380,7 @@ function SourceDoc(props) {
                 setCurCode(response.data);
               })
               .catch((error) => {
+                setCurCode(null);
                 console.log(error);
                 dispatch(
                   errorNotification(`Github error retrieving file content`)
@@ -386,12 +390,17 @@ function SourceDoc(props) {
             console.log(
               "Already retrieved file code contents, calling from store"
             );
+            setCurCode(
+              "Select a node with a file to view a source code or add a file to this node!"
+            );
+
             if (path) {
               setCurCode(state.repoFiles.repoFiles[path].code);
             }
           }
         } else {
-          setCurCode("Select a nnode to view a file");
+          console.log("not a file");
+          setCurCode("Select a node to view a file");
         }
       }
     } catch (error) {
