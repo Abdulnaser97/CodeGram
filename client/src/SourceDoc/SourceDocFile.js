@@ -1,10 +1,9 @@
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import CodeIcon from "@mui/icons-material/Code";
-import Folder from "@mui/icons-material/Folder";
 import FolderIcon from "@mui/icons-material/Folder";
 import { mapDispatchToProps, mapStateToProps } from "../Redux/configureStore";
 import { connect } from "react-redux";
-import { useStore, useZoomPanHelper } from "react-flow-renderer";
+import { useReactFlow } from "react-flow-renderer";
 
 // export default function SourceDocFile(props) {
 function SourceDocFile(props) {
@@ -12,9 +11,7 @@ function SourceDocFile(props) {
     props;
   var { file } = props;
 
-  const store = useStore();
-  const { fitBounds } = useZoomPanHelper();
-  const { nodes } = store.getState();
+  const { fitBounds, getNodes } = useReactFlow();
 
   if (!file) {
     return <> </>;
@@ -51,7 +48,7 @@ function SourceDocFile(props) {
     setOpenArtifact(file);
 
     if (file) {
-      var el = nodes.find((node) =>
+      var el = getNodes().find((node) =>
         node.data ? node.data.path === file.path : false
       );
       if (el) {

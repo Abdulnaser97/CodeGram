@@ -32,7 +32,7 @@ import { theme } from "./Themes";
 import { loadDiagram } from "./Redux/actions/loadDiagram";
 import { storeRepoFiles } from "./Redux/actions/repoFiles";
 import SourceDoc from "./SourceDoc/SourceDoc";
-
+import { useReactFlow } from "react-flow-renderer";
 import Fuse from "fuse.js";
 
 // pages
@@ -72,6 +72,7 @@ const LogoTopNav = styled.div`
  *
  *
  */
+
 function App() {
   const {
     nodesArr,
@@ -80,6 +81,7 @@ function App() {
     publicRepoURL,
     isFetchingFiles,
     isReloadDiagram,
+    RFState,
   } = useSelector((state) => {
     return {
       nodesArr: state.nodes.nodesArr,
@@ -88,9 +90,10 @@ function App() {
       publicRepoURL: state.repoFiles.publicRepoURL,
       isFetchingFiles: state.repoFiles.isFetchingFiles,
       isReloadDiagram: state.RFState.reloadDiagram,
+      RFState: state.RFState,
     };
   });
-
+  const rf = useReactFlow();
   const [user, setUser] = useState([]);
   const [content, setContent] = useState([]);
   const [repos, setRepos] = useState([]);
@@ -101,7 +104,7 @@ function App() {
   const [fuse, setFuse] = useState(null);
   const [homePath, setHomePath] = useState(null);
   const [openArtifact, setOpenArtifact] = useState("");
-  const [search, setSearch] = useState("search");
+  const [search, setSearch] = useState("");
   const [cursor, setCursor] = useState("default");
   const [branch, setBranch] = useState("");
   const [repoBranches, setRepoBranches] = useState([]);
@@ -126,8 +129,10 @@ function App() {
   } = useToolBar();
   const {
     render,
+    nodes: nodes,
     addNode,
-    setElements,
+    setNodes: setNodes,
+    setEdges: setEdges,
     setNodeName,
     onElementsRemove,
     initialElements,
@@ -204,7 +209,8 @@ function App() {
 
   // set new repo from drop down menu
   const handleRepoChange = (event) => {
-    setElements(initialElements);
+    setNodes(initialElements.nodes);
+    setEdges(initialElements.edges);
     setRepo(event.target.value);
     setSelectedEL(initialElements[0]);
     setBranch("");
@@ -236,7 +242,8 @@ function App() {
           "https://api.github.com/" + userName + "/" + repoName;
 
         setRepos([...repos, { name: repoName }]);
-        setElements(initialElements);
+        setNodes(initialElements.nodes);
+        setEdges(initialElements.edges);
         dispatch(getPublicRepoFiles(repoName, formattedURL));
         setRepo(repoName);
         setSelectedEL(initialElements[0]);
@@ -256,7 +263,8 @@ function App() {
 
   // set new branch from drop down menu
   const handleBranchChange = (event) => {
-    setElements(initialElements);
+    setNodes(initialElements.nodes);
+    setEdges(initialElements.edges);
     dispatch(getRepoFiles(repo, event.target.value));
     setSelectedEL(initialElements[0]);
     setBranch(event.target.value);
@@ -268,7 +276,6 @@ function App() {
   const handleName = (event, newValue) => {
     setNodeName(event.target.value);
   };
-
   const renderRepos = () => {
     var repoChoiceItems = [];
 
@@ -371,6 +378,7 @@ function App() {
     }
   }, [isReloadDiagram, repoFiles]);
   // create home path, and search engine after all loads
+
   useEffect(() => {
     try {
       if (
@@ -378,7 +386,8 @@ function App() {
         repoFiles &&
         Object.keys(repoFiles).length > 0 &&
         !isFetchingFiles &&
-        (branch || publicRepoURL)
+        (branch || publicRepoURL) &&
+        !isLoadingDiagram
       ) {
         var homeDir = [];
 
@@ -391,12 +400,15 @@ function App() {
 
         // set files in pulled repo to be linked if files
         // in current react flow elements
-        for (const node of nodesArr) {
-          if (!node.data) {
-            continue;
-          }
-          if (repoFiles[node.data.path]) {
-            repoFiles[node.data.path].linked = true;
+        if (RFState?.RFState?.nodes) {
+          for (const node of RFState?.RFState?.nodes) {
+            if (!node.data) {
+              continue;
+            }
+            if (repoFiles[node.data.path]) {
+              console.log(node.label);
+              repoFiles[node.data.path].linked = true;
+            }
           }
         }
 
@@ -405,7 +417,6 @@ function App() {
           dir: homeDir,
           path: repo,
         };
-
         const myFuse = new Fuse(Object.values(repoFiles), options);
         setHomePath(hPath);
         setFuse(myFuse);
@@ -415,7 +426,7 @@ function App() {
       console.log(err);
       dispatch(errorNotification(`Error loading repository ${repo}`));
     }
-  }, [isFetchingFiles, isLoadingDiagram, branch, publicRepoURL]);
+  }, [repoFiles, isFetchingFiles, isLoadingDiagram, branch, publicRepoURL]);
 
   // Retrieves user details once authenticated
   useEffect(() => {
@@ -588,7 +599,8 @@ function App() {
             handleName: handleName,
             setSelectedEL: setSelectedEL,
             setIsOpenSD: setIsOpenSD,
-            setElements: setElements,
+            setNodes: setNodes,
+            setEdges: setEdges,
             setOpenArtifact: setOpenArtifact,
             addFileToNode: addFileToNode,
             setTabValue: setTabValue,
@@ -607,6 +619,7 @@ function App() {
             branch: branch,
             openArtifact: openArtifact,
             tabValue: tabValue,
+            nodes: nodes,
           }}
         />
         <NotifDiagramLoading />

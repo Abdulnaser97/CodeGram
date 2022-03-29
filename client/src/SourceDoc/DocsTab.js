@@ -13,10 +13,10 @@ export default function DocsTab(props) {
   const {
     isEditing,
     setIsEditing,
-    renderFiles,
     selectedEL,
     openArtifact,
-    setElements,
+    setNodes,
+    setEdges,
     setSelectedEL,
   } = props;
 
@@ -33,22 +33,43 @@ export default function DocsTab(props) {
 
   const saveWikiToNode = () => {
     var selEl = null;
-    setElements((els) =>
-      els.map((el) => {
-        if (selectedEL && el.id === selectedEL.id) {
-          // it's important that you create a new object here
-          // in order to notify react flow about the change
-          el.data = {
-            ...el.data,
-            label: newLabel.toString(),
-            wiki: wiki,
-          };
-          selEl = el;
-        }
+    // CHecks if edge with source attribute
+    if (selectedEL?.source) {
+      setEdges((els) =>
+        els.map((el) => {
+          if (selectedEL && el.id === selectedEL.id) {
+            // it's important that you create a new object here
+            // in order to notify react flow about the change
+            el.data = {
+              ...el.data,
+              label: newLabel.toString(),
+              wiki: wiki,
+            };
+            selEl = el;
+          }
 
-        return el;
-      })
-    );
+          return el;
+        })
+      );
+    } else {
+      setNodes((els) =>
+        els.map((el) => {
+          if (selectedEL && el.id === selectedEL.id) {
+            // it's important that you create a new object here
+            // in order to notify react flow about the change
+            el.data = {
+              ...el.data,
+              label: newLabel.toString(),
+              wiki: wiki,
+            };
+            selEl = el;
+          }
+
+          return el;
+        })
+      );
+    }
+
     setSelectedEL(selEl);
   };
 

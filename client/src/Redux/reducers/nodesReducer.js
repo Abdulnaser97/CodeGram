@@ -6,11 +6,12 @@ import {
   UPDATE_NODE_Z_INDEX,
   LOAD_TEMPLATE_DIAGRAM,
   RELOAD_DIAGRAM,
+  SET_IS_LOADING_DIAGRAM,
 } from "../constants";
 
 const initialState = {
   nodesArr: [],
-  isLoadingDiagram: true,
+  isLoadingDiagram: false,
   nodesZIndex: [],
 };
 
@@ -37,16 +38,19 @@ export const nodesReducer = (state = initialState, action) => {
     case LOAD_DIAGRAM_TO_STORE:
       return {
         ...state,
-        nodesArr: action.payload.nodes.elements,
+        nodesArr: action.payload.elements.nodes,
         nodesZIndex: action.payload.nodesZIndex,
-        isLoadingDiagram: false,
       };
     case FETCH_REPO_FILES:
       state.isFetchingFiles = true;
       return {
         ...state,
-        isLoadingDiagram: true,
         nodesArr: [],
+      };
+    case SET_IS_LOADING_DIAGRAM:
+      return {
+        ...state,
+        isLoadingDiagram: action.payload,
       };
     default:
       return state;
@@ -64,7 +68,7 @@ export const RFStateReducer = (state = RFinitialState, action) => {
     case LOAD_DIAGRAM_TO_STORE:
       return {
         ...state,
-        RFState: action.payload.nodes,
+        RFState: action.payload.elements,
       };
     case LOAD_TEMPLATE_DIAGRAM:
       return {

@@ -7,7 +7,6 @@ import { Resizable } from "re-resizable";
 
 // third party dependecnies
 import PropTypes from "prop-types";
-import { useStoreActions } from "react-flow-renderer";
 
 // react
 import { useState, useEffect } from "react";
@@ -30,6 +29,8 @@ import SearchBar from "./SearchBar";
 
 import axios from "axios";
 import { getRepo } from "../api/apiClient";
+
+import { useReactFlow } from "react-flow-renderer";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -72,7 +73,7 @@ function SourceDoc(props) {
   });
   // Tabs: for tabs in the side menu
   const [value, setValue] = useState(0);
-
+  // console.log(props.data.nodes);
   const [curCode, setCurCode] = useState("Select a node to view file");
 
   // state for selected file
@@ -83,10 +84,6 @@ function SourceDoc(props) {
 
   const [isEditing, setIsEditing] = useState("");
 
-  // react flow functions
-  const setSelectedElements = useStoreActions(
-    (actions) => actions.setSelectedElements
-  );
   // console.log(props.data.selectedEL)
   // resizeable state varaiables
   const [width, setWidth] = useState("40vw");
@@ -94,6 +91,8 @@ function SourceDoc(props) {
 
   // only updates if selectedEL is not text
   const [filteredSelectedEL, setFilteredSelectedEL] = useState(null);
+
+  const { getNodes } = useReactFlow();
 
   const dispatch = useDispatch();
 
@@ -121,18 +120,21 @@ function SourceDoc(props) {
     }
   }, [filteredSelectedEL]);
 
+  // console.log(props.data.nodes);
+
   // highlight node on canvas if exists -> may need optimizing. Indeed it needed :)
   useEffect(() => {
     try {
       if (props.data.openArtifact) {
-        var el = state.nodes.nodesArr.find((node) =>
+        var el = getNodes().find((node) =>
           node.data ? node.data.path === props.data.openArtifact.path : false
         );
+
         if (el) {
-          setSelectedElements(el);
+          console.log(el);
           props.functions.setSelectedEL(el);
         } else {
-          setSelectedElements([]);
+          props.functions.setSelectedEL(null);
         }
       }
     } catch (e) {
@@ -140,7 +142,6 @@ function SourceDoc(props) {
       dispatch(errorNotification(`Error loading repo file`));
     }
   }, [props.data.openArtifact]);
-
   // set content of sourceDoc
   useEffect(() => {
     if (SDContent === null || SDContent === undefined) {
@@ -173,6 +174,7 @@ function SourceDoc(props) {
             openArtifact={props.data.openArtifact}
             selectedEL={filteredSelectedEL}
             addFileToNode={props.functions.addFileToNode}
+            nodes={props.data.nodes}
           />
         );
       }
@@ -184,6 +186,7 @@ function SourceDoc(props) {
     props.data.openArtifact,
     repository,
     state.repoFiles.isFetchingFiles,
+    props.data.nodes,
   ]);
 
   useEffect(() => {
@@ -307,6 +310,7 @@ function SourceDoc(props) {
   // Tabs: handlers for state of tabs
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    props.functions.setTabValue(newValue);
   };
 
   useEffect(() => {
@@ -319,8 +323,11 @@ function SourceDoc(props) {
         setValue(0);
       } else if (!selectedEL.data.label) {
         setValue(0);
+        setCurCode(
+          "Select a node with a file to view a source code or add a file to this node!"
+        );
       } else if (filteredSelectedEL.data.label) {
-        setValue(2);
+        // setValue(2);
         const path = props.data.openArtifact
           ? props.data.openArtifact.path
           : null;
@@ -373,6 +380,7 @@ function SourceDoc(props) {
                 setCurCode(response.data);
               })
               .catch((error) => {
+                setCurCode(null);
                 console.log(error);
                 dispatch(
                   errorNotification(`Github error retrieving file content`)
@@ -382,12 +390,17 @@ function SourceDoc(props) {
             console.log(
               "Already retrieved file code contents, calling from store"
             );
+            setCurCode(
+              "Select a node with a file to view a source code or add a file to this node!"
+            );
+
             if (path) {
               setCurCode(state.repoFiles.repoFiles[path].code);
             }
           }
         } else {
-          setCurCode("Select a nnode to view a file");
+          console.log("not a file");
+          setCurCode("Select a node to view a file");
         }
       }
     } catch (error) {
@@ -518,7 +531,8 @@ function SourceDoc(props) {
             openArtifact={props.data.openArtifact}
             setIsEditing={setIsEditing}
             renderFiles={renderFiles}
-            setElements={props.functions.setElements}
+            setNodes={props.functions.setNodes}
+            setEdges={props.functions.setEdges}
             setSelectedEL={props.functions.setSelectedEL}
           />
         </TabPanel>

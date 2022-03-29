@@ -105,3 +105,10 @@ export async function getPublicRepo(url) {
   };
   return await perform("post", `/getpubliccontent`, data);
 }
+
+export async function getFileSHA(url) {
+  const data = {
+    url: url,
+  };
+  return await perform("post", `/getfilesha`, data);
+}

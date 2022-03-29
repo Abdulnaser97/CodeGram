@@ -8,6 +8,7 @@
     "buildRF": "cd client/node_modules/react-flow-renderer && npm i && npm run build"
   },
   "dependencies": {
-    "concurrently": "^6.4.0"
+    "concurrently": "^6.4.0",
+    "react-flow-renderer": "^10.0.3"
   }
 }
