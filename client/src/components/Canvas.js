@@ -921,12 +921,6 @@ export function useReactFlowWrapper({
   }, [nameFlag, selectedEL, search, text]);
 
   function nodeInputHandler(event, nodeType = "") {
-    if (
-      event.key === "Enter" &&
-      document.activeElement.tagName !== "TEXTAREA"
-    ) {
-      setNameFlag(true);
-    }
     if (nodeType === "Text") {
       setText(event.target.value);
     } else {

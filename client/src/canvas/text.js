@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { Typography } from "@mui/material";
 import { theme } from "../Themes";
+import TextareaAutosize from "react-textarea-autosize";
 
 const TextComponent = (props) => {
   const [height, setHeight] = useState(
@@ -65,7 +66,6 @@ const TextComponent = (props) => {
 
     if (innerText) {
       setHeight(innerText.clientHeight + 30);
-      setWidth(innerText.clientWidth);
     }
 
     if (fitHeight) {
@@ -150,21 +150,19 @@ const TextComponent = (props) => {
           {props.data.label && !isEditing ? (
             props.data.label
           ) : (
-            <textarea
+            <TextareaAutosize
               id={`textarea_${props.id}`}
-              placeholder="Enter text"
-              onKeyUp={handleNewNodeName}
+              rows={5}
+              maxRows={1000}
+              onChange={handleNewNodeName}
+              placeholder={`Enter Text`}
               autoFocus
               style={{
-                width: "100%",
-                height: "100%",
-                "z-index": 0,
+                width: `${width - 10}px`,
                 border: "none",
                 textAlign: "left",
-                overflow: "hidden",
-                whiteSpace: "pre-wrap",
-                top: 0,
                 fontSize: fontSize,
+                overflow: "hidden",
                 resize: "none",
                 outline: "none",
                 background: "transparent",
@@ -174,7 +172,7 @@ const TextComponent = (props) => {
               }}
             >
               {props.data.label}
-            </textarea>
+            </TextareaAutosize>
           )}
         </Typography>
       }
