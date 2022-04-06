@@ -331,7 +331,7 @@ function SourceDoc(props) {
           : null;
 
         // only set code in Code Tab if openArtifact is a file
-        if (props.data.openArtifact.type == "file") {
+        if (props.data.openArtifact && props.data.openArtifact.type == "file") {
           // do GET request if file code hasn't been retrieved yet
           if (
             path &&
