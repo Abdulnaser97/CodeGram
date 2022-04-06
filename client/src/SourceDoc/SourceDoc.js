@@ -133,8 +133,6 @@ function SourceDoc(props) {
         if (el) {
           console.log(el);
           props.functions.setSelectedEL(el);
-        } else {
-          props.functions.setSelectedEL(null);
         }
       }
     } catch (e) {
