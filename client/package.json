@@ -26,6 +26,7 @@
     "react-redux": "^7.2.6",
     "react-scripts": "^4.0.3",
     "react-syntax-highlighter": "^15.4.5",
+    "react-textarea-autosize": "^8.3.3",
     "redux-thunk": "^2.4.0",
     "remote-redux-devtools": "^0.5.16",
     "styled-components": "^5.3.3",
