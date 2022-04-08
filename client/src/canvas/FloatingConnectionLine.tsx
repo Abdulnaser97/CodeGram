@@ -3,6 +3,7 @@ import {
   getBezierPath,
   ConnectionLineComponentProps,
   Node,
+  useReactFlow
 } from "react-flow-renderer";
 
 import { getEdgeParams } from "./utils";
@@ -14,6 +15,10 @@ const FloatingConnectionLine: FC<ConnectionLineComponentProps> = ({
   targetPosition,
   sourceNode,
 }) => {
+
+  var rf = useReactFlow(); 
+
+
   if (!sourceNode) {
     return null;
   }
@@ -25,7 +30,23 @@ const FloatingConnectionLine: FC<ConnectionLineComponentProps> = ({
     __rf: { width: 1, height: 1, position: { x: targetX, y: targetY } },
   } as Node;
 
+  if (sourceNode.parentNode) { 
+    var parent = rf.getNode(sourceNode.parentNode) 
+    if (parent){
+      sourceNode = {
+        ...sourceNode,
+        position: { 
+          x: parent.position.x + sourceNode.position.x,
+          y: parent.position.y + sourceNode.position.y, 
+        } 
+      }
+    }
+  }
+ 
+  
+  
   const { sx, sy } = getEdgeParams(sourceNode, targetNode);
+
   const d = getBezierPath({
     sourceX: sx,
     sourceY: sy,

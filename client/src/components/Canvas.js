@@ -390,7 +390,7 @@ export function useReactFlowWrapper({
 
   const addChildNode = useCallback(
     (props) => {
-      props.event.preventDefault();
+      // props.event.preventDefault();
       var file = props.file ? props.file : null;
       var event = props.event ? props.event : null;
       var label = "";
@@ -455,8 +455,9 @@ export function useReactFlowWrapper({
       dispatch(addNodeToArray(newNode));
       addNodes(newNode);
       createCustomChange("select", newNode.id, "node");
-
       setNewNodeId(newNode.id);
+      dispatch(bringToFront({ id: newNode.id }));
+      setRequestUpdateZIndex(true);
     },
     [setNodes, selectedEL, nodeName, dispatch, project]
   );
@@ -567,7 +568,7 @@ export function useReactFlowWrapper({
     console.log("click", element);
     setSelectedEL(element);
     if (activeToolBarButton === "selectShape") {
-      await addChildNode({ event: event });
+      addChildNode({ event: event });
       setActiveToolBarButton("cursor");
     }
     // element.data.selected = true;
@@ -724,7 +725,7 @@ export function useReactFlowWrapper({
   };
 
   const onNodeMouseEnter = (event, node) => {
-    if (connectionStarted && !floatTargetHandle) {
+    if (connectionStarted) {
       node.data.floatTargetHandle = true;
       setMouseOverNode(node);
       setFloatTargetHandle(true);
