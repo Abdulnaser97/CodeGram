@@ -53,8 +53,6 @@ import { errorNotification } from "../Redux/actions/notification";
 
 const multiSelectionKeyCode = "Shift";
 
-var initialElements = ControlTemplate2;
-
 const edgeTypes = {
   default: SmoothStepEdge,
   straight: StraightEdge,
@@ -103,6 +101,15 @@ export function useReactFlowWrapper({
     };
   });
   const rf = useReactFlow();
+
+  let initialElements = useMemo(() => {
+    // based on viewport width
+    if (window.innerWidth < 1600) {
+      return ControlTemplate2;
+    } else {
+      return ControlTemplate;
+    }
+  }, []);
   const [nodes, setNodes] = useState(
     initialElements.nodes ? initialElements.nodes : []
   );

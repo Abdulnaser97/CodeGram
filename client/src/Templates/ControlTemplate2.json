@@ -48,23 +48,23 @@
         "path": "",
         "floatTargetHandle": false,
         "type": "DashedShape",
-        "width": 585,
-        "height": 165
+        "width": 480,
+        "height": 135
       },
       "type": "home",
-      "width": 585,
-      "height": 165,
+      "width": 480,
+      "height": 135,
       "position": {
-        "x": 353,
-        "y": 146
+        "x": 308,
+        "y": 86
       },
       "animated": true,
       "style": {
         "zIndex": "10"
       },
       "positionAbsolute": {
-        "x": 353,
-        "y": 146
+        "x": 308,
+        "y": 86
       },
       "z": 0,
       "handleBounds": {
@@ -105,16 +105,16 @@
       "width": 300,
       "height": 77,
       "position": {
-        "x": 203,
-        "y": 411
+        "x": 143,
+        "y": 306
       },
       "animated": true,
       "style": {
         "zIndex": "10"
       },
       "positionAbsolute": {
-        "x": 203,
-        "y": 411
+        "x": 143,
+        "y": 306
       },
       "z": 0,
       "handleBounds": {
@@ -155,16 +155,16 @@
       "width": 463,
       "height": 49,
       "position": {
-        "x": 288,
-        "y": 663
+        "x": 198,
+        "y": 483
       },
       "animated": true,
       "style": {
         "zIndex": "10"
       },
       "positionAbsolute": {
-        "x": 288,
-        "y": 663
+        "x": 198,
+        "y": 483
       },
       "z": 0,
       "handleBounds": {
@@ -205,16 +205,16 @@
       "width": 300,
       "height": 71,
       "position": {
-        "x": 805,
-        "y": 496
+        "x": 595,
+        "y": 376
       },
       "animated": true,
       "style": {
         "zIndex": "10"
       },
       "positionAbsolute": {
-        "x": 805,
-        "y": 496
+        "x": 595,
+        "y": 376
       },
       "z": 0,
       "handleBounds": {
