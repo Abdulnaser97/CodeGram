@@ -919,8 +919,6 @@ export function useReactFlowWrapper({
     };
   });
 
-  console.log("selected EL >>>", selectedEL);
-
   const addFileToNode = (file) => {
     console.log(selectedEL);
     var selEl = null;
@@ -998,8 +996,6 @@ export function useReactFlowWrapper({
     setNameFlag(false);
   }, [nameFlag, selectedEL, search, text]);
 
-  console.log("nodeName: ", nodeName);
-  console.log("nameFlag: ", nameFlag);
   function nodeInputHandler(event, nodeType = "") {
     if (nodeType === "Text") {
       setText(event.target.value);
