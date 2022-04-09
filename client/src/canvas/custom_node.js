@@ -981,7 +981,7 @@ const HomeNodeComponent = (props) => {
       >
         <Typography
           fontWeight="fontWeightMedium"
-          style={{ "font-size": "40px" }}
+          style={{ "font-size": "30px" }}
           textAlign="center"
           color="secondary"
         >
