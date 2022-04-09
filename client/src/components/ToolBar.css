@@ -14,6 +14,22 @@
   fill: #ffaea6;
 }
 
+.ToolBarButton:hover .Undo {
+  stroke: #ffaea6;
+  fill: none;
+  fill-rule: evenodd;
+  stroke-linecap: round;
+  stroke-width: 2.3;
+}
+
+.ToolBarButton:hover .Redo {
+  stroke: #ffaea6;
+  fill: none;
+  fill-rule: evenodd;
+  stroke-linecap: round;
+  stroke-width: 2.3;
+}
+
 .PopupButton:hover rect {
   stroke: #ffaea6;
 }

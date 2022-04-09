@@ -248,3 +248,51 @@ export const Options = () => {
     </ButtonWrapper>
   );
 };
+
+export const Undo = () => {
+  return (
+    <ButtonWrapper className="buttonWrapper">
+      <svg
+        width="100%"
+        height="100%"
+        viewBox="0 0 23 11"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          className="Undo"
+          d="M5 14.5C8.5 8 17.5 8 20 15M9.018 15H4l.018-5"
+          fill="none"
+          fill-rule="evenodd"
+          stroke="black"
+          stroke-linecap="round"
+          stroke-width="2.3"
+        ></path>
+      </svg>
+    </ButtonWrapper>
+  );
+};
+
+export const Redo = () => {
+  return (
+    <ButtonWrapper className="buttonWrapper">
+      <svg
+        width="100%"
+        height="100%"
+        viewBox="0 0 23 11"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          className="Redo"
+          d="M19 14.5C15.5 8 6.5 8 4 15m10.982 0H20l-.018-5"
+          fill="none"
+          fill-rule="evenodd"
+          stroke="black"
+          stroke-linecap="round"
+          stroke-width="2.3"
+        ></path>
+      </svg>
+    </ButtonWrapper>
+  );
+};
