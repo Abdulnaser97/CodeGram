@@ -540,7 +540,6 @@ export function useReactFlowWrapper({
     setContextMenu(null);
     setSelectedNodeEvent(null);
     setContextFiles(null);
-    setNodeName("");
   };
 
   const handlePaneContextMenu = (event) => {
@@ -920,6 +919,8 @@ export function useReactFlowWrapper({
     };
   });
 
+  console.log("selected EL >>>", selectedEL);
+
   const addFileToNode = (file) => {
     console.log(selectedEL);
     var selEl = null;
@@ -997,6 +998,8 @@ export function useReactFlowWrapper({
     setNameFlag(false);
   }, [nameFlag, selectedEL, search, text]);
 
+  console.log("nodeName: ", nodeName);
+  console.log("nameFlag: ", nameFlag);
   function nodeInputHandler(event, nodeType = "") {
     if (nodeType === "Text") {
       setText(event.target.value);
@@ -1132,6 +1135,14 @@ export function useReactFlowWrapper({
       },
     ]);
   }, [selectedEL]);
+
+  // Only reset nodeName when nameFlag is false, i.e. we have saved the name in node
+  useEffect(() => {
+    if (!nameFlag) {
+      setNodeName("");
+    }
+  }, [nameFlag]);
+
   return {
     render: (
       <div className="canvas">
