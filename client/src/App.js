@@ -131,6 +131,7 @@ function App() {
     render,
     nodes: nodes,
     addNode,
+    addLineNode,
     setNodes: setNodes,
     setEdges: setEdges,
     setNodeName,
@@ -321,7 +322,6 @@ function App() {
 
   // Save Diagram: Push redux store content to github repo
   const onSave = useCallback(async () => {
-
     if (!loggedIn) {
       const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
       window.location.assign(`${REACT_APP_BACKEND_URL}/auth/github`);
@@ -572,12 +572,13 @@ function App() {
                 </Box>
               </div>
             </Box>
-            {loggedIn &&
-            <Box sx={{ "box-shadow": 0 }}>
-              <div className="navbar-button github" onClick={() => logout()}>
-                <LogoutIcon color="primary"> </LogoutIcon>
-              </div>
-            </Box>}
+            {loggedIn && (
+              <Box sx={{ "box-shadow": 0 }}>
+                <div className="navbar-button github" onClick={() => logout()}>
+                  <LogoutIcon color="primary"> </LogoutIcon>
+                </div>
+              </Box>
+            )}
           </Toolbar>
         </AppBar>
         {/* everything from here down can be in a cashboard component */}
@@ -594,6 +595,7 @@ function App() {
         <SourceDoc
           functions={{
             addNode: addNode,
+            addLineNode: addLineNode,
             deleteNode: onElementsRemove, //TODO: Add deleteNode function to DELETE NODE button(?)
             getPRContent: getPRContent,
             handleName: handleName,

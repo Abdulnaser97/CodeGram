@@ -36,6 +36,7 @@ const sourceHandleStyle = {
   width: "10px",
 };
 const zoomSelector = (s) => s.transform[2];
+
 // TODO: need to store data from here in state then dispatch to
 // the react elemnts array when done typing/editing
 const CustomNodeComponent = (props) => {
@@ -53,6 +54,14 @@ const CustomNodeComponent = (props) => {
   const [isEditing, setIsEditing] = useState(true);
   const [handleSize, setHandleSize] = useState(Math.sqrt(height + width));
 
+  const focusInput = useRef();
+
+  useEffect(() => {
+    if (focusInput.current && isEditing) {
+      focusInput.current.focus();
+    }
+  }, [focusInput, isEditing]);
+
   useEffect(() => {
     if (props.selected) {
       if (props.data.type === "FileNode") setSelected("highlightedNode");
@@ -60,7 +69,7 @@ const CustomNodeComponent = (props) => {
       setSelected("");
     }
 
-    if (props.selected != props.id) {
+    if (props.selected !== props.id) {
       setIsEditing(false);
     }
   }, [props.selected]);
@@ -187,6 +196,7 @@ const CustomNodeComponent = (props) => {
                 placeholder="wrapper"
                 // onChange={handleSearch}
                 onKeyUp={handleNewNodeName}
+                ref={focusInput}
                 autoFocus
                 style={{
                   "z-index": 0,
@@ -224,6 +234,7 @@ const CustomNodeComponent = (props) => {
               ) : (
                 <input
                   placeholder="__"
+                  ref={focusInput}
                   autoFocus
                   onKeyUp={handleNewNodeName}
                   key="input"
@@ -318,6 +329,13 @@ const WrapperNodeComponent = (props) => {
   const [selected, setSelected] = useState("");
   const [handleSize, setHandleSize] = useState(Math.sqrt(height + width));
   const [isEditing, setIsEditing] = useState(true);
+  const focusInput = useRef();
+
+  useEffect(() => {
+    if (focusInput.current && isEditing) {
+      focusInput.current.focus();
+    }
+  }, [focusInput, isEditing]);
 
   useEffect(() => {
     if (props.selected) {
@@ -459,6 +477,7 @@ const WrapperNodeComponent = (props) => {
               placeholder="wrapper"
               // onChange={handleSearch}
               onKeyUp={handleNewNodeName}
+              ref={focusInput}
               autoFocus
               style={{
                 "z-index": 0,
@@ -547,6 +566,14 @@ const FolderNodeComponent = (props) => {
   const [selected, setSelected] = useState("");
   const [handleSize, setHandleSize] = useState(Math.sqrt(height + width));
   const [isEditing, setIsEditing] = useState(true);
+
+  const focusInput = useRef();
+
+  useEffect(() => {
+    if (focusInput.current && isEditing) {
+      focusInput.current.focus();
+    }
+  }, [focusInput, isEditing]);
 
   useEffect(() => {
     if (props.selected) {
@@ -678,6 +705,7 @@ const FolderNodeComponent = (props) => {
               placeholder="wrapper"
               // onChange={handleSearch}
               onKeyUp={handleNewNodeName}
+              ref={focusInput}
               autoFocus
               style={{
                 "z-index": 0,

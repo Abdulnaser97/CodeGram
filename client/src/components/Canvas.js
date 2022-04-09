@@ -129,6 +129,7 @@ export function useReactFlowWrapper({
   const [newNodeId, setNewNodeId] = useState(null);
   const [text, setText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [mouseOverNode, setMouseOverNode] = useState(null);
 
   const selectedElIdRef = useRef(null);
 
@@ -315,9 +316,81 @@ export function useReactFlowWrapper({
     [setNodes, nodeName, dispatch, project]
   );
 
+  const addLineNode = useCallback(
+    (props) => {
+      // props.event.preventDefault();
+      var file = props.file ? props.file : null;
+      var event = props.event ? props.event : null;
+      var label = "";
+      var position = calculatePosition(event, rfInstance);
+      var { parentNode, lines } = props;
+      var shapeType = selectedShapeName.current;
+      if (file) {
+        shapeType = file.type === "dir" ? "DashedShape" : "FileNode";
+      }
+
+      let url =
+        file && file.download_url !== undefined
+          ? file.download_url
+          : file && file.url !== undefined
+          ? file.url
+          : null;
+
+      const html_url = file && file.html_url ? file.html_url : null;
+
+      const newNode = {
+        id: getNodeId(),
+        data: {
+          label: label,
+          name: label,
+          linkedFiles: ["aa.py", "gg.py", "kookoo.py"],
+          childNodes: ["da", "de", "do"],
+          siblingNodes: ["ta", "te", "to"],
+          parentNodes: ["pa", "pe"],
+          documentation: ["url1", "url2"],
+          description: "",
+          url: url,
+          html_url: html_url,
+          path: file && file.path ? file.path : "",
+          floatTargetHandle: false,
+          code: lines,
+          // can set this type to whatever is selected in the tool bar for now
+          // but the type will probably be set from a few different places
+          type: event ? shapeType : "FileNode",
+          width: parentNode.width / 3,
+          height: parentNode.height / 3,
+          nodeInputHandler: nodeInputHandler,
+          nodeLinkHandler: nodeLinkHandler,
+          childFlag: true,
+          zoomSensitivity: parentNode.data.zoomSensitivity * 1.3,
+        },
+        type: event ? shapeType : "FileNode",
+        parentNode: parentNode.id,
+        // hold and drag against side for over 0.3 seconds
+        // remove extent so it can come out of group
+        extent: "parent",
+        width: parentNode.width / 3,
+        height: parentNode.height / 3,
+        draggable: true,
+        // position: project({
+        //   x: props.fromSD ? position.x : event?.clientX,
+        //   y: props.fromSD ? position.y : event?.clientY,
+        // }),
+        position: { x: parentNode.width / 10, y: parentNode.height / 10 },
+        animated: true,
+      };
+      dispatch(addNodeToArray(newNode));
+      addNodes(newNode);
+      createCustomChange("select", newNode.id, "node");
+
+      setNewNodeId(newNode.id);
+    },
+    [setNodes, selectedEL, nodeName, dispatch, project]
+  );
+
   const addChildNode = useCallback(
     (props) => {
-      props.event.preventDefault();
+      // props.event.preventDefault();
       var file = props.file ? props.file : null;
       var event = props.event ? props.event : null;
       var label = "";
@@ -362,6 +435,7 @@ export function useReactFlowWrapper({
           nodeLinkHandler: nodeLinkHandler,
           childFlag: true,
           zoomSensitivity: selectedEL.data.zoomSensitivity * 1.3,
+          position: { x: selectedEL.width / 10, y: selectedEL.height / 10 },
         },
         type: event ? shapeType : "FileNode",
         parentNode: selectedEL.id,
@@ -381,8 +455,9 @@ export function useReactFlowWrapper({
       dispatch(addNodeToArray(newNode));
       addNodes(newNode);
       createCustomChange("select", newNode.id, "node");
-
       setNewNodeId(newNode.id);
+      dispatch(bringToFront({ id: newNode.id }));
+      setRequestUpdateZIndex(true);
     },
     [setNodes, selectedEL, nodeName, dispatch, project]
   );
@@ -465,7 +540,6 @@ export function useReactFlowWrapper({
     setContextMenu(null);
     setSelectedNodeEvent(null);
     setContextFiles(null);
-    setNodeName("");
   };
 
   const handlePaneContextMenu = (event) => {
@@ -493,26 +567,26 @@ export function useReactFlowWrapper({
     console.log("click", element);
     setSelectedEL(element);
     if (activeToolBarButton === "selectShape") {
-      await addChildNode({ event: event });
+      addChildNode({ event: event });
       setActiveToolBarButton("cursor");
     }
     // element.data.selected = true;
   };
 
-  const onPaneClick = async (event) => {
+  const onPaneClick = (event) => {
     if (nodeName || text) {
       setNameFlag(true);
     } else {
       setSelectedEL(null);
-      // handleContextMenuClose();
     }
     if (activeToolBarButton === "selectShape") {
-      await addNode({ event: event });
+      addNode({ event: event });
       setActiveToolBarButton("cursor");
     } else if (activeToolBarButton === "TextIcon") {
-      await addText({ event: event });
+      addText({ event: event });
       setActiveToolBarButton("cursor");
     }
+    handleContextMenuClose();
   };
 
   const onDeleteSourceDocFile = (change) => {
@@ -531,11 +605,13 @@ export function useReactFlowWrapper({
   const onNodesChange = useCallback(
     (changes) => {
       try {
-        console.log(changes);
-        // console.log(nodes);
-
         changes.forEach((change) => {
           switch (change.type) {
+            case "add":
+              createCustomChange("deselectAll");
+              const curNode = getNode(change.id);
+              setSelectedEL(curNode);
+              break;
             case "remove":
               // const nodeToRemove = setNodes((nodes) =>
               //   nodes.find((node) => node.id === change.id)
@@ -554,6 +630,17 @@ export function useReactFlowWrapper({
                 selectedElIdRef.current === change.id
               ) {
                 selectedElIdRef.current = null;
+              }
+              break;
+            case "position":
+              // if changes.length > 2, it means there are multiple nodes selected
+              // so we don't want to setSelectedEL otherwise it will infinetely rerender
+              if (
+                changes.length < 2 &&
+                (!selectedEL || selectedEL.id !== change.id)
+              ) {
+                const curNode = getNode(change.id);
+                setSelectedEL(curNode);
               }
               break;
 
@@ -650,8 +737,9 @@ export function useReactFlowWrapper({
   };
 
   const onNodeMouseEnter = (event, node) => {
-    if (connectionStarted && !floatTargetHandle) {
+    if (connectionStarted) {
       node.data.floatTargetHandle = true;
+      setMouseOverNode(node);
       setFloatTargetHandle(true);
     }
   };
@@ -666,6 +754,7 @@ export function useReactFlowWrapper({
   const onNodeMouseLeave = (event, node) => {
     node.data.floatTargetHandle = false;
     setFloatTargetHandle(false);
+    setMouseOverNode(null);
   };
 
   const onNodeContextMenuDelete = (event) => {
@@ -780,6 +869,18 @@ export function useReactFlowWrapper({
   );
 
   const keydownHandler = (e) => {
+    // Enter key
+    if (e.keyCode === 13) {
+      if (
+        selectedEL &&
+        selectedEL.data &&
+        selectedEL.data.type !== "Text" &&
+        document.activeElement.tagName !== "TEXTAREA" &&
+        document.activeElement.tagName !== "DIV"
+      ) {
+        onPaneClick(e);
+      }
+    }
     // Ctrl + C (Cmd + C) for copy
     if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
       onCopy();
@@ -916,8 +1017,8 @@ export function useReactFlowWrapper({
         setter(nodeName);
         setSelectedEL(null);
       }
+      setNameFlag(false);
     }
-    setNameFlag(false);
   }, [nameFlag, selectedEL, search, text]);
 
   function nodeInputHandler(event, nodeType = "") {
@@ -1055,6 +1156,14 @@ export function useReactFlowWrapper({
       },
     ]);
   }, [selectedEL]);
+
+  // Only reset nodeName when nameFlag is false, i.e. we have saved the name in node
+  useEffect(() => {
+    if (!nameFlag) {
+      setNodeName("");
+    }
+  }, [nameFlag]);
+
   return {
     render: (
       <div className="canvas">
@@ -1120,7 +1229,7 @@ export function useReactFlowWrapper({
           disableAutoFocusItem
           autoFocus={false}
           open={contextMenu !== null}
-          onClose={handleContextMenuClose}
+          onClose={onPaneClick}
           anchorReference="anchorPosition"
           anchorPosition={
             contextMenu !== null
@@ -1215,6 +1324,7 @@ export function useReactFlowWrapper({
     nodes: nodes,
     edges: edges,
     addNode: addNode,
+    addLineNode: addLineNode,
     setNodes: setNodes,
     setEdges: setEdges,
     setNodeName: setNodeName,

@@ -319,6 +319,11 @@ function SourceDoc(props) {
         selectedEL.data.type === "Text"
       ) {
         setValue(0);
+      }
+      // only set code in Code Tab if openArtifact is a file
+      else if (filteredSelectedEL.data.code) {
+        console.log("data.code");
+        setCurCode(filteredSelectedEL.data.code);
       } else if (!selectedEL.data.label) {
         setValue(0);
         setCurCode(
@@ -520,6 +525,8 @@ function SourceDoc(props) {
                 ? filteredSelectedEL.data.label
                 : ""
             }
+            fileNode={filteredSelectedEL ? filteredSelectedEL : ""}
+            addLineNode={props.functions.addLineNode}
           />
         </TabPanel>
         <TabPanel value={value} index={2} style={{ overflow: "auto" }}>

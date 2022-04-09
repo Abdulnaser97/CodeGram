@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import js from "react-syntax-highlighter/dist/esm/languages/hljs/javascript";
 import apache from "react-syntax-highlighter/dist/esm/languages/hljs/apache";
@@ -15,9 +17,11 @@ import typescript from "react-syntax-highlighter/dist/esm/languages/hljs/typescr
 import css from "react-syntax-highlighter/dist/esm/languages/hljs/css";
 import cpp from "react-syntax-highlighter/dist/esm/languages/hljs/cpp";
 import htmlbars from "react-syntax-highlighter/dist/esm/languages/hljs/htmlbars";
-
-import { a11yLight } from "react-syntax-highlighter/dist/esm/styles/hljs";
-
+import { xcode } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
+import ContentCopyOutlinedIcon from "@mui/icons-material/ContentCopyOutlined";
 SyntaxHighlighter.registerLanguage("javascript", js);
 SyntaxHighlighter.registerLanguage("apache", apache);
 SyntaxHighlighter.registerLanguage("python", python);
@@ -77,25 +81,106 @@ function getLangFromFilename(filename) {
   }
 }
 
-function CodeTab({ rawCode, fileName }) {
+function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
   const lang = getLangFromFilename(fileName);
+  const [selectedText, setSelectedText] = useState(null);
+  const [popUpLoc, setPopUpLoc] = useState(null);
   console.log(lang);
   // If json, then stringify it
   if (lang === "json") {
     rawCode = JSON.stringify(rawCode, null, 2);
   }
 
+  // function NewLineNodeButton() {
+  //   return (
+  //     <button
+  //       style={{ position: "absolute" }}
+  //       onClick={(event) => addLineNode({ event: event })}
+  //     >
+  //       ADD LINES
+  //     </button>
+  //   );
+  // }
+
+  const handleCodeMenuClose = (e) => {
+    setSelectedText(null);
+  };
+
+  const handleCopyEvent = (e) => {
+    try {
+      var selectedText = "";
+      if (window.getSelection) {
+        var boundingClient = window.getSelection().toString();
+        if (boundingClient.length > 0) {
+          setSelectedText(window.getSelection());
+          setPopUpLoc({ x: e.clientX, y: e.clientY });
+        }
+      } else {
+        setSelectedText(null);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  console.log(selectedText);
   return (
-    <SyntaxHighlighter
-      language={lang}
-      style={{ ...a11yLight, backgroundColor: "transparent" }}
-      showLineNumbers={true}
-      showInLineNumbers={true}
-      lineProps={{ style: { wordBreak: "break-word", whiteSpace: "pre-wrap" } }}
-      wrapLines={true}
-    >
-      {rawCode}
-    </SyntaxHighlighter>
+    <div onMouseUp={(e) => handleCopyEvent(e)}>
+      <Menu
+        dense
+        variant="menu"
+        disableAutoFocus
+        disableAutoFocusItem
+        autoFocus={false}
+        open={selectedText}
+        onClose={handleCodeMenuClose}
+        anchorReference="anchorPosition"
+        anchorPosition={
+          popUpLoc && selectedText
+            ? {
+                top: popUpLoc.y,
+                left: popUpLoc.x + 20,
+              }
+            : undefined
+        }
+        sx={{ boxShadow: 1 }}
+      >
+        <MenuItem
+          dense
+          fontSize="small"
+          onClick={(event) => {
+            console.log(fileNode);
+            addLineNode({
+              parentNode: fileNode,
+              lines: selectedText.toString(),
+            });
+            setSelectedText(null);
+          }}
+        >
+          <AddCircleOutlineOutlinedIcon />
+        </MenuItem>
+        <MenuItem
+          fontSize="small"
+          dense
+          onClick={(event) => {
+            console.log("TODO: Add to clipboard!");
+          }}
+        >
+          <ContentCopyOutlinedIcon />
+        </MenuItem>
+      </Menu>
+      <SyntaxHighlighter
+        language={lang}
+        style={{ ...xcode, backgroundColor: "#fbfbfb" }}
+        showLineNumbers={true}
+        showInLineNumbers={true}
+        lineProps={{
+          style: { wordBreak: "break-word", whiteSpace: "pre-wrap" },
+        }}
+        wrapLines={true}
+      >
+        {rawCode}
+      </SyntaxHighlighter>
+    </div>
   );
 }
 
