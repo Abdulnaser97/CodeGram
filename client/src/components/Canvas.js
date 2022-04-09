@@ -50,6 +50,7 @@ import {
   reloadDiagram,
 } from "../Redux/actions/loadDiagram";
 import { errorNotification } from "../Redux/actions/notification";
+import useUndoable from "use-undoable";
 
 const multiSelectionKeyCode = "Shift";
 
@@ -103,12 +104,6 @@ export function useReactFlowWrapper({
     };
   });
   const rf = useReactFlow();
-  const [nodes, setNodes] = useState(
-    initialElements.nodes ? initialElements.nodes : []
-  );
-  const [edges, setEdges] = useState(
-    initialElements.edges ? initialElements.edges : []
-  );
 
   const [nodeName, setNodeName] = useState("");
   // Selected node
@@ -132,6 +127,26 @@ export function useReactFlowWrapper({
   const [mouseOverNode, setMouseOverNode] = useState(null);
 
   const selectedElIdRef = useRef(null);
+
+  const [elements, setElements, { undo, redo, reset }] = useUndoable({
+    nodes: initialElements.nodes ? initialElements.nodes : [],
+    edges: initialElements.edges ? initialElements.edges : [],
+  });
+
+  console.log("elements", elements);
+  console.log("getNodes()", getNodes());
+  const triggerUpdate = useCallback(
+    (t, v) => {
+      // To prevent a mismatch of state updates,
+      // we'll use the value passed into this
+      // function instead of the state directly.
+      setElements((e) => ({
+        nodes: t === "nodes" ? v : e.nodes,
+        edges: t === "edges" ? v : e.edges,
+      }));
+    },
+    [setElements]
+  );
 
   const edgeTypes = useMemo(
     () => ({
@@ -313,7 +328,7 @@ export function useReactFlowWrapper({
       createCustomChange("select", newNode.id, "node");
       setNewNodeId(newNode.id);
     },
-    [setNodes, nodeName, dispatch, project]
+    [nodeName, dispatch, project, triggerUpdate]
   );
 
   const addLineNode = useCallback(
@@ -385,7 +400,7 @@ export function useReactFlowWrapper({
 
       setNewNodeId(newNode.id);
     },
-    [setNodes, selectedEL, nodeName, dispatch, project]
+    [selectedEL, nodeName, dispatch, project, triggerUpdate]
   );
 
   const addChildNode = useCallback(
@@ -459,7 +474,7 @@ export function useReactFlowWrapper({
       dispatch(bringToFront({ id: newNode.id }));
       setRequestUpdateZIndex(true);
     },
-    [setNodes, selectedEL, nodeName, dispatch, project]
+    [selectedEL, nodeName, dispatch, project, triggerUpdate]
   );
 
   // Add node function
@@ -497,7 +512,7 @@ export function useReactFlowWrapper({
       createCustomChange("select", newText.id, "node");
       setNewNodeId(newText.id);
     },
-    [setNodes, nodeName, dispatch, project]
+    [nodeName, dispatch, project]
   );
 
   const handleContextMenu = (event, node) => {
@@ -604,6 +619,7 @@ export function useReactFlowWrapper({
 
   const onNodesChange = useCallback(
     (changes) => {
+      console.log("changes", changes);
       try {
         changes.forEach((change) => {
           switch (change.type) {
@@ -649,14 +665,13 @@ export function useReactFlowWrapper({
           }
         });
 
-        setNodes((ns) => applyNodeChanges(changes, ns));
+        triggerUpdate("nodes", applyNodeChanges(changes, elements.nodes));
       } catch (e) {
         console.log(e);
       }
     },
-    [setNodes]
+    [triggerUpdate]
   );
-
   const onEdgesChange = useCallback(
     (changes) => {
       try {
@@ -672,16 +687,17 @@ export function useReactFlowWrapper({
           }
         });
 
-        setEdges((es) => applyEdgeChanges(changes, es));
+        triggerUpdate("edges", addEdge(changes, elements.edges));
       } catch (e) {
         console.log(e);
       }
     },
-    [setEdges]
+    [triggerUpdate]
   );
 
   const onConnect = useCallback((connection) => {
-    setEdges((eds) =>
+    triggerUpdate(
+      "edges",
       addEdge(
         // TODO : lookinto styling floating edges  and smoothstep
         {
@@ -700,15 +716,16 @@ export function useReactFlowWrapper({
           labelBgStyle: { fill: "#FFCC00", color: "#fff", fillOpacity: 1 },
           labelShowBg: true,
         },
-        eds
+        elements.edges
       )
     );
   });
 
   // Updates zIndex of all nodes
   useEffect(() => {
-    setNodes((ns) =>
-      ns.map((el) => {
+    triggerUpdate(
+      "nodes",
+      elements.nodes.map((el) => {
         nodesZIndex.forEach((nodeId, index) => {
           if (el.id === nodeId) {
             let newIndex = index + 7;
@@ -955,8 +972,9 @@ export function useReactFlowWrapper({
     // TODO: need to check if node or edges
     // if node, use setNodes
     // if edge, use setEdges
-    setNodes((els) =>
-      els.map((el) => {
+    triggerUpdate(
+      "nodes",
+      elements.nodes.map((el) => {
         if (el.id === selectedEL.id) {
           // it's important that you create a new object here
           // in order to notify react flow about the change
@@ -978,6 +996,7 @@ export function useReactFlowWrapper({
         return el;
       })
     );
+
     handleContextMenuClose();
     setSelectedEL(selEl);
     dispatch(updateRepoFile(selEl, oldPath));
@@ -987,8 +1006,9 @@ export function useReactFlowWrapper({
     // TODO: need to check if node or edges
     // if node, use setNodes
     // if edge, use setEdges
-    setNodes((els) =>
-      els.map((el) => {
+    triggerUpdate(
+      "nodes",
+      elements.nodes.map((el) => {
         if (el.id === selectedEL.id) {
           el.data = {
             ...el.data,
@@ -1099,7 +1119,9 @@ export function useReactFlowWrapper({
 
   useEffect(() => {
     if (newNodeId) {
-      const newlyAddedNode = nodes.find((node) => node.id === newNodeId);
+      const newlyAddedNode = elements.nodes.find(
+        (node) => node.id === newNodeId
+      );
       if (newlyAddedNode) {
         //setSelectedElements([newlyAddedNode]);
         // TODO: replace with applyNodeChanges
@@ -1107,7 +1129,7 @@ export function useReactFlowWrapper({
         setNewNodeId(null);
       }
     }
-  }, [newNodeId, nodes]);
+  }, [newNodeId, elements.nodes]);
 
   useEffect(() => {
     if (isLoadTemplateDiagram) {
@@ -1115,29 +1137,31 @@ export function useReactFlowWrapper({
       // actual compiled functions
       // TODO:need to recreate template diagram
       // then uncomment the stuff below
-      setNodes(
-        // template.nodes.map((el) => {
-        //   el.data = {
-        //     ...el.data,
-        //     nodeInputHandler: nodeInputHandler,
-        //     nodeLinkHandler: nodeLinkHandler,
-        //   };
-        //   return el;
-        // })
-        []
-      );
+      triggerUpdate("nodes", []);
+      // setNodes(
+      //   // template.nodes.map((el) => {
+      //   //   el.data = {
+      //   //     ...el.data,
+      //   //     nodeInputHandler: nodeInputHandler,
+      //   //     nodeLinkHandler: nodeLinkHandler,
+      //   //   };
+      //   //   return el;
+      //   // })
+      //   []
+      // );
+      triggerUpdate("edges", []);
 
-      setEdges(
-        //   template.edges.map((el) => {
-        //     el.data = {
-        //       ...el.data,
-        //       nodeInputHandler: nodeInputHandler,
-        //       nodeLinkHandler: nodeLinkHandler,
-        //     };
-        //     return el;
-        //   })
-        []
-      );
+      // setEdges(
+      //   //   template.edges.map((el) => {
+      //   //     el.data = {
+      //   //       ...el.data,
+      //   //       nodeInputHandler: nodeInputHandler,
+      //   //       nodeLinkHandler: nodeLinkHandler,
+      //   //     };
+      //   //     return el;
+      //   //   })
+      //   []
+      // );
       dispatch(loadTemplateDiagram(false));
       dispatch(reloadDiagram(false));
     }
@@ -1169,8 +1193,8 @@ export function useReactFlowWrapper({
       <div className="canvas">
         <ReactFlow
           nodeTypes={nodeTypes}
-          nodes={nodes}
-          edges={edges}
+          nodes={elements.nodes}
+          edges={elements.edges}
           edgeTypes={edgeTypes}
           connectionLineComponent={FloatingConnectionLine}
           onNodesChange={onNodesChange}
@@ -1214,8 +1238,7 @@ export function useReactFlowWrapper({
           <ReactFlowStoreInterface
             {...{
               RFState,
-              setNodes,
-              setEdges,
+              triggerUpdate,
               isReloadDiagram,
               dispatch,
               nodeInputHandler,
@@ -1321,12 +1344,11 @@ export function useReactFlowWrapper({
         </Menu>
       </div>
     ),
-    nodes: nodes,
-    edges: edges,
+    nodes: elements.nodes,
+    edges: elements.edges,
     addNode: addNode,
     addLineNode: addLineNode,
-    setNodes: setNodes,
-    setEdges: setEdges,
+    triggerUpdate,
     setNodeName: setNodeName,
     onNodesChange: onNodesChange,
     onEdgesChange: onEdgesChange,
@@ -1342,8 +1364,7 @@ export function useReactFlowWrapper({
 
 export function ReactFlowStoreInterface({
   RFState,
-  setNodes,
-  setEdges,
+  triggerUpdate,
   isReloadDiagram,
   dispatch,
   nodeInputHandler,
@@ -1363,7 +1384,8 @@ export function ReactFlowStoreInterface({
           // loading the node handler functions into the nodes as
           // actual compiled functions
           // TODO: need to test if this works
-          setNodes(
+          triggerUpdate(
+            "nodes",
             RFState.RFState.nodes.map((el) => {
               el.data = {
                 ...el.data,
@@ -1374,10 +1396,11 @@ export function ReactFlowStoreInterface({
             })
           );
         } else {
-          setNodes([]);
+          triggerUpdate("nodes", []);
         }
         if (RFState?.RFState?.edges) {
-          setEdges(
+          triggerUpdate(
+            "edges",
             RFState.RFState.edges.map((el) => {
               el.data = {
                 ...el.data,
@@ -1388,7 +1411,7 @@ export function ReactFlowStoreInterface({
             })
           );
         } else {
-          setEdges([]);
+          triggerUpdate("edges", []);
         }
 
         setViewport({
@@ -1402,7 +1425,7 @@ export function ReactFlowStoreInterface({
       console.log(err);
       dispatch(errorNotification(`Error parsing saved diagram!`));
     }
-  }, [RFState, setNodes, setEdges, setViewport, isReloadDiagram]);
+  }, [RFState, triggerUpdate, setViewport, isReloadDiagram]);
 
   return null;
 }

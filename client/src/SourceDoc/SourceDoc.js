@@ -536,9 +536,10 @@ function SourceDoc(props) {
             openArtifact={props.data.openArtifact}
             setIsEditing={setIsEditing}
             renderFiles={renderFiles}
-            setNodes={props.functions.setNodes}
-            setEdges={props.functions.setEdges}
+            triggerUpdate={props.functions.triggerUpdate}
             setSelectedEL={props.functions.setSelectedEL}
+            nodes={props.data.nodes}
+            edges={props.data.edges}
           />
         </TabPanel>
       </Resizable>

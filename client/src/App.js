@@ -129,11 +129,11 @@ function App() {
   } = useToolBar();
   const {
     render,
-    nodes: nodes,
+    nodes,
+    edges,
     addNode,
     addLineNode,
-    setNodes: setNodes,
-    setEdges: setEdges,
+    triggerUpdate,
     setNodeName,
     onElementsRemove,
     initialElements,
@@ -210,8 +210,8 @@ function App() {
 
   // set new repo from drop down menu
   const handleRepoChange = (event) => {
-    setNodes(initialElements.nodes);
-    setEdges(initialElements.edges);
+    triggerUpdate("nodes", initialElements.nodes);
+    triggerUpdate("edges", initialElements.edges);
     setRepo(event.target.value);
     setSelectedEL(initialElements[0]);
     setBranch("");
@@ -243,8 +243,8 @@ function App() {
           "https://api.github.com/" + userName + "/" + repoName;
 
         setRepos([...repos, { name: repoName }]);
-        setNodes(initialElements.nodes);
-        setEdges(initialElements.edges);
+        triggerUpdate("nodes", initialElements.nodes);
+        triggerUpdate("edges", initialElements.edges);
         dispatch(getPublicRepoFiles(repoName, formattedURL));
         setRepo(repoName);
         setSelectedEL(initialElements[0]);
@@ -264,8 +264,8 @@ function App() {
 
   // set new branch from drop down menu
   const handleBranchChange = (event) => {
-    setNodes(initialElements.nodes);
-    setEdges(initialElements.edges);
+    triggerUpdate("nodes", initialElements.nodes);
+    triggerUpdate("edges", initialElements.edges);
     dispatch(getRepoFiles(repo, event.target.value));
     setSelectedEL(initialElements[0]);
     setBranch(event.target.value);
@@ -601,8 +601,7 @@ function App() {
             handleName: handleName,
             setSelectedEL: setSelectedEL,
             setIsOpenSD: setIsOpenSD,
-            setNodes: setNodes,
-            setEdges: setEdges,
+            triggerUpdate: triggerUpdate,
             setOpenArtifact: setOpenArtifact,
             addFileToNode: addFileToNode,
             setTabValue: setTabValue,

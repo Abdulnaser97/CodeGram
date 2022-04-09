@@ -15,8 +15,7 @@ export default function DocsTab(props) {
     setIsEditing,
     selectedEL,
     openArtifact,
-    setNodes,
-    setEdges,
+    triggerUpdate,
     setSelectedEL,
   } = props;
 
@@ -35,8 +34,9 @@ export default function DocsTab(props) {
     var selEl = null;
     // CHecks if edge with source attribute
     if (selectedEL?.source) {
-      setEdges((els) =>
-        els.map((el) => {
+      triggerUpdate(
+        "edges",
+        props.edges.map((el) => {
           if (selectedEL && el.id === selectedEL.id) {
             // it's important that you create a new object here
             // in order to notify react flow about the change
@@ -52,8 +52,9 @@ export default function DocsTab(props) {
         })
       );
     } else {
-      setNodes((els) =>
-        els.map((el) => {
+      triggerUpdate(
+        "nodes",
+        props.nodes.map((el) => {
           if (selectedEL && el.id === selectedEL.id) {
             // it's important that you create a new object here
             // in order to notify react flow about the change
