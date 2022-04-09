@@ -869,6 +869,18 @@ export function useReactFlowWrapper({
   );
 
   const keydownHandler = (e) => {
+    // Enter key
+    if (e.keyCode === 13) {
+      if (
+        selectedEL &&
+        selectedEL.data &&
+        selectedEL.data.type !== "Text" &&
+        document.activeElement.tagName !== "TEXTAREA" &&
+        document.activeElement.tagName !== "DIV"
+      ) {
+        onPaneClick(e);
+      }
+    }
     // Ctrl + C (Cmd + C) for copy
     if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
       onCopy();
