@@ -573,20 +573,20 @@ export function useReactFlowWrapper({
     // element.data.selected = true;
   };
 
-  const onPaneClick = async (event) => {
+  const onPaneClick = (event) => {
     if (nodeName || text) {
       setNameFlag(true);
     } else {
       setSelectedEL(null);
-      // handleContextMenuClose();
     }
     if (activeToolBarButton === "selectShape") {
-      await addNode({ event: event });
+      addNode({ event: event });
       setActiveToolBarButton("cursor");
     } else if (activeToolBarButton === "TextIcon") {
-      await addText({ event: event });
+      addText({ event: event });
       setActiveToolBarButton("cursor");
     }
+    handleContextMenuClose();
   };
 
   const onDeleteSourceDocFile = (change) => {
@@ -628,6 +628,12 @@ export function useReactFlowWrapper({
                 selectedElIdRef.current === change.id
               ) {
                 selectedElIdRef.current = null;
+              }
+              break;
+            case "position":
+              if (!selectedEL || selectedEL.id !== change.id) {
+                const curNode = getNode(change.id);
+                setSelectedEL(curNode);
               }
               break;
 
@@ -992,8 +998,8 @@ export function useReactFlowWrapper({
         setter(nodeName);
         setSelectedEL(null);
       }
+      setNameFlag(false);
     }
-    setNameFlag(false);
   }, [nameFlag, selectedEL, search, text]);
 
   function nodeInputHandler(event, nodeType = "") {
@@ -1042,6 +1048,7 @@ export function useReactFlowWrapper({
     }
   }, [searchContent]);
 
+  console.log("selecteEL >>>", selectedEL);
   const nodeLinkHandler = useCallback(
     (event) => {
       if (selectedEL) {
@@ -1204,7 +1211,7 @@ export function useReactFlowWrapper({
           disableAutoFocusItem
           autoFocus={false}
           open={contextMenu !== null}
-          onClose={handleContextMenuClose}
+          onClose={onPaneClick}
           anchorReference="anchorPosition"
           anchorPosition={
             contextMenu !== null
