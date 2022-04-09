@@ -605,11 +605,13 @@ export function useReactFlowWrapper({
   const onNodesChange = useCallback(
     (changes) => {
       try {
-        console.log(changes);
-        // console.log(nodes);
-
         changes.forEach((change) => {
           switch (change.type) {
+            case "add":
+              createCustomChange("deselectAll");
+              const curNode = getNode(change.id);
+              setSelectedEL(curNode);
+              break;
             case "remove":
               // const nodeToRemove = setNodes((nodes) =>
               //   nodes.find((node) => node.id === change.id)
@@ -631,7 +633,12 @@ export function useReactFlowWrapper({
               }
               break;
             case "position":
-              if (!selectedEL || selectedEL.id !== change.id) {
+              // if changes.length > 2, it means there are multiple nodes selected
+              // so we don't want to setSelectedEL otherwise it will infinetely rerender
+              if (
+                changes.length < 2 &&
+                (!selectedEL || selectedEL.id !== change.id)
+              ) {
                 const curNode = getNode(change.id);
                 setSelectedEL(curNode);
               }
@@ -1048,7 +1055,6 @@ export function useReactFlowWrapper({
     }
   }, [searchContent]);
 
-  console.log("selecteEL >>>", selectedEL);
   const nodeLinkHandler = useCallback(
     (event) => {
       if (selectedEL) {
