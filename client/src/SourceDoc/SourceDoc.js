@@ -86,7 +86,7 @@ function SourceDoc(props) {
 
   // console.log(props.data.selectedEL)
   // resizeable state varaiables
-  const [width, setWidth] = useState("40vw");
+  const [width, setWidth] = useState("35vw");
   const [height, setHeight] = useState("85vh");
 
   // only updates if selectedEL is not text
@@ -335,7 +335,8 @@ function SourceDoc(props) {
           ? props.data.openArtifact.path
           : null;
 
-        if (props.data.openArtifact.type == "file") {
+        // only set code in Code Tab if openArtifact is a file
+        if (props.data.openArtifact && props.data.openArtifact.type == "file") {
           // do GET request if file code hasn't been retrieved yet
           if (
             path &&

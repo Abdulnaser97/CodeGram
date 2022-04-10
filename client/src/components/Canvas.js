@@ -53,8 +53,6 @@ import { errorNotification } from "../Redux/actions/notification";
 
 const multiSelectionKeyCode = "Shift";
 
-var initialElements = ControlTemplate2;
-
 const edgeTypes = {
   default: SmoothStepEdge,
   straight: StraightEdge,
@@ -103,6 +101,15 @@ export function useReactFlowWrapper({
     };
   });
   const rf = useReactFlow();
+
+  let initialElements = useMemo(() => {
+    // based on viewport width
+    if (window.innerWidth < 1600) {
+      return ControlTemplate2;
+    } else {
+      return ControlTemplate;
+    }
+  }, []);
   const [nodes, setNodes] = useState(
     initialElements.nodes ? initialElements.nodes : []
   );
@@ -540,7 +547,6 @@ export function useReactFlowWrapper({
     setContextMenu(null);
     setSelectedNodeEvent(null);
     setContextFiles(null);
-    setNodeName("");
   };
 
   const handlePaneContextMenu = (event) => {
@@ -574,20 +580,20 @@ export function useReactFlowWrapper({
     // element.data.selected = true;
   };
 
-  const onPaneClick = async (event) => {
+  const onPaneClick = (event) => {
     if (nodeName || text) {
       setNameFlag(true);
     } else {
       setSelectedEL(null);
-      // handleContextMenuClose();
     }
     if (activeToolBarButton === "selectShape") {
-      await addNode({ event: event });
+      addNode({ event: event });
       setActiveToolBarButton("cursor");
     } else if (activeToolBarButton === "TextIcon") {
-      await addText({ event: event });
+      addText({ event: event });
       setActiveToolBarButton("cursor");
     }
+    handleContextMenuClose();
   };
 
   const onDeleteSourceDocFile = (change) => {
@@ -606,11 +612,13 @@ export function useReactFlowWrapper({
   const onNodesChange = useCallback(
     (changes) => {
       try {
-        console.log(changes);
-        // console.log(nodes);
-
         changes.forEach((change) => {
           switch (change.type) {
+            case "add":
+              createCustomChange("deselectAll");
+              const curNode = getNode(change.id);
+              setSelectedEL(curNode);
+              break;
             case "remove":
               // const nodeToRemove = setNodes((nodes) =>
               //   nodes.find((node) => node.id === change.id)
@@ -629,6 +637,17 @@ export function useReactFlowWrapper({
                 selectedElIdRef.current === change.id
               ) {
                 selectedElIdRef.current = null;
+              }
+              break;
+            case "position":
+              // if changes.length > 2, it means there are multiple nodes selected
+              // so we don't want to setSelectedEL otherwise it will infinetely rerender
+              if (
+                changes.length < 2 &&
+                (!selectedEL || selectedEL.id !== change.id)
+              ) {
+                const curNode = getNode(change.id);
+                setSelectedEL(curNode);
               }
               break;
 
@@ -857,6 +876,18 @@ export function useReactFlowWrapper({
   );
 
   const keydownHandler = (e) => {
+    // Enter key
+    if (e.keyCode === 13) {
+      if (
+        selectedEL &&
+        selectedEL.data &&
+        selectedEL.data.type !== "Text" &&
+        document.activeElement.tagName !== "TEXTAREA" &&
+        document.activeElement.tagName !== "DIV"
+      ) {
+        onPaneClick(e);
+      }
+    }
     // Ctrl + C (Cmd + C) for copy
     if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
       onCopy();
@@ -993,8 +1024,8 @@ export function useReactFlowWrapper({
         setter(nodeName);
         setSelectedEL(null);
       }
+      setNameFlag(false);
     }
-    setNameFlag(false);
   }, [nameFlag, selectedEL, search, text]);
 
   function nodeInputHandler(event, nodeType = "") {
@@ -1132,6 +1163,14 @@ export function useReactFlowWrapper({
       },
     ]);
   }, [selectedEL]);
+
+  // Only reset nodeName when nameFlag is false, i.e. we have saved the name in node
+  useEffect(() => {
+    if (!nameFlag) {
+      setNodeName("");
+    }
+  }, [nameFlag]);
+
   return {
     render: (
       <div className="canvas">
@@ -1197,7 +1236,7 @@ export function useReactFlowWrapper({
           disableAutoFocusItem
           autoFocus={false}
           open={contextMenu !== null}
-          onClose={handleContextMenuClose}
+          onClose={onPaneClick}
           anchorReference="anchorPosition"
           anchorPosition={
             contextMenu !== null
