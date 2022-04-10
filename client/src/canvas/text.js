@@ -81,13 +81,7 @@ const TextComponent = (props) => {
         ref.className = `${props.data.type} nodrag ${selected}`;
       }}
       onResize={(e, direction, ref, d) => {
-        setFontSize(
-          `${
-            Math.sqrt(
-              Math.pow(height + d.height, 2) + Math.pow(width + d.width, 2)
-            ) / 17
-          }px`
-        );
+        setFontSize(`${Math.sqrt(Math.pow(height / 4 + d.height / 8, 2))}px`);
 
         setHandleSize(Math.sqrt(height + d.height + width + d.width));
 
