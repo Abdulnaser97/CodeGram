@@ -34,8 +34,8 @@
 .SDMaximizeWrapper {
   position: fixed;
   top: 1.5%;
-  right: 2%;
-  height: 20px;
+  left: 3%;
+  height: 15px;
   width: 30px;
   display: flex;
   flex-direction: column;
@@ -49,11 +49,11 @@
 
 .SDMaximize {
   position: relative;
-  height: 60%;
-  width: 40%;
+  height: 50%;
+  width: 28%;
   border: 1px solid #ffaea6;
+  border-radius: 2px;
   z-index: 9999;
-
 }
 .SDMaximizeWrapper:hover .SDMaximize {
   background-color: white;
@@ -67,8 +67,8 @@
 .SDMinimizeWrapper {
   position: relative;
   top: 1.5%;
-  left: 2%;
-  height: 20px;
+  left: 9%;
+  height: 15px;
   width: 30px;
   display: flex;
   flex-direction: column;
