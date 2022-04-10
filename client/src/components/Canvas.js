@@ -608,7 +608,7 @@ export function useReactFlowWrapper({
     }
     setOpenArtifact("");
   };
-
+  console.log(contextMenu);
   const onNodesChange = useCallback(
     (changes) => {
       try {
@@ -993,6 +993,7 @@ export function useReactFlowWrapper({
     );
     handleContextMenuClose();
     setSelectedEL(selEl);
+    setNodeName(null);
     dispatch(updateRepoFile(selEl, oldPath));
   };
 
@@ -1082,20 +1083,20 @@ export function useReactFlowWrapper({
 
   const nodeLinkHandler = useCallback(
     (event) => {
-      if (selectedEL) {
-        setContextMenu(
-          contextMenu === null
-            ? {
-                mouseX: event.clientX + 20,
-                mouseY: event.clientY,
-                type: "nodeLink",
-              }
-            : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
-              // Other native context menus might behave different.
-              // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
-              null
-        );
-      }
+      // if (selectedEL) {
+      setContextMenu(
+        // contextMenu === null ?
+        {
+          mouseX: event.clientX + 20,
+          mouseY: event.clientY,
+          type: "nodeLink",
+        }
+        //     : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+        //       // Other native context menus might behave different.
+        //       // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+        //       null
+      );
+      // }
     },
     [selectedEL, project]
   );

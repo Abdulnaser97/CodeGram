@@ -173,10 +173,10 @@ function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
         style={{ ...xcode, backgroundColor: "#fbfbfb" }}
         showLineNumbers={true}
         showInLineNumbers={true}
-        lineProps={{
-          style: { wordBreak: "break-word", whiteSpace: "pre-wrap" },
-        }}
-        wrapLines={true}
+        // lineProps={{
+        //   style: { wordBreak: "break-word", whiteSpace: "pre-wrap" },
+        // }}
+        // wrapLines={true}
       >
         {rawCode}
       </SyntaxHighlighter>

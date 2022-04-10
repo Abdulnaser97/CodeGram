@@ -87,7 +87,7 @@ function SourceDoc(props) {
   // console.log(props.data.selectedEL)
   // resizeable state varaiables
   const [width, setWidth] = useState("35vw");
-  const [height, setHeight] = useState("85vh");
+  const [height, setHeight] = useState("80vh");
 
   // only updates if selectedEL is not text
   const [filteredSelectedEL, setFilteredSelectedEL] = useState(null);
