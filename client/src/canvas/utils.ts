@@ -1,4 +1,4 @@
-import { Position, MarkerType, Node, XYPosition } from "react-flow-renderer";
+import { Position, MarkerType, Node, XYPosition, ReactFlowInstance } from "react-flow-renderer";
 
 // this helper function returns the intersection point
 // of the line between the center of the intersectionNode and the target node
@@ -32,6 +32,28 @@ function getNodeIntersection(
 
   return { x, y };
 }
+export function realPos (n: Node, rf: ReactFlowInstance){ 
+  var realx = n.position.x
+  var realy = n.position.y
+  var pId = n.parentNode
+  while (pId){
+    var parent = rf.getNode(pId) 
+    if (parent){ 
+      realx += parent?.position.x
+      realy += parent?.position.y 
+    }
+    pId = parent?.parentNode
+  }
+  var retNode = {
+    ...n,
+    position: { 
+      x: realx,
+      y: realy, 
+    } 
+  }
+  return retNode
+}
+
 
 function getMiddleNodeIntersection(
   intersectionNode: Node,
@@ -110,6 +132,7 @@ function getEdgePosition(node: Node, intersectionPoint: XYPosition) {
 
   return Position.Top;
 }
+
 
 // returns the parameters (sx, sy, tx, ty, sourcePos, targetPos) you need to create an edge
 export function getEdgeParams(source: Node, target: Node) {
