@@ -1,4 +1,5 @@
 import "./App.css";
+import { Helmet } from "react-helmet";
 import styled from "styled-components";
 import Logo3 from "./Media/Logo3.svg";
 import React, { useState, useEffect, useCallback } from "react";
@@ -47,6 +48,7 @@ import {
   errorNotification,
   successNotification,
 } from "./Redux/actions/notification";
+import pageMeta from "./Utils/pageMeta";
 
 //templates
 //import * as data from './Templates/FullStackTemplate.CodeGram';
@@ -459,6 +461,11 @@ function App() {
       <NotifError />
 
       <div className="App" style={{ cursor: cursor }}>
+        <Helmet>
+          <title>{`${pageMeta.title}`}</title>
+          <meta name="description" content={pageMeta.description} />
+          <meta name="keywords" content={pageMeta.keywords.join(",")} />
+        </Helmet>
         {!isOpenSD && (
           <div
             className="SourceDocButtonWrapper"
@@ -588,7 +595,7 @@ function App() {
           fontWeight="2vh"
           color="primary.grey"
         >
-          Welcome to CodeGram demo {user.username}!
+          Welcome to CodeGram {user.username}!
         </Typography>
         {toolBarRender}
         <Container className="canvasContainer">{render}</Container>
