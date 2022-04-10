@@ -155,7 +155,7 @@
 //       source: `${i}`,
 //       type: "floating",
 //       markerEnd: {
-//         type: MarkerType.Arrow 
+//         type: MarkerType.Arrow
 //       },
 //     });
 //   }
@@ -163,8 +163,8 @@
 //   return { nodes, edges };
 // }
 
-
-import { Position, MarkerType } from 'react-flow-renderer';
+// TODO: THIS FILE IS UNUSED I BELIEVE CHECK WITH PHOEBE
+import { Position, MarkerType, useReactFlow } from "react-flow-renderer";
 
 // this helper function returns the intersection point
 // of the line between the center of the intersectionNode and the target node
@@ -220,6 +220,27 @@ function getEdgePosition(node, intersectionPoint) {
   return Position.Top;
 }
 
+export function realPos(n, rf) {
+  var realx = n.position.x;
+  var realy = n.position.y;
+  var pId = n.parentNode;
+  while (pId) {
+    var parent = rf.getNode(pId);
+    if (parent) {
+      realx += parent?.position.x;
+      realy += parent?.position.y;
+    }
+    pId = parent?.parentNode;
+  }
+  var retNode = {
+    ...n,
+    position: {
+      x: realx,
+      y: realy,
+    },
+  };
+  return retNode;
+}
 // returns the parameters (sx, sy, tx, ty, sourcePos, targetPos) you need to create an edge
 export function getEdgeParams(source, target) {
   const sourceIntersectionPoint = getNodeIntersection(source, target);
@@ -243,7 +264,7 @@ export function createNodesAndEdges() {
   const edges = [];
   const center = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 
-  nodes.push({ id: 'target', data: { label: 'Target' }, position: center });
+  nodes.push({ id: "target", data: { label: "Target" }, position: center });
 
   for (let i = 0; i < 8; i++) {
     const degrees = i * (360 / 8);
@@ -251,13 +272,13 @@ export function createNodesAndEdges() {
     const x = 250 * Math.cos(radians) + center.x;
     const y = 250 * Math.sin(radians) + center.y;
 
-    nodes.push({ id: `${i}`, data: { label: 'Source' }, position: { x, y } });
+    nodes.push({ id: `${i}`, data: { label: "Source" }, position: { x, y } });
 
     edges.push({
       id: `edge-${i}`,
-      target: 'target',
+      target: "target",
       source: `${i}`,
-      type: 'floating',
+      type: "floating",
       markerEnd: {
         type: MarkerType.Arrow,
       },
