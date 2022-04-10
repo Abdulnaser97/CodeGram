@@ -6,7 +6,7 @@ import {
   useReactFlow
 } from "react-flow-renderer";
 
-import { getEdgeParams } from "./utils";
+import { getEdgeParams, realPos } from "./utils";
 
 const FloatingConnectionLine: FC<ConnectionLineComponentProps> = ({
   targetX,
@@ -30,22 +30,41 @@ const FloatingConnectionLine: FC<ConnectionLineComponentProps> = ({
     __rf: { width: 1, height: 1, position: { x: targetX, y: targetY } },
   } as Node;
 
-  if (sourceNode.parentNode) { 
-    var parent = rf.getNode(sourceNode.parentNode) 
-    if (parent){
-      sourceNode = {
-        ...sourceNode,
-        position: { 
-          x: parent.position.x + sourceNode.position.x,
-          y: parent.position.y + sourceNode.position.y, 
-        } 
-      }
-    }
-  }
- 
+  // if (sourceNode.parentNode) { 
+  //   var parent = rf.getNode(sourceNode.parentNode) 
+  //   if (parent){
+  //     sourceNode = {
+  //       ...sourceNode,
+  //       position: { 
+  //         x: parent.position.x + sourceNode.position.x,
+  //         y: parent.position.y + sourceNode.position.y, 
+  //       } 
+  //     }
+  //   }
+  // }
+
+  // var node = {...sourceNode}
+  // var realx = node.position.x
+  // var realy = node.position.y
+  // var pId = node.parentNode
+  // while (pId){
+  //   var parent = rf.getNode(pId) 
+  //   if (parent){ 
+  //     realx += parent?.position.x
+  //     realy += parent?.position.y 
+  //   }
+  //   pId = parent?.parentNode
+  // }
+  // sourceNode = {
+  //   ...sourceNode,
+  //   position: { 
+  //     x: realx,
+  //     y: realy, 
+  //   } 
+  // }
   
-  
-  const { sx, sy } = getEdgeParams(sourceNode, targetNode);
+
+  const { sx, sy } = getEdgeParams(realPos(sourceNode, rf), targetNode);
 
   const d = getBezierPath({
     sourceX: sx,
