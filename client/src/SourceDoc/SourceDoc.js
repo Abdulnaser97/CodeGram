@@ -81,7 +81,7 @@ function SourceDoc(props) {
   const [path, setPath] = useState([]);
   const [pathComponent, setPathComponent] = useState(null);
   const [SDContent, setSDContent] = useState(null);
-
+  const [isMaxSD, setIsMaxSD] = useState(false);
   const [isEditing, setIsEditing] = useState("");
 
   // console.log(props.data.selectedEL)
@@ -443,6 +443,10 @@ function SourceDoc(props) {
         className="sourceDocContainer"
         style={{
           position: "absolute",
+          top: isMaxSD ? "0" : "13vh",
+          height: isMaxSD ? "100vh" : "",
+          right: isMaxSD ? "0" : "1.5vw",
+          "border-radius": isMaxSD ? "0" : "20px",
         }}
         onResizeStop={(e, direction, ref, d) => {
           setWidth(width + d.width);
@@ -456,6 +460,16 @@ function SourceDoc(props) {
           }
         >
           <div className="SDMinimize" />
+        </div>
+        <div
+          className="SDMaximizeWrapper"
+          onClick={() => {
+            if (!isMaxSD) setHeight("100vh");
+            else setHeight("80vh");
+            setIsMaxSD((prevIsMaxSD) => !prevIsMaxSD);
+          }}
+        >
+          <div className="SDMaximize" />
         </div>
         <Box m={0}>
           <Tabs

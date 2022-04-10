@@ -173,6 +173,22 @@ function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
         style={{ ...xcode, backgroundColor: "#fbfbfb" }}
         showLineNumbers={true}
         showInLineNumbers={true}
+        lineNumberStyle={{
+          "-webkit-user-select": null /* Safari */,
+          "-moz-user-select": null /* Firefox */,
+          "-ms-user-select": "none" /* IE10+/Edge */,
+          "user-select": "none" /* Standard */,
+          // color: "grey",
+          opacity: "30%",
+        }}
+        lineNumberContainerStyle={{
+          padding: 0,
+
+          "-webkit-user-select": null /* Safari */,
+          "-moz-user-select": null /* Firefox */,
+          "-ms-user-select": "none" /* IE10+/Edge */,
+          "user-select": "none" /* Standard */,
+        }}
         // lineProps={{
         //   style: { wordBreak: "break-word", whiteSpace: "pre-wrap" },
         // }}

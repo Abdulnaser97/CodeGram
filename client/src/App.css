@@ -264,6 +264,19 @@ body {
   align-items: center;
 }
 
+.nodeCard {
+  font-size: 10pt;
+  border: 1px solid #626262;
+  border-radius: 1vh;
+  padding: 1%; 
+  margin:5px; 
+}
+
+.nodeCard:hover {
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px; 
+  cursor:default;
+}
+
 .background {
   position: absolute;
   top: -100vh;

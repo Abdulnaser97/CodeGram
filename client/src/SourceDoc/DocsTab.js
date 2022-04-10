@@ -1,5 +1,5 @@
 import react, { useState, useEffect } from "react";
-
+import { getOutgoers, getIncomers, useReactFlow } from "react-flow-renderer";
 import { Box, Typography } from "@mui/material";
 
 import TextEditor from "../components/TextEditor.js";
@@ -19,8 +19,11 @@ export default function DocsTab(props) {
     setEdges,
     setSelectedEL,
   } = props;
+  var rf = useReactFlow();
 
   const [wiki, setWiki] = useState(selectedEL ? selectedEL.data.wiki : "");
+  const [ogs, setOgs] = useState([]);
+  const [incs, setIncs] = useState([]);
   const [newLabel, setNewLabel] = useState(
     selectedEL ? selectedEL.data.label : ""
   );
@@ -28,6 +31,11 @@ export default function DocsTab(props) {
     if (selectedEL) {
       setWiki(selectedEL.data.wiki);
       setNewLabel(selectedEL.data.label);
+      let node = rf.getNode(selectedEL.id);
+      if (node) {
+        setIncs(getIncomers(node, rf.getNodes(), rf.getEdges()));
+        setOgs(getOutgoers(node, rf.getNodes(), rf.getEdges()));
+      }
     }
   }, [selectedEL]);
 
@@ -167,6 +175,7 @@ export default function DocsTab(props) {
       <Typography my={1} variant="h6">
         Wiki
       </Typography>
+
       <div className="text-editor-container">
         {isEditing ? (
           <TextEditor
@@ -182,6 +191,44 @@ export default function DocsTab(props) {
             }}
           />
         )}
+        <div className="canvasData">
+          {ogs.length > 0 && (
+            <div>
+              <Typography variant="h7">Outgoers</Typography>
+              <Box sx={{ display: "flex", width: "auto" }}>
+                {ogs.map((og) => (
+                  <div
+                    className="nodeCard"
+                    onClick={() => {
+                      setSelectedEL(rf.getNode(og.id));
+                    }}
+                  >
+                    {" "}
+                    {og.data.label}{" "}
+                  </div>
+                ))}
+              </Box>
+            </div>
+          )}
+          {incs.length > 0 && (
+            <div>
+              <Typography variant="h7">Incomers</Typography>
+              <Box sx={{ display: "flex", width: "auto" }}>
+                {incs.map((inc) => (
+                  <div
+                    className="nodeCard"
+                    onClick={() => {
+                      setSelectedEL(rf.getNode(inc.id));
+                    }}
+                  >
+                    {" "}
+                    {inc.data.label}{" "}
+                  </div>
+                ))}
+              </Box>
+            </div>
+          )}
+        </div>
       </div>
     </Box>
   );
