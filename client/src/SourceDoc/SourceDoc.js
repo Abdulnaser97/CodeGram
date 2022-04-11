@@ -318,21 +318,19 @@ function SourceDoc(props) {
         !selectedEL ||
         selectedEL.data.type === "Text"
       ) {
-        setValue(0);
+        // setValue(0);
       }
       // only set code in Code Tab if openArtifact is a file
       else if (filteredSelectedEL.data.code) {
         console.log("data.code");
         setCurCode(filteredSelectedEL.data.code);
       } else if (!selectedEL.data.label) {
-        setValue(0);
-        setCurCode(
-          "Select a node with a file to view a source code or add a file to this node!"
-        );
+        // setValue(0);
+        setCurCode("This node has no code linked!");
       } else if (filteredSelectedEL.data.label) {
         // setValue(2);
-        const path = props.data.openArtifact
-          ? props.data.openArtifact.path
+        const path = props.data.selectedEL
+          ? props.data.selectedEL.data.path
           : null;
 
         // only set code in Code Tab if openArtifact is a file
@@ -393,12 +391,12 @@ function SourceDoc(props) {
             console.log(
               "Already retrieved file code contents, calling from store"
             );
-            setCurCode(
-              "Select a node with a file to view a source code or add a file to this node!"
-            );
 
             if (path) {
+              console.log("PATH!");
               setCurCode(state.repoFiles.repoFiles[path].code);
+            } else {
+              setCurCode("This node has no code linked!");
             }
           }
         } else {
@@ -541,6 +539,8 @@ function SourceDoc(props) {
             }
             fileNode={filteredSelectedEL ? filteredSelectedEL : ""}
             addLineNode={props.functions.addLineNode}
+            height={height}
+            width={width}
           />
         </TabPanel>
         <TabPanel value={value} index={2} style={{ overflow: "auto" }}>
