@@ -81,13 +81,13 @@ function SourceDoc(props) {
   const [path, setPath] = useState([]);
   const [pathComponent, setPathComponent] = useState(null);
   const [SDContent, setSDContent] = useState(null);
-
+  const [isMaxSD, setIsMaxSD] = useState(false);
   const [isEditing, setIsEditing] = useState("");
 
   // console.log(props.data.selectedEL)
   // resizeable state varaiables
   const [width, setWidth] = useState("35vw");
-  const [height, setHeight] = useState("85vh");
+  const [height, setHeight] = useState("80vh");
 
   // only updates if selectedEL is not text
   const [filteredSelectedEL, setFilteredSelectedEL] = useState(null);
@@ -325,14 +325,12 @@ function SourceDoc(props) {
         console.log("data.code");
         setCurCode(filteredSelectedEL.data.code);
       } else if (!selectedEL.data.label) {
-        setValue(0);
-        setCurCode(
-          "Select a node with a file to view a source code or add a file to this node!"
-        );
+        // setValue(0);
+        setCurCode("This node has no code linked!");
       } else if (filteredSelectedEL.data.label) {
         // setValue(2);
-        const path = props.data.openArtifact
-          ? props.data.openArtifact.path
+        const path = props.data.selectedEL
+          ? props.data.selectedEL.data.path
           : null;
 
         // only set code in Code Tab if openArtifact is a file
@@ -393,12 +391,12 @@ function SourceDoc(props) {
             console.log(
               "Already retrieved file code contents, calling from store"
             );
-            setCurCode(
-              "Select a node with a file to view a source code or add a file to this node!"
-            );
 
             if (path) {
+              console.log("PATH!");
               setCurCode(state.repoFiles.repoFiles[path].code);
+            } else {
+              setCurCode("This node has no code linked!");
             }
           }
         } else {
@@ -443,6 +441,10 @@ function SourceDoc(props) {
         className="sourceDocContainer"
         style={{
           position: "absolute",
+          top: isMaxSD ? "0" : "13vh",
+          height: isMaxSD ? "100vh" : "",
+          right: isMaxSD ? "0" : "1.5vw",
+          "border-radius": isMaxSD ? "0" : "20px",
         }}
         onResizeStop={(e, direction, ref, d) => {
           setWidth(width + d.width);
@@ -456,6 +458,16 @@ function SourceDoc(props) {
           }
         >
           <div className="SDMinimize" />
+        </div>
+        <div
+          className="SDMaximizeWrapper"
+          onClick={() => {
+            if (!isMaxSD) setHeight("100vh");
+            else setHeight("80vh");
+            setIsMaxSD((prevIsMaxSD) => !prevIsMaxSD);
+          }}
+        >
+          <div className="SDMaximize" />
         </div>
         <Box m={0}>
           <Tabs
@@ -525,8 +537,10 @@ function SourceDoc(props) {
                 ? filteredSelectedEL.data.label
                 : ""
             }
-            fileNode={filteredSelectedEL ? filteredSelectedEL : ""}
+            fileNode={selectedEL ? selectedEL : ""}
             addLineNode={props.functions.addLineNode}
+            height={height}
+            width={width}
           />
         </TabPanel>
         <TabPanel value={value} index={2} style={{ overflow: "auto" }}>

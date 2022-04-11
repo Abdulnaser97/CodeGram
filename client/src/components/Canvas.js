@@ -608,11 +608,13 @@ export function useReactFlowWrapper({
     }
     setOpenArtifact("");
   };
-
+  console.log(contextMenu);
   const onNodesChange = useCallback(
     (changes) => {
       try {
+        var extraChanges = [];
         changes.forEach((change) => {
+          console.log(change);
           switch (change.type) {
             case "add":
               createCustomChange("deselectAll");
@@ -620,13 +622,17 @@ export function useReactFlowWrapper({
               setSelectedEL(curNode);
               break;
             case "remove":
-              // const nodeToRemove = setNodes((nodes) =>
-              //   nodes.find((node) => node.id === change.id)
-              // );
-              // const nodeToRemove = nodes.find((node) => node.id === change.id);
-              // dispatch(deleteNodeFromArray([nodeToRemove]));
-              // setOpenArtifact("");
-
+              var curNodes = rf.getNodes();
+              curNodes.forEach((node) => {
+                if (node.parentNode == change.id) {
+                  onNodesChange([
+                    {
+                      id: node.id,
+                      type: "remove",
+                    },
+                  ]);
+                }
+              });
               onDeleteSourceDocFile(change);
               break;
             case "select":
@@ -656,7 +662,7 @@ export function useReactFlowWrapper({
           }
         });
 
-        setNodes((ns) => applyNodeChanges(changes, ns));
+        setNodes((ns) => applyNodeChanges([...changes, ...extraChanges], ns));
       } catch (e) {
         console.log(e);
       }
@@ -987,6 +993,7 @@ export function useReactFlowWrapper({
     );
     handleContextMenuClose();
     setSelectedEL(selEl);
+    setNodeName(null);
     dispatch(updateRepoFile(selEl, oldPath));
   };
 
@@ -1076,20 +1083,20 @@ export function useReactFlowWrapper({
 
   const nodeLinkHandler = useCallback(
     (event) => {
-      if (selectedEL) {
-        setContextMenu(
-          contextMenu === null
-            ? {
-                mouseX: event.clientX + 20,
-                mouseY: event.clientY,
-                type: "nodeLink",
-              }
-            : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
-              // Other native context menus might behave different.
-              // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
-              null
-        );
-      }
+      // if (selectedEL) {
+      setContextMenu(
+        // contextMenu === null ?
+        {
+          mouseX: event.clientX + 20,
+          mouseY: event.clientY,
+          type: "nodeLink",
+        }
+        //     : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+        //       // Other native context menus might behave different.
+        //       // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+        //       null
+      );
+      // }
     },
     [selectedEL, project]
   );
