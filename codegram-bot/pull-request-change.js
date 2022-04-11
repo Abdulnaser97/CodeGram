@@ -78,6 +78,7 @@ async function handlePullRequestChange(context) {
     status: "completed",
     conclusion: conclusion,
     completed_at: new Date().toISOString(),
+    files: feedback.files,
     output: {
       title: title,
       summary: summary,
