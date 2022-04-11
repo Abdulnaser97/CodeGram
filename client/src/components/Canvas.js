@@ -1183,14 +1183,20 @@ export function useReactFlowWrapper({
   useEffect(() => {
     console.log(prFiles);
     if (prFiles?.length > 1) {
-      var changes = prFiles.map((f) => {
-        console.log(f);
-        return {
-          id: repository[f],
-          type: "select",
-          selected: true,
-        };
+      var curNodes = rf.getNodes();
+      var prSet = new Set(prFiles);
+
+      var changes = curNodes.map((n) => {
+        console.log(n);
+        if (prSet.has(n.data.path)) {
+          return {
+            id: n.id,
+            type: "select",
+            selected: true,
+          };
+        }
       });
+
       onNodesChange(changes);
     }
   }, [prFiles]);
