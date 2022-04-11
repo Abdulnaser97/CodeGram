@@ -318,7 +318,7 @@ function SourceDoc(props) {
         !selectedEL ||
         selectedEL.data.type === "Text"
       ) {
-        // setValue(0);
+        setValue(0);
       }
       // only set code in Code Tab if openArtifact is a file
       else if (filteredSelectedEL.data.code) {
@@ -537,7 +537,7 @@ function SourceDoc(props) {
                 ? filteredSelectedEL.data.label
                 : ""
             }
-            fileNode={filteredSelectedEL ? filteredSelectedEL : ""}
+            fileNode={selectedEL ? selectedEL : ""}
             addLineNode={props.functions.addLineNode}
             height={height}
             width={width}

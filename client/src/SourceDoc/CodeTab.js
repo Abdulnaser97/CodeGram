@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+import { useReactFlow } from "react-flow-renderer";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import js from "react-syntax-highlighter/dist/esm/languages/hljs/javascript";
 import apache from "react-syntax-highlighter/dist/esm/languages/hljs/apache";
@@ -87,7 +88,14 @@ function getLangFromFilename(filename) {
 }
 
 function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
-  const lang = getLangFromFilename(fileName);
+  var rf = useReactFlow();
+  var lang = "";
+  if (fileNode?.parentNode) {
+    var parent = rf.getNode(fileNode.parentNode);
+    lang = getLangFromFilename(parent.data.label);
+  } else {
+    lang = getLangFromFilename(fileName);
+  }
   const [selectedText, setSelectedText] = useState(null);
   const [popUpLoc, setPopUpLoc] = useState(null);
   console.log(lang);
@@ -187,7 +195,7 @@ function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
       <SyntaxHighlighter
         language={lang}
         style={{ ...xcode, backgroundColor: "#fbfbfb" }}
-        showLineNumbers={true}
+        // showLineNumbers={true}
         // showInLineNumbers={true}
         lineNumberStyle={{
           "-webkit-user-select": "none" /* Safari */,
