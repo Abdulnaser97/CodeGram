@@ -363,6 +363,7 @@ function App() {
   // If redirect from github Checks, get the branch from the url params
   useEffect(() => {
     if (repo && repoBranches && params.branch && !branch) {
+      console.log(params);
       setBranch(params.branch);
     }
   }, [repoBranches, params.branch, repo, branch]);
