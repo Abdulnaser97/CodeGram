@@ -82,6 +82,7 @@ export function useReactFlowWrapper({
   search,
   setSearch,
   fuse,
+  prFiles,
 }) {
   const {
     RFState,
@@ -1177,6 +1178,22 @@ export function useReactFlowWrapper({
       setNodeName("");
     }
   }, [nameFlag]);
+
+  // select prFiles
+  useEffect(() => {
+    console.log(prFiles);
+    if (prFiles?.length > 1) {
+      var changes = prFiles.map((f) => {
+        console.log(f);
+        return {
+          id: repository[f],
+          type: "select",
+          selected: true,
+        };
+      });
+      onNodesChange(changes);
+    }
+  }, [prFiles]);
 
   return {
     render: (
