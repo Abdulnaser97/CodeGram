@@ -5,6 +5,7 @@ import NavigateNextRoundedIcon from "@mui/icons-material/NavigateNextRounded";
 import NavigateBeforeRoundedIcon from "@mui/icons-material/NavigateBeforeRounded";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
+import { useState } from "react";
 
 const CircleDiv = styled.div`
   position: relative;
@@ -41,32 +42,41 @@ const SimulationsPlayerBar = styled.div`
   align-items: center;
 `;
 
-function SimulationsControls({ isRunning, setIsRunning, prev, setPrev, current, setCurrent }) {
-    const [disableBackWard, setDisableBackWard] = useState(true);
-    const [disableForward, setDisableForward] = useState(false);
-    const handleForward = () => {
-        if (current) {
-            const newIdx = current+1
-            if (newIdx >= simFiles.length) {
-                setDisableForward(true);
-                return;
-            }
-            setPrev(current);
-            setCurrent(newIdx);
-            setDisableBackWard(false);
-        }
+function SimulationsControls({
+  isRunning,
+  setIsRunning,
+  prev,
+  setPrev,
+  current,
+  setCurrent,
+  simFiles,
+}) {
+  const [disableBackWard, setDisableBackWard] = useState(true);
+  const [disableForward, setDisableForward] = useState(false);
+  const handleForward = () => {
+    if (current !== undefined) {
+      const newIdx = current + 1;
+      if (newIdx >= simFiles.length) {
+        setDisableForward(true);
+        return;
+      }
+      setPrev(current);
+      setCurrent(newIdx);
+      setDisableBackWard(false);
     }
-    const handleBackward = () => {
-        if (current) {
-            const newIdx = current-1
-            if (newIdx <= 0) {
-                setDisableBackWard(true);
-                return;
-            }
-            setPrev(current);
-            setCurrent(newIdx);
-            setDisableForward(false);
-        }
+  };
+  const handleBackward = () => {
+    if (current !== undefined) {
+      const newIdx = current - 1;
+      if (newIdx < 0) {
+        setDisableBackWard(true);
+        return;
+      }
+      setPrev(current);
+      setCurrent(newIdx);
+      setDisableForward(false);
+    }
+  };
   return (
     <SimulationsPlayerBar>
       <CircleDiv className="backward">
@@ -77,7 +87,7 @@ function SimulationsControls({ isRunning, setIsRunning, prev, setPrev, current, 
             fill: theme.palette.primary.lighterPink,
           }}
           fontSize="large"
-          onClick={() => handleBackward()}
+          onClick={handleBackward}
         />
       </CircleDiv>
 
@@ -99,7 +109,7 @@ function SimulationsControls({ isRunning, setIsRunning, prev, setPrev, current, 
               fill: theme.palette.primary.lighterPink,
             }}
             fontSize="large"
-            onClick={() => handleForward()}
+            onClick={() => setIsRunning(true)}
           />
         )}
       </CircleDiv>
@@ -110,7 +120,7 @@ function SimulationsControls({ isRunning, setIsRunning, prev, setPrev, current, 
             height: "100%",
             fill: theme.palette.primary.lighterPink,
           }}
-          onClick={() => console.log("Simulations")}
+          onClick={handleForward}
         />
       </CircleDiv>
     </SimulationsPlayerBar>

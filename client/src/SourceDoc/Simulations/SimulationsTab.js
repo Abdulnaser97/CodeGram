@@ -100,7 +100,8 @@ function SimFiles({ simFiles, setSimFiles, current }) {
 
 function SimulationsTab({ sourceFiles }) {
   const [current, setCurrent] = useState(0);
-  const [prev, setPrev] = useState("");
+  const [cuurentStyle, setCurrentStyle] = useState(null);
+  const [prev, setPrev] = useState(undefined);
   const [simFiles, setSimFiles] = useState([
     "randomnode_1649613468513",
     "randomnode_1649613487157",
@@ -111,8 +112,6 @@ function SimulationsTab({ sourceFiles }) {
   const { getNodes } = useReactFlow();
 
   const nodes = getNodes();
-
-  console.log(originalStylesBackup);
 
   useEffect(() => {
     if (isRunning) {
@@ -125,9 +124,6 @@ function SimulationsTab({ sourceFiles }) {
           //   ).style.backgroundColor = "green";
 
           const nodeOriginalStyles = addStyles(nodeId, {
-            color: "white",
-            fontFamily: "Poppins-Bold",
-            // backgroundColor: theme.palette.primary.lighterPink,
             border: `1px solid ${theme.palette.primary.pinkerPink}`,
             boxShadow: `5px 10px 20px ${theme.palette.primary.light}`,
           });
@@ -154,12 +150,17 @@ function SimulationsTab({ sourceFiles }) {
   }, [isRunning]);
 
   useEffect(() => {
-    if (isRunning && current) {
-      addStyles(current, {
+    if (isRunning && current !== undefined) {
+      const origCurStyles = addStyles(simFiles[current], {
         backgroundColor: theme.palette.primary.lighterPink,
+        color: "white",
       });
+      setCurrentStyle(origCurStyles);
+      if (prev !== undefined) {
+        restoreStyles(simFiles[prev], cuurentStyle);
+      }
     }
-  });
+  }, [isRunning, current, prev]);
 
   return (
     <>
@@ -170,6 +171,7 @@ function SimulationsTab({ sourceFiles }) {
         setPrev={setPrev}
         current={current}
         setCurrent={setCurrent}
+        simFiles={simFiles}
       />
       <div
         className="repoContainer"
