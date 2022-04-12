@@ -39,7 +39,7 @@ export function NotifDiagramLoading() {
     };
   });
   const [open, setOpen] = useState(false);
-
+  // app
   useEffect(() => {
     if (loadingMessage) {
       setOpen(true);
