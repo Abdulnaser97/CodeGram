@@ -9,6 +9,7 @@ import SimulationNode from "./SimulationNode";
 import SimulationsControls from "./SimulationControls";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useReactFlow } from "react-flow-renderer";
+import { FormControl } from "@mui/material";
 
 function getElementByXpath(path) {
   return document.evaluate(
@@ -42,6 +43,26 @@ function restoreStyles(nodeId, originalStyles) {
   Object.keys(originalStyles).forEach((key) => {
     el.style[key] = originalStyles[key];
   });
+}
+
+function renderSimulations() {
+  var simulations = [];
+  simulations.push(<option value={""}>Select Simulation!</option>);
+
+  simulations.push(
+    <option value="Authentication with GitHub">
+      Authentication With GitHub
+    </option>
+  );
+  simulations.push(
+    <option value="Loading PR files on Landing">
+      Loading PR files on Landing
+    </option>
+  );
+  simulations.push(<option value="Saving diagram">Saving diagram</option>);
+  simulations.push(<option value="Loading diagram">Loading diagram</option>);
+
+  return simulations;
 }
 
 function SimFiles({ simFiles, setSimFiles, current }) {
@@ -99,8 +120,9 @@ function SimFiles({ simFiles, setSimFiles, current }) {
 }
 
 function SimulationsTab({ sourceFiles }) {
+  const [selectedSimulation, setSelectedSimulation] = useState("");
   const [current, setCurrent] = useState(0);
-  const [cuurentStyle, setCurrentStyle] = useState(null);
+  const [currentStyle, setCurrentStyle] = useState(null);
   const [prev, setPrev] = useState(undefined);
   const [simFiles, setSimFiles] = useState([
     "randomnode_1649613468513",
@@ -112,6 +134,11 @@ function SimulationsTab({ sourceFiles }) {
   const { getNodes } = useReactFlow();
 
   const nodes = getNodes();
+
+  // set new repo from drop down menu
+  const selectSimulation = (event) => {
+    setSelectedSimulation(event.target.value);
+  };
 
   useEffect(() => {
     if (isRunning) {
@@ -150,20 +177,49 @@ function SimulationsTab({ sourceFiles }) {
   }, [isRunning]);
 
   useEffect(() => {
-    if (isRunning && current !== undefined) {
-      const origCurStyles = addStyles(simFiles[current], {
-        backgroundColor: theme.palette.primary.lighterPink,
-        color: "white",
-      });
-      setCurrentStyle(origCurStyles);
-      if (prev !== undefined) {
-        restoreStyles(simFiles[prev], cuurentStyle);
+    try {
+      if (isRunning && current !== undefined) {
+        const origCurStyles = addStyles(simFiles[current], {
+          backgroundColor: theme.palette.primary.lighterPink,
+          color: "white",
+        });
+        setCurrentStyle(origCurStyles);
+        if (prev !== undefined && currentStyle) {
+          restoreStyles(simFiles[prev], currentStyle);
+        }
       }
+    } catch (e) {
+      console.log(e);
     }
   }, [isRunning, current, prev]);
 
   return (
     <>
+      <Box sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}>
+        <FormControl fullWidth variant="outlined">
+          <select
+            className=""
+            value={selectedSimulation}
+            label="Repository"
+            onChange={selectSimulation}
+            placeholder="Choose Simulation"
+            style={{
+              borderRadius: "30px",
+              outline: "none",
+              height: "3vh",
+              paddingLeft: "20px",
+              border: "1px solid #ffaea6",
+              color: "#FFAEA6",
+              background: "transparent",
+              appearance: "none",
+              cursor: "pointer",
+              boxShadow: !selectSimulation ? "-2.5px 4px 5px #c9c9c9" : "",
+            }}
+          >
+            {renderSimulations()}
+          </select>
+        </FormControl>
+      </Box>
       <SimulationsControls
         isRunning={isRunning}
         setIsRunning={setIsRunning}

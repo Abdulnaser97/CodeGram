@@ -798,6 +798,13 @@ export function useReactFlowWrapper({
     handleContextMenuClose();
   };
 
+  const addToSimulation = async (event) => {
+    event.preventDefault();
+    //await dispatch(addToSimulation(selectedEL));
+    //setRequestUpdateZIndex(true);
+    handleContextMenuClose();
+  };
+
   const onCopy = (event = null) => {
     if (
       selectedElIdRef.current &&
@@ -1295,6 +1302,13 @@ export function useReactFlowWrapper({
               </div>
             </MenuItem>
           )}
+          {contextMenu !== null && contextMenu.type === "elementMenu" && (
+            <MenuItem onClick={(e) => addToSimulation(e)}>
+              <div className="menu-item">
+                <div className="menu-text">Add to Simulation</div>
+              </div>
+            </MenuItem>
+          )}
           {contextMenu !== null && contextMenu.type === "paneMenu" && (
             <MenuItem
               onClick={onPaste}
@@ -1306,6 +1320,7 @@ export function useReactFlowWrapper({
               </div>
             </MenuItem>
           )}
+
           {contextMenu !== null && contextMenu.type === "nodeLink" && (
             <div>
               <Typography
