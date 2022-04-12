@@ -26,31 +26,31 @@ async function handlePullRequestChange(context) {
     }
   }
 
-  let diagram = await context.octokit.rest.repos.getContent({
-    owner: org,
-    repo: repo,
-    ref: sourceBrance,
-    path: "Diagram1.CodeGram",
-  });
+  // let diagram = await context.octokit.rest.repos.getContent({
+  //   owner: org,
+  //   repo: repo,
+  //   ref: sourceBrance,
+  //   path: "Diagram1.CodeGram",
+  // });
 
-  if (diagram && diagram.data && diagram.data.content) {
-    diagram = await Base64.decode(diagram.data.content);
-    diagram = await JSON.parse(diagram);
+  // if (diagram && diagram.data && diagram.data.content) {
+  //   diagram = await Base64.decode(diagram.data.content);
+  //   diagram = await JSON.parse(diagram);
 
-    let prFiles = new Set(feedback.files);
-    diagram.nodes.forEach((nodes) => {
-      if (nodes.type && nodes.type === "FileNode") {
-        let path = nodes.data.path;
+  //   let prFiles = new Set(feedback.files);
+  //   diagram.nodes.forEach((nodes) => {
+  //     if (nodes.type && nodes.type === "FileNode") {
+  //       let path = nodes.data.path;
 
-        if (prFiles.has(path)) {
-          prFiles.delete(path);
-        }
-      }
-    });
+  //       if (prFiles.has(path)) {
+  //         prFiles.delete(path);
+  //       }
+  //     }
+  //   });
 
-    feedback.files = Array.from(prFiles);
-    console.log(`Found diagram for ${org}/${repo}#${sourceBrance}`);
-  }
+  //   feedback.files = Array.from(prFiles);
+  //   console.log(`Found diagram for ${org}/${repo}#${sourceBrance}`);
+  // }
 
   const action_required = feedback.files.length > 0;
   const conclusion = action_required ? "action_required" : "success";
@@ -61,7 +61,7 @@ async function handlePullRequestChange(context) {
   if (action_required) {
     summary += "### " + "The following files need update on CodeGram" + "\n";
     for (const issue of feedback.files) {
-      summary += "**File:** " + issue + "\n";
+      summary += "**File:** " + issue + "," + "\n";
     }
 
     summary +=
@@ -81,6 +81,7 @@ async function handlePullRequestChange(context) {
     output: {
       title: title,
       summary: summary,
+      text: feedback.files.join(" "),
     },
   });
 }

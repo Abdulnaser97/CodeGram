@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+import { useReactFlow } from "react-flow-renderer";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import js from "react-syntax-highlighter/dist/esm/languages/hljs/javascript";
 import apache from "react-syntax-highlighter/dist/esm/languages/hljs/apache";
@@ -22,6 +23,11 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import ContentCopyOutlinedIcon from "@mui/icons-material/ContentCopyOutlined";
+import {
+  errorNotification,
+  successNotification,
+} from "../Redux/actions/notification";
+import { useDispatch } from "react-redux";
 SyntaxHighlighter.registerLanguage("javascript", js);
 SyntaxHighlighter.registerLanguage("apache", apache);
 SyntaxHighlighter.registerLanguage("python", python);
@@ -82,7 +88,13 @@ function getLangFromFilename(filename) {
 }
 
 function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
-  const lang = getLangFromFilename(fileName);
+  var rf = useReactFlow();
+  var lang = "";
+  if (fileNode?.data?.lang) {
+    lang = fileNode?.data.lang;
+  } else {
+    lang = getLangFromFilename(fileName);
+  }
   const [selectedText, setSelectedText] = useState(null);
   const [popUpLoc, setPopUpLoc] = useState(null);
   console.log(lang);
@@ -90,6 +102,7 @@ function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
   if (lang === "json") {
     rawCode = JSON.stringify(rawCode, null, 2);
   }
+  const dispatch = useDispatch();
 
   // function NewLineNodeButton() {
   //   return (
@@ -111,8 +124,10 @@ function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
       var selectedText = "";
       if (window.getSelection) {
         var boundingClient = window.getSelection().toString();
+
+        console.log(boundingClient);
         if (boundingClient.length > 0) {
-          setSelectedText(window.getSelection());
+          setSelectedText(boundingClient);
           setPopUpLoc({ x: e.clientX, y: e.clientY });
         }
       } else {
@@ -151,7 +166,8 @@ function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
             console.log(fileNode);
             addLineNode({
               parentNode: fileNode,
-              lines: selectedText.toString(),
+              lines: selectedText,
+              lang: lang,
             });
             setSelectedText(null);
           }}
@@ -161,8 +177,16 @@ function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
         <MenuItem
           fontSize="small"
           dense
-          onClick={(event) => {
-            console.log("TODO: Add to clipboard!");
+          onClick={() => {
+            navigator.clipboard.writeText(selectedText);
+            setSelectedText(null);
+            dispatch(
+              successNotification(
+                `Copied text from ${
+                  fileName ? fileName : "no-name Node"
+                } to clipboard!`
+              )
+            );
           }}
         >
           <ContentCopyOutlinedIcon />
@@ -171,11 +195,11 @@ function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
       <SyntaxHighlighter
         language={lang}
         style={{ ...xcode, backgroundColor: "#fbfbfb" }}
-        showLineNumbers={true}
-        showInLineNumbers={true}
+        // showLineNumbers={true}
+        // showInLineNumbers={true}
         lineNumberStyle={{
-          "-webkit-user-select": null /* Safari */,
-          "-moz-user-select": null /* Firefox */,
+          "-webkit-user-select": "none" /* Safari */,
+          "-moz-user-select": "none" /* Firefox */,
           "-ms-user-select": "none" /* IE10+/Edge */,
           "user-select": "none" /* Standard */,
           // color: "grey",
@@ -183,9 +207,9 @@ function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
         }}
         lineNumberContainerStyle={{
           padding: 0,
-
-          "-webkit-user-select": null /* Safari */,
-          "-moz-user-select": null /* Firefox */,
+          color: "orange",
+          "-webkit-user-select": "none " /* Safari */,
+          "-moz-user-select": "none" /* Firefox */,
           "-ms-user-select": "none" /* IE10+/Edge */,
           "user-select": "none" /* Standard */,
         }}

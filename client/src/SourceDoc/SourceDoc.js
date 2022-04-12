@@ -157,6 +157,7 @@ function SourceDoc(props) {
             openArtifact={props.data.openArtifact}
             selectedEL={filteredSelectedEL}
             addFileToNode={props.functions.addFileToNode}
+            addChildNode={props.functions.addChildNode}
           />
         );
       }
@@ -174,6 +175,7 @@ function SourceDoc(props) {
             selectedEL={filteredSelectedEL}
             addFileToNode={props.functions.addFileToNode}
             nodes={props.data.nodes}
+            addChildNode={props.functions.addChildNode}
           />
         );
       }
@@ -326,14 +328,12 @@ function SourceDoc(props) {
         console.log("data.code");
         setCurCode(filteredSelectedEL.data.code);
       } else if (!selectedEL.data.label) {
-        setValue(0);
-        setCurCode(
-          "Select a node with a file to view a source code or add a file to this node!"
-        );
+        // setValue(0);
+        setCurCode("This node has no code linked!");
       } else if (filteredSelectedEL.data.label) {
         // setValue(2);
-        const path = props.data.openArtifact
-          ? props.data.openArtifact.path
+        const path = props.data.selectedEL
+          ? props.data.selectedEL.data.path
           : null;
 
         // only set code in Code Tab if openArtifact is a file
@@ -394,12 +394,12 @@ function SourceDoc(props) {
             console.log(
               "Already retrieved file code contents, calling from store"
             );
-            setCurCode(
-              "Select a node with a file to view a source code or add a file to this node!"
-            );
 
             if (path) {
+              console.log("PATH!");
               setCurCode(state.repoFiles.repoFiles[path].code);
+            } else {
+              setCurCode("This node has no code linked!");
             }
           }
         } else {
@@ -415,7 +415,6 @@ function SourceDoc(props) {
   useEffect(() => {
     if (props.data.tabValue != value) setValue(props.data.tabValue);
   }, [props.data.tabValue]);
-
   // search method called whenever search var changes
   useEffect(() => {
     props.functions.setOpenArtifact("");
@@ -465,8 +464,13 @@ function SourceDoc(props) {
         <div
           className="SDMaximizeWrapper"
           onClick={() => {
-            if (!isMaxSD) setHeight("100vh");
-            else setHeight("80vh");
+            if (!isMaxSD) {
+              setWidth("45vw");
+              setHeight("100vh");
+            } else {
+              setWidth("35vw");
+              setHeight("80vh");
+            }
             setIsMaxSD((prevIsMaxSD) => !prevIsMaxSD);
           }}
         >
@@ -541,8 +545,10 @@ function SourceDoc(props) {
                 ? filteredSelectedEL.data.label
                 : ""
             }
-            fileNode={filteredSelectedEL ? filteredSelectedEL : ""}
+            fileNode={selectedEL ? selectedEL : ""}
             addLineNode={props.functions.addLineNode}
+            height={height}
+            width={width}
           />
         </TabPanel>
         <TabPanel value={value} index={2} style={{ overflow: "auto" }}>

@@ -3,16 +3,22 @@ import CodeIcon from "@mui/icons-material/Code";
 import FolderIcon from "@mui/icons-material/Folder";
 import { mapDispatchToProps, mapStateToProps } from "../Redux/configureStore";
 import { connect } from "react-redux";
-import { useReactFlow } from "react-flow-renderer";
-
+import { useReactFlow, OnNodesChange } from "react-flow-renderer";
+import { realPos } from "../canvas/utils";
 // export default function SourceDocFile(props) {
 function SourceDocFile(props) {
-  const { addNode, setOpenArtifact, openArtifact, addFileToNode, selectedEL } =
-    props;
+  const {
+    addNode,
+    setOpenArtifact,
+    openArtifact,
+    addFileToNode,
+    selectedEL,
+    addChildNode,
+  } = props;
   var { file } = props;
 
-  const { fitBounds, getNodes } = useReactFlow();
-
+  const { fitBounds, getNodes, setCenter } = useReactFlow();
+  const rf = useReactFlow();
   if (!file) {
     return <> </>;
   }
@@ -52,17 +58,23 @@ function SourceDocFile(props) {
         node.data ? node.data.path === file.path : false
       );
       if (el) {
-        const x = el.position.x + el.width / 2;
-        const y = el.position.y + el.height / 2;
+        var realNodePos = realPos(el, rf);
+        const x = realNodePos.position.x + el.width / 2;
+        const y = realNodePos.position.y + el.height / 2;
 
+        const zoom = 1;
+        // setCenter(x, y, { zoom, duration: 1000 });
         fitBounds(
           {
-            x: x,
-            y: y,
+            x: realNodePos.position.x + el.width / 2,
+            y: realNodePos.position.y,
             width: el.data.width,
             height: el.data.height,
           },
-          1
+          {
+            padding: 2,
+            duration: 1000,
+          }
         );
       }
     }
@@ -102,6 +114,12 @@ function SourceDocFile(props) {
           onClick={() => {
             if (selectedEL && !selectedEL.data.label) {
               addFileToNode(file);
+            } else if (
+              selectedEL &&
+              selectedEL.data.label &&
+              selectedEL.data.label != "Project Root"
+            ) {
+              addChildNode({ file: file, fromSD: true });
             } else {
               addNode({ file: file, fromSD: true });
             }

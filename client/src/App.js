@@ -145,6 +145,7 @@ function App() {
     addFileToNode,
     tabValue,
     setTabValue,
+    addChildNode,
   } = useReactFlowWrapper({
     dispatch,
     selectedShapeName,
@@ -333,7 +334,7 @@ function App() {
       const flow = rfInstance.toObject();
       const result = await save(repo, branch, flow);
       console.log(result);
-      if (result.status === 200 || result.status === 201) {
+      if (result?.status === 200 || result?.status === 201) {
         dispatch(successNotification(`Successfully saved diagram to ${repo}`));
       } else {
         dispatch(errorNotification(`Error saving diagram to github repo`));
@@ -615,6 +616,7 @@ function App() {
             setTabValue: setTabValue,
             handleSearch: handleSearch,
             getRepoFiles: getRepoFiles,
+            addChildNode: addChildNode,
           }}
           data={{
             repo: repo,
