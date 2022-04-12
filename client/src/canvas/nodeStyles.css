@@ -65,13 +65,13 @@
 }
 .node-button.corner {
   position: fixed;
-  top:0;
-  right:0;
+  top: 0;
+  right: 0;
   z-index: 10000000;
 }
 
 .node-button.corner:hover {
-  cursor:pointer; 
+  cursor: pointer;
   filter: brightness(90%);
 }
 
@@ -150,7 +150,7 @@
   border: 1px solid #c5c5c5;
 }
 
-.react-flow__edge-path{
+.react-flow__edge-path {
   background-color: blue;
   padding: 5;
 }

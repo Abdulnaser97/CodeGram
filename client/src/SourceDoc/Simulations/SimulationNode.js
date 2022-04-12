@@ -12,16 +12,11 @@ import { removeNodeFromSimulation } from "../../Redux/actions/simulationActions"
 function SimulationNode(props) {
   const { fitBounds, getNodes, getNode } = useReactFlow();
   // TODO: Uncomment
-  //const node = getNode(props.nodeId);
-  const node = {
-    id: props.nodeId,
-    data: {
-      label: `${props.nodeId}`,
-    },
-  };
+  const node = getNode(props.nodeId);
+
   // search results from fuse are returned as items
   // TODO: Uncomment
-  var title = node.data.label;
+  var title = node ? node.data.label : props.nodeId;
 
   // openArtifact must exist to match names
   var selected = props.current === node.id ? "selectedFile" : "";

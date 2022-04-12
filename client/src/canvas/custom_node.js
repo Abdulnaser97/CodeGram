@@ -98,7 +98,7 @@ const CustomNodeComponent = (props) => {
       style={{
         backgroundColor:
           showContent && props.data.parentFlag ? "transparent" : "white",
-        borderRadius: `${handleSize * 1.1}px`,
+        borderRadius: `${handleSize * 1.4}px`,
         display:
           zoom * 4 >= props.data.zoomSensitivity / 1.3 || !props.data.childFlag
             ? "block"

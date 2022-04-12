@@ -13,7 +13,12 @@ const initialState = {
     ],
     "Loading PR files on Landing": [],
     "Saving diagram": [],
-    "Loading diagram": [],
+    "Loading diagram": [
+      "randomnode_1649781488161",
+      "randomnode_1649747720060",
+      "randomnode_1649747759874",
+      "randomnode_1649779391168",
+    ],
   },
   currentSimulation: "",
 };
