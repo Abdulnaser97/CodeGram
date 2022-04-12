@@ -280,7 +280,6 @@ export function useReactFlowWrapper({
           html_url: html_url,
           path: file && file.path ? file.path : "",
           floatTargetHandle: false,
-
           // can set this type to whatever is selected in the tool bar for now
           // but the type will probably be set from a few different places
           type: shapeType,
@@ -299,6 +298,7 @@ export function useReactFlowWrapper({
           zoomSensitivity: 0.6,
         },
         type: shapeType,
+
         width:
           selectedShapeName.current &&
           selectedShapeName.current === "CircleShape"
@@ -309,13 +309,19 @@ export function useReactFlowWrapper({
           selectedShapeName.current === "CircleShape"
             ? 100
             : Math.floor(70 / 15) * 15,
-        position: project({
-          x: props.fromSD ? position.x : event?.clientX,
-          y: props.fromSD ? position.y : event?.clientY,
-        }),
+        position: props.parent
+          ? { x: selectedEL.width / 10, y: selectedEL.height / 10 }
+          : project({
+              x: props.fromSD ? position.x : event?.clientX,
+              y: props.fromSD ? position.y : event?.clientY,
+            }),
         animated: true,
       };
-
+      if (props.parent) {
+        newNode.parentNode = props.parent;
+        newNode.extent = "parent";
+        newNode.draggable = true;
+      }
       dispatch(addNodeToArray(newNode));
       addNodes(newNode);
       createCustomChange("select", newNode.id, "node");
@@ -371,6 +377,7 @@ export function useReactFlowWrapper({
           nodeLinkHandler: nodeLinkHandler,
           childFlag: true,
           zoomSensitivity: parentNode.data.zoomSensitivity * 1.3,
+          lang: props.lang ? props.lang : "",
         },
         type: event ? shapeType : "FileNode",
         parentNode: parentNode.id,
@@ -390,8 +397,21 @@ export function useReactFlowWrapper({
       dispatch(addNodeToArray(newNode));
       addNodes(newNode);
       createCustomChange("select", newNode.id, "node");
+      setNodes((els) =>
+        els.map((el) => {
+          if (el.id === parentNode.id) {
+            // it's important that you create a new object here
+            // in order to notify react flow about the change
+            el.data = {
+              ...el.data,
+              parentFlag: true,
+            };
+          }
 
-      setNewNodeId(newNode.id);
+          return el;
+        })
+      );
+      // setNewNodeId(newNode.id);
     },
     [setNodes, selectedEL, nodeName, dispatch, project]
   );
@@ -444,6 +464,7 @@ export function useReactFlowWrapper({
           childFlag: true,
           zoomSensitivity: selectedEL.data.zoomSensitivity * 1.3,
           position: { x: selectedEL.width / 10, y: selectedEL.height / 10 },
+          path: file && file.path ? file.path : "",
         },
         type: event ? shapeType : "FileNode",
         parentNode: selectedEL.id,
@@ -466,6 +487,20 @@ export function useReactFlowWrapper({
       setNewNodeId(newNode.id);
       dispatch(bringToFront({ id: newNode.id }));
       setRequestUpdateZIndex(true);
+      setNodes((els) =>
+        els.map((el) => {
+          if (el.id === selectedEL.id) {
+            // it's important that you create a new object here
+            // in order to notify react flow about the change
+            el.data = {
+              ...el.data,
+              parentFlag: true,
+            };
+          }
+
+          return el;
+        })
+      );
     },
     [setNodes, selectedEL, nodeName, dispatch, project]
   );
@@ -609,7 +644,6 @@ export function useReactFlowWrapper({
     }
     setOpenArtifact("");
   };
-  // console.log(contextMenu);
   const onNodesChange = useCallback(
     (changes) => {
       try {
@@ -1375,6 +1409,7 @@ export function useReactFlowWrapper({
     addFileToNode: addFileToNode,
     setTabValue: setTabValue,
     tabValue: tabValue,
+    addChildNode: addChildNode,
   };
 }
 

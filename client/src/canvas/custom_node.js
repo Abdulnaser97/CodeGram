@@ -41,7 +41,7 @@ const zoomSelector = (s) => s.transform[2];
 // the react elemnts array when done typing/editing
 const CustomNodeComponent = (props) => {
   const zoom = useStore(zoomSelector);
-  const showContent = zoom >= props.data.zoomSensitivity;
+  const showContent = zoom * 4 >= props.data.zoomSensitivity;
   const [width, setWidth] = useState(props.data.width ? props.data.width : 120);
   const [height, setHeight] = useState(
     props.data.height ? props.data.height : 70
@@ -96,10 +96,11 @@ const CustomNodeComponent = (props) => {
   return (
     <div
       style={{
-        backgroundColor: showContent ? "transparent" : "white",
+        backgroundColor:
+          showContent && props.data.parentFlag ? "transparent" : "white",
         borderRadius: `${handleSize * 1.1}px`,
         display:
-          zoom >= props.data.zoomSensitivity / 1.3 || !props.data.childFlag
+          zoom * 4 >= props.data.zoomSensitivity / 1.3 || !props.data.childFlag
             ? "block"
             : "none",
       }}
@@ -187,7 +188,7 @@ const CustomNodeComponent = (props) => {
           topLeft: false,
         }}
       >
-        {showContent && (
+        {showContent && props.data.parentFlag && (
           <div className="node-label corner">
             {props.data.label && !isEditing ? (
               <>{props.data.label}</>
@@ -214,7 +215,7 @@ const CustomNodeComponent = (props) => {
           </div>
         )}
 
-        {!showContent && (
+        {(!showContent || !props.data.parentFlag) && (
           <div
             style={{
               display: "flex",
@@ -372,7 +373,7 @@ const WrapperNodeComponent = (props) => {
     <div
       style={{
         display:
-          zoom >= props.data.zoomSensitivity / 1.3 || !props.data.childFlag
+          zoom * 4 >= props.data.zoomSensitivity / 1.3 || !props.data.childFlag
             ? "block"
             : "none",
       }}
@@ -614,7 +615,7 @@ const FolderNodeComponent = (props) => {
     <div
       style={{
         display:
-          zoom >= props.data.zoomSensitivity / 1.3 || !props.data.childFlag
+          zoom * 4 >= props.data.zoomSensitivity / 1.3 || !props.data.childFlag
             ? "block"
             : "none",
       }}
