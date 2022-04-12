@@ -110,7 +110,9 @@ function App() {
   const [cursor, setCursor] = useState("default");
   const [branch, setBranch] = useState("");
   const [repoBranches, setRepoBranches] = useState([]);
-  const [checkRunFiles, setCheckRunFiles] = useState([]);
+  const [prFiles, setPRFiles] = useState([]);
+  const [prSha, setPRSha] = useState(null);
+  // const [prFiles, setPRFiles] = useState(null);
   // redux
   const dispatch = useDispatch();
 
@@ -156,6 +158,7 @@ function App() {
     search,
     setSearch,
     fuse,
+    prFiles,
   });
 
   // change cursor to be opposite as previous
@@ -200,7 +203,17 @@ function App() {
       if (!codeGramScanner) {
         throw new Error("CodeGram Scanner CheckRun not found");
       }
-      setCheckRunFiles(codeGramScanner);
+      console.log(repoFiles);
+      console.log(codeGramScanner);
+      const summary = codeGramScanner.output.summary;
+      console.log(summary);
+      const start = "**File:** ";
+      let files = summary.split(start);
+      console.log(files);
+      files.shift();
+      if (files.length > 2) files.pop();
+      files = files.map((file) => file.split("\n")[0]);
+      setPRFiles(files);
     } catch (err) {
       console.log("Error: Failed To Retrieve CheckRun Files", err);
       dispatch(
@@ -210,6 +223,15 @@ function App() {
       );
     }
   };
+
+  useEffect(() => {
+    const get = async (r, s) => {
+      console.log("getting");
+      await getCheckRunFiles(r, s);
+    };
+    console.log("PR USEEFFECT");
+    if (prSha && repo) get(repo, prSha);
+  }, [prSha]);
 
   // set new repo from drop down menu
   const handleRepoChange = (event) => {
@@ -364,7 +386,10 @@ function App() {
   // If redirect from github Checks, get the branch from the url params
   useEffect(() => {
     if (repo && repoBranches && params.branch && !branch) {
+      console.log(params);
+      console.log(params.sha);
       setBranch(params.branch);
+      setPRSha(params.sha);
     }
   }, [repoBranches, params.branch, repo, branch]);
 
@@ -631,6 +656,7 @@ function App() {
             openArtifact: openArtifact,
             tabValue: tabValue,
             nodes: nodes,
+            prFiles: prFiles,
           }}
         />
         <NotifDiagramLoading />

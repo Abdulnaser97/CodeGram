@@ -417,6 +417,24 @@ pre {
   z-index: 1;
 }
 
+.prNotif{
+  font-size: 10pt;
+  color: #797979;
+  font-weight: bold;
+}
+
+.notifContainer{
+  display: flex;
+  justify-content: center;
+  bottom: 0;
+  margin:none
+}
+
+.prNotif:hover{
+  color: #ff8b8b;
+  cursor: pointer;
+}
+
 .LearnMoreButtonWrapper:hover .LearnMoreButton {
   fill: #ffaea6;
   cursor: pointer;
