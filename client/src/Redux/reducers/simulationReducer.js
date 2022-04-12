@@ -15,8 +15,8 @@ const initialState = {
     "Saving diagram": [],
     "Loading diagram": [
       "randomnode_1649781488161",
-      "randomnode_1649747720060",
       "randomnode_1649747759874",
+      "randomnode_1649747720060",
       "randomnode_1649779391168",
     ],
   },
