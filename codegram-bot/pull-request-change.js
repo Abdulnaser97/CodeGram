@@ -61,7 +61,7 @@ async function handlePullRequestChange(context) {
   if (action_required) {
     summary += "### " + "The following files need update on CodeGram" + "\n";
     for (const issue of feedback.files) {
-      summary += "**File:** " + issue + "\n";
+      summary += "**File:** " + issue + "," + "\n";
     }
 
     summary +=

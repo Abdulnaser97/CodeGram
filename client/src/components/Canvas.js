@@ -50,6 +50,7 @@ import {
   reloadDiagram,
 } from "../Redux/actions/loadDiagram";
 import { errorNotification } from "../Redux/actions/notification";
+import { addNodeToSimulation } from "../Redux/actions/simulationActions";
 
 const multiSelectionKeyCode = "Shift";
 
@@ -82,6 +83,7 @@ export function useReactFlowWrapper({
   search,
   setSearch,
   fuse,
+  prFiles,
 }) {
   const {
     RFState,
@@ -279,7 +281,6 @@ export function useReactFlowWrapper({
           html_url: html_url,
           path: file && file.path ? file.path : "",
           floatTargetHandle: false,
-
           // can set this type to whatever is selected in the tool bar for now
           // but the type will probably be set from a few different places
           type: shapeType,
@@ -298,6 +299,7 @@ export function useReactFlowWrapper({
           zoomSensitivity: 0.6,
         },
         type: shapeType,
+
         width:
           selectedShapeName.current &&
           selectedShapeName.current === "CircleShape"
@@ -308,13 +310,19 @@ export function useReactFlowWrapper({
           selectedShapeName.current === "CircleShape"
             ? 100
             : Math.floor(70 / 15) * 15,
-        position: project({
-          x: props.fromSD ? position.x : event?.clientX,
-          y: props.fromSD ? position.y : event?.clientY,
-        }),
+        position: props.parent
+          ? { x: selectedEL.width / 10, y: selectedEL.height / 10 }
+          : project({
+              x: props.fromSD ? position.x : event?.clientX,
+              y: props.fromSD ? position.y : event?.clientY,
+            }),
         animated: true,
       };
-
+      if (props.parent) {
+        newNode.parentNode = props.parent;
+        newNode.extent = "parent";
+        newNode.draggable = true;
+      }
       dispatch(addNodeToArray(newNode));
       addNodes(newNode);
       createCustomChange("select", newNode.id, "node");
@@ -370,6 +378,7 @@ export function useReactFlowWrapper({
           nodeLinkHandler: nodeLinkHandler,
           childFlag: true,
           zoomSensitivity: parentNode.data.zoomSensitivity * 1.3,
+          lang: props.lang ? props.lang : "",
         },
         type: event ? shapeType : "FileNode",
         parentNode: parentNode.id,
@@ -389,8 +398,21 @@ export function useReactFlowWrapper({
       dispatch(addNodeToArray(newNode));
       addNodes(newNode);
       createCustomChange("select", newNode.id, "node");
+      setNodes((els) =>
+        els.map((el) => {
+          if (el.id === parentNode.id) {
+            // it's important that you create a new object here
+            // in order to notify react flow about the change
+            el.data = {
+              ...el.data,
+              parentFlag: true,
+            };
+          }
 
-      setNewNodeId(newNode.id);
+          return el;
+        })
+      );
+      // setNewNodeId(newNode.id);
     },
     [setNodes, selectedEL, nodeName, dispatch, project]
   );
@@ -443,6 +465,7 @@ export function useReactFlowWrapper({
           childFlag: true,
           zoomSensitivity: selectedEL.data.zoomSensitivity * 1.3,
           position: { x: selectedEL.width / 10, y: selectedEL.height / 10 },
+          path: file && file.path ? file.path : "",
         },
         type: event ? shapeType : "FileNode",
         parentNode: selectedEL.id,
@@ -622,7 +645,6 @@ export function useReactFlowWrapper({
     }
     setOpenArtifact("");
   };
-  console.log(contextMenu);
   const onNodesChange = useCallback(
     (changes) => {
       try {
@@ -809,6 +831,12 @@ export function useReactFlowWrapper({
     event.preventDefault();
     await dispatch(sendToBack(selectedEL));
     setRequestUpdateZIndex(true);
+    handleContextMenuClose();
+  };
+
+  const addToSimulation = async (event) => {
+    event.preventDefault();
+    await dispatch(addNodeToSimulation(selectedEL));
     handleContextMenuClose();
   };
 
@@ -1192,6 +1220,29 @@ export function useReactFlowWrapper({
     }
   }, [nameFlag]);
 
+  // select prFiles
+  useEffect(() => {
+    if (!isReloadDiagram) {
+      console.log(prFiles);
+      var curNodes = rf.getNodes();
+      var prSet = new Set(prFiles);
+      console.log(curNodes);
+      var changes = [];
+      curNodes.forEach((n) => {
+        console.log(n);
+        if (prSet.has(n.data.path)) {
+          changes.push({
+            id: n.id,
+            type: "select",
+            selected: true,
+          });
+        }
+      });
+      console.log(changes);
+      onNodesChange(changes);
+    }
+  }, [prFiles, isReloadDiagram]);
+
   return {
     render: (
       <div className="canvas">
@@ -1309,6 +1360,13 @@ export function useReactFlowWrapper({
               </div>
             </MenuItem>
           )}
+          {contextMenu !== null && contextMenu.type === "elementMenu" && (
+            <MenuItem onClick={(e) => addToSimulation(e)}>
+              <div className="menu-item">
+                <div className="menu-text">Add to Simulation</div>
+              </div>
+            </MenuItem>
+          )}
           {contextMenu !== null && contextMenu.type === "paneMenu" && (
             <MenuItem
               onClick={onPaste}
@@ -1320,6 +1378,7 @@ export function useReactFlowWrapper({
               </div>
             </MenuItem>
           )}
+
           {contextMenu !== null && contextMenu.type === "nodeLink" && (
             <div>
               <Typography
@@ -1365,6 +1424,7 @@ export function useReactFlowWrapper({
     addFileToNode: addFileToNode,
     setTabValue: setTabValue,
     tabValue: tabValue,
+    addChildNode: addChildNode,
   };
 }
 

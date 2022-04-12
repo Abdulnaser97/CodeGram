@@ -31,6 +31,7 @@ import axios from "axios";
 import { getRepo } from "../api/apiClient";
 
 import { useReactFlow } from "react-flow-renderer";
+import SimulationsTab from "./Simulations/SimulationsTab";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -83,6 +84,7 @@ function SourceDoc(props) {
   const [SDContent, setSDContent] = useState(null);
   const [isMaxSD, setIsMaxSD] = useState(false);
   const [isEditing, setIsEditing] = useState("");
+  const [openPR, setOpenPR] = useState(false);
 
   // console.log(props.data.selectedEL)
   // resizeable state varaiables
@@ -92,7 +94,7 @@ function SourceDoc(props) {
   // only updates if selectedEL is not text
   const [filteredSelectedEL, setFilteredSelectedEL] = useState(null);
 
-  const { getNodes } = useReactFlow();
+  const { getNodes, fitBounds } = useReactFlow();
 
   const dispatch = useDispatch();
 
@@ -156,6 +158,7 @@ function SourceDoc(props) {
             openArtifact={props.data.openArtifact}
             selectedEL={filteredSelectedEL}
             addFileToNode={props.functions.addFileToNode}
+            addChildNode={props.functions.addChildNode}
           />
         );
       }
@@ -173,6 +176,7 @@ function SourceDoc(props) {
             selectedEL={filteredSelectedEL}
             addFileToNode={props.functions.addFileToNode}
             nodes={props.data.nodes}
+            addChildNode={props.functions.addChildNode}
           />
         );
       }
@@ -412,7 +416,6 @@ function SourceDoc(props) {
   useEffect(() => {
     if (props.data.tabValue != value) setValue(props.data.tabValue);
   }, [props.data.tabValue]);
-
   // search method called whenever search var changes
   useEffect(() => {
     props.functions.setOpenArtifact("");
@@ -432,6 +435,35 @@ function SourceDoc(props) {
       setFilteredSelectedEL(props.data.selectedEL);
     }
   }, [props.data.selectedEL]);
+
+  useEffect(() => {
+    if (state.RFState.reloadDiagram) {
+    }
+  }, [state.RFState.reloadDiagram, props.data.prFiles]);
+
+  function fileClickHandler(file) {
+    props.data.functions.setOpenArtifact(file);
+
+    if (file) {
+      var el = getNodes().find((node) =>
+        node.data ? node.data.path === file.path : false
+      );
+      if (el) {
+        const x = el.position.x + el.width / 2;
+        const y = el.position.y + el.height / 2;
+
+        fitBounds(
+          {
+            x: x,
+            y: y,
+            width: el.data.width,
+            height: el.data.height,
+          },
+          1
+        );
+      }
+    }
+  }
 
   //if(props.data.isOpenSD){
   return (
@@ -462,8 +494,13 @@ function SourceDoc(props) {
         <div
           className="SDMaximizeWrapper"
           onClick={() => {
-            if (!isMaxSD) setHeight("100vh");
-            else setHeight("80vh");
+            if (!isMaxSD) {
+              setWidth("45vw");
+              setHeight("100vh");
+            } else {
+              setWidth("35vw");
+              setHeight("80vh");
+            }
             setIsMaxSD((prevIsMaxSD) => !prevIsMaxSD);
           }}
         >
@@ -486,6 +523,7 @@ function SourceDoc(props) {
             <Tab label="Repo" {...a11yProps(0)} />
             <Tab label="Code" {...a11yProps(1)} />
             <Tab label="Docs" {...a11yProps(2)} />
+            <Tab label="Simulations" {...a11yProps(3)} />
           </Tabs>
         </Box>
         <TabPanel
@@ -497,10 +535,23 @@ function SourceDoc(props) {
             handleSearch={props.functions.handleSearch}
             setTabValue={props.functions.setTabValue}
           />
-          <Box>
-            <div className="pathContainer">
-              {path.length ? pathComponent : "Root"}
-            </div>
+          {!openPR ? (
+            <Box>
+              <div className="pathContainer">
+                {path.length ? pathComponent : "Root"}
+              </div>
+              <div
+                className="repoContainer"
+                style={{
+                  position: "relative",
+                  maxHeight: "50vh",
+                  "overflow-y": "auto",
+                }}
+              >
+                {sourceFiles}
+              </div>
+            </Box>
+          ) : (
             <div
               className="repoContainer"
               style={{
@@ -509,9 +560,27 @@ function SourceDoc(props) {
                 "overflow-y": "auto",
               }}
             >
-              {sourceFiles}
+              <Typography variant="h7" thin>
+                {" "}
+                Pull Request Files
+              </Typography>
+              {props?.data?.prFiles.map((file, i) => {
+                return (
+                  <SourceDocFile
+                    key={i}
+                    addNode={props.functions.addNode}
+                    setOpenArtifact={props.functions.setOpenArtifact}
+                    file={repository[file]}
+                    openArtifact={props.data.openArtifact}
+                    selectedEL={filteredSelectedEL}
+                    addFileToNode={props.functions.addFileToNode}
+                    addChildNode={props.functions.addChildNode}
+                    nodes={props.data.nodes}
+                  />
+                );
+              })}
             </div>
-          </Box>
+          )}
         </TabPanel>
         <TabPanel
           value={value}
@@ -555,6 +624,39 @@ function SourceDoc(props) {
             setSelectedEL={props.functions.setSelectedEL}
           />
         </TabPanel>
+        <TabPanel
+          value={value}
+          index={3}
+          sx={{ display: "flex", flexDirection: "column" }}
+        >
+          <SimulationsTab sourceFiles={sourceFiles} />
+        </TabPanel>
+        {value == 0 && props.data.prFiles.length > 0 && !openPR && (
+          <div className="notifContainer">
+            <p
+              className="prNotif"
+              onClick={(e) => {
+                setOpenPR(true);
+              }}
+            >
+              There are {props.data.prFiles.length} files affected by the
+              current PR!
+            </p>
+          </div>
+        )}
+
+        {value == 0 && openPR && (
+          <div className="notifContainer">
+            <p
+              className="prNotif"
+              onClick={(e) => {
+                setOpenPR(false);
+              }}
+            >
+              Close pull request files!
+            </p>
+          </div>
+        )}
       </Resizable>
     </div>
   );
