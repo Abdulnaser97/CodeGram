@@ -78,11 +78,9 @@ async function handlePullRequestChange(context) {
     status: "completed",
     conclusion: conclusion,
     completed_at: new Date().toISOString(),
-    prFiles: JSON.stringify(feedback.files),
     output: {
       title: title,
       summary: summary,
-      prFiles: JSON.stringify(feedback.files),
       text: feedback.files.join(" "),
     },
   });
