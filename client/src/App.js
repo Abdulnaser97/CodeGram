@@ -202,13 +202,16 @@ function App() {
       if (!codeGramScanner) {
         throw new Error("CodeGram Scanner CheckRun not found");
       }
+      console.log(repoFiles);
       console.log(codeGramScanner);
       const summary = codeGramScanner.output.summary;
+      console.log(summary);
       const start = "**File:** ";
       let files = summary.split(start);
+      console.log(files);
       files.shift();
       if (files.length > 2) files.pop();
-      files = files.map((file) => file.split(",")[0]);
+      files = files.map((file) => file.split("\n")[0]);
       setPRFiles(files);
     } catch (err) {
       console.log("Error: Failed To Retrieve CheckRun Files", err);
@@ -651,6 +654,7 @@ function App() {
             openArtifact: openArtifact,
             tabValue: tabValue,
             nodes: nodes,
+            prFiles: prFiles,
           }}
         />
         <NotifDiagramLoading />

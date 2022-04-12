@@ -609,7 +609,7 @@ export function useReactFlowWrapper({
     }
     setOpenArtifact("");
   };
-  console.log(contextMenu);
+  // console.log(contextMenu);
   const onNodesChange = useCallback(
     (changes) => {
       try {
@@ -1181,25 +1181,26 @@ export function useReactFlowWrapper({
 
   // select prFiles
   useEffect(() => {
-    console.log(prFiles);
-    if (prFiles?.length > 1) {
+    if (!isReloadDiagram) {
+      console.log(prFiles);
       var curNodes = rf.getNodes();
       var prSet = new Set(prFiles);
-
-      var changes = curNodes.map((n) => {
+      console.log(curNodes);
+      var changes = [];
+      curNodes.forEach((n) => {
         console.log(n);
         if (prSet.has(n.data.path)) {
-          return {
+          changes.push({
             id: n.id,
             type: "select",
             selected: true,
-          };
+          });
         }
       });
-
+      console.log(changes);
       onNodesChange(changes);
     }
-  }, [prFiles]);
+  }, [prFiles, isReloadDiagram]);
 
   return {
     render: (
