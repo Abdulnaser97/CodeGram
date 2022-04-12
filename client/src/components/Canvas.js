@@ -83,6 +83,7 @@ export function useReactFlowWrapper({
   search,
   setSearch,
   fuse,
+  prFiles,
 }) {
   const {
     RFState,
@@ -1218,6 +1219,29 @@ export function useReactFlowWrapper({
       setNodeName("");
     }
   }, [nameFlag]);
+
+  // select prFiles
+  useEffect(() => {
+    if (!isReloadDiagram) {
+      console.log(prFiles);
+      var curNodes = rf.getNodes();
+      var prSet = new Set(prFiles);
+      console.log(curNodes);
+      var changes = [];
+      curNodes.forEach((n) => {
+        console.log(n);
+        if (prSet.has(n.data.path)) {
+          changes.push({
+            id: n.id,
+            type: "select",
+            selected: true,
+          });
+        }
+      });
+      console.log(changes);
+      onNodesChange(changes);
+    }
+  }, [prFiles, isReloadDiagram]);
 
   return {
     render: (
