@@ -83,6 +83,7 @@ async function handlePullRequestChange(context) {
       title: title,
       summary: summary,
       prFiles: JSON.stringify(feedback.files),
+      text: feedback.files.join(" "),
     },
   });
 }
