@@ -90,9 +90,8 @@ function getLangFromFilename(filename) {
 function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
   var rf = useReactFlow();
   var lang = "";
-  if (fileNode?.parentNode) {
-    var parent = rf.getNode(fileNode.parentNode);
-    lang = getLangFromFilename(parent.data.label);
+  if (fileNode?.data?.lang) {
+    lang = fileNode?.data.lang;
   } else {
     lang = getLangFromFilename(fileName);
   }
@@ -168,6 +167,7 @@ function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
             addLineNode({
               parentNode: fileNode,
               lines: selectedText,
+              lang: lang,
             });
             setSelectedText(null);
           }}
