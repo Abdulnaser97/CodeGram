@@ -50,6 +50,7 @@ import {
   reloadDiagram,
 } from "../Redux/actions/loadDiagram";
 import { errorNotification } from "../Redux/actions/notification";
+import { addNodeToSimulation } from "../Redux/actions/simulationActions";
 
 const multiSelectionKeyCode = "Shift";
 
@@ -834,8 +835,7 @@ export function useReactFlowWrapper({
 
   const addToSimulation = async (event) => {
     event.preventDefault();
-    //await dispatch(addToSimulation(selectedEL));
-    //setRequestUpdateZIndex(true);
+    await dispatch(addNodeToSimulation(selectedEL));
     handleContextMenuClose();
   };
 

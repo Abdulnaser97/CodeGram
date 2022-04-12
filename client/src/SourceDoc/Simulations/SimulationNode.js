@@ -1,11 +1,13 @@
 import DragHandleRoundedIcon from "@mui/icons-material/DragHandleRounded";
 import CodeIcon from "@mui/icons-material/Code";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import {
   mapDispatchToProps,
   mapStateToProps,
 } from "../../Redux/configureStore";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { useReactFlow } from "react-flow-renderer";
+import { removeNodeFromSimulation } from "../../Redux/actions/simulationActions";
 
 function SimulationNode(props) {
   const { fitBounds, getNodes, getNode } = useReactFlow();
@@ -23,6 +25,8 @@ function SimulationNode(props) {
 
   // openArtifact must exist to match names
   var selected = props.current === node.id ? "selectedFile" : "";
+
+  const dispatch = useDispatch();
 
   function fileClickHandler(file) {
     console.log("TODO: show stored simulation info for this node");
@@ -52,6 +56,17 @@ function SimulationNode(props) {
             {title}
           </p>
         </div>
+      </div>
+      <div
+        className="iconWrapper"
+        style={{ marginRight: "10px", cursor: "grab" }}
+      >
+        <DeleteRoundedIcon
+          fontSize="small"
+          onClick={() => {
+            dispatch(removeNodeFromSimulation(node));
+          }}
+        />
       </div>
       <div
         className="iconWrapper"

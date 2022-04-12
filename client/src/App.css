@@ -393,19 +393,19 @@ pre {
 .ck-editor__editable_inline {
   min-height: 20vh;
 }
-.emptyWikiButton{
-  width:100%;
+.emptyWikiButton {
+  width: 100%;
   height: 30%;
   background-color: #f7f7f7;
-  color:#7e7e7e;
+  color: #7e7e7e;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin:2% 0;
+  margin: 2% 0;
 }
-.emptyWikiButton:hover{
+.emptyWikiButton:hover {
   opacity: 0.9;
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;  
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 .LearnMoreButtonWrapper {
   position: relative;

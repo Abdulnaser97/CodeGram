@@ -34,12 +34,19 @@ import {
   errorNotification,
   loadingNotification,
 } from "./actions/notification";
+import { simulationReducer } from "./reducers/simulationReducer";
+import {
+  addNodeToSimulation,
+  removeNodeFromSimulation,
+  setCurrentSimulation,
+} from "./actions/simulationActions";
 
 const rootReducer = combineReducers({
   nodes: nodesReducer,
   repoFiles: repoReducer,
   RFState: RFStateReducer,
   notifications: notificationReducer,
+  simulations: simulationReducer,
 });
 
 const composeEnhancers = composeWithDevTools({
@@ -70,7 +77,10 @@ const ActionCreators = Object.assign(
   loadTemplateDiagram,
   reloadDiagram,
   setSourceDocTab,
-  setIsLoadingDiagram
+  setIsLoadingDiagram,
+  addNodeToSimulation,
+  removeNodeFromSimulation,
+  setCurrentSimulation
 );
 export const mapStateToProps = (state) => ({
   nodes: state.nodes,
@@ -81,6 +91,7 @@ export const mapStateToProps = (state) => ({
     errorNotificationMessage: state.errorNotificationMessage,
     loadingNotificationMessage: state.loadingNotificationMessage,
   },
+  simulations: state.simulations,
 });
 export const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators(ActionCreators, dispatch),

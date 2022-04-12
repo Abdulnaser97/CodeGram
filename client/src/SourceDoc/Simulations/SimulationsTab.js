@@ -10,6 +10,8 @@ import SimulationsControls from "./SimulationControls";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useReactFlow } from "react-flow-renderer";
 import { FormControl } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { setCurrentSimulation } from "../../Redux/actions/simulationActions";
 
 function getElementByXpath(path) {
   return document.evaluate(
@@ -45,24 +47,14 @@ function restoreStyles(nodeId, originalStyles) {
   });
 }
 
-function renderSimulations() {
-  var simulations = [];
-  simulations.push(<option value={""}>Select Simulation!</option>);
-
-  simulations.push(
-    <option value="Authentication with GitHub">
-      Authentication With GitHub
-    </option>
+function renderSimulations(simulations) {
+  var simList = [];
+  simList.push(<option value={""}>Select Simulation to Start</option>);
+  Object.keys(simulations).forEach((s) =>
+    simList.push(<option value={s}>{s}</option>)
   );
-  simulations.push(
-    <option value="Loading PR files on Landing">
-      Loading PR files on Landing
-    </option>
-  );
-  simulations.push(<option value="Saving diagram">Saving diagram</option>);
-  simulations.push(<option value="Loading diagram">Loading diagram</option>);
 
-  return simulations;
+  return simList;
 }
 
 function SimFiles({ simFiles, setSimFiles, current }) {
@@ -94,23 +86,24 @@ function SimFiles({ simFiles, setSimFiles, current }) {
               marginLeft: "10px",
             }}
           >
-            {simFiles.map((nodeId, index) => (
-              <Draggable key={nodeId} draggableId={nodeId} index={index}>
-                {(provided) => (
-                  <li
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    ref={provided.innerRef}
-                  >
-                    <SimulationNode
-                      nodeId={nodeId}
-                      current={current}
-                      style={{ width: "100%" }}
-                    />
-                  </li>
-                )}
-              </Draggable>
-            ))}
+            {simFiles &&
+              simFiles.map((nodeId, index) => (
+                <Draggable key={nodeId} draggableId={nodeId} index={index}>
+                  {(provided) => (
+                    <li
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      ref={provided.innerRef}
+                    >
+                      <SimulationNode
+                        nodeId={nodeId}
+                        current={current}
+                        style={{ width: "100%" }}
+                      />
+                    </li>
+                  )}
+                </Draggable>
+              ))}
             {provided.placeholder}
           </ul>
         )}
@@ -124,21 +117,29 @@ function SimulationsTab({ sourceFiles }) {
   const [current, setCurrent] = useState(0);
   const [currentStyle, setCurrentStyle] = useState(null);
   const [prev, setPrev] = useState(undefined);
-  const [simFiles, setSimFiles] = useState([
-    "randomnode_1649613468513",
-    "randomnode_1649613487157",
-    "randomnode_1649613537384",
-  ]);
+  const [simFiles, setSimFiles] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
   const [originalStylesBackup, setOriginalStylesBackup] = useState(null);
   const { getNodes } = useReactFlow();
 
+  const { simulations } = useSelector((state) => state.simulations);
+
+  console.log("simulations", simulations);
+
   const nodes = getNodes();
+  const dispatch = useDispatch();
 
   // set new repo from drop down menu
   const selectSimulation = (event) => {
+    dispatch(setCurrentSimulation(event.target.value));
     setSelectedSimulation(event.target.value);
   };
+
+  useEffect(() => {
+    if (simulations && selectedSimulation in simulations) {
+      setSimFiles(simulations[selectedSimulation]);
+    }
+  }, [selectedSimulation, simulations]);
 
   useEffect(() => {
     if (isRunning) {
@@ -216,7 +217,7 @@ function SimulationsTab({ sourceFiles }) {
               boxShadow: !selectSimulation ? "-2.5px 4px 5px #c9c9c9" : "",
             }}
           >
-            {renderSimulations()}
+            {renderSimulations(simulations)}
           </select>
         </FormControl>
       </Box>
@@ -245,7 +246,7 @@ function SimulationsTab({ sourceFiles }) {
         <SimFiles
           simFiles={simFiles}
           setSimFiles={setSimFiles}
-          current={simFiles[current]}
+          current={simFiles ? simFiles[current] : null}
         />
       </div>
     </>
