@@ -439,7 +439,7 @@ function App() {
             }
           }
         }
-
+        // s
         var hPath = {
           name: repo,
           dir: homeDir,
