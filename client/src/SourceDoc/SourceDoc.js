@@ -31,6 +31,7 @@ import axios from "axios";
 import { getRepo } from "../api/apiClient";
 
 import { useReactFlow } from "react-flow-renderer";
+import SimulationsTab from "./Simulations/SimulationsTab";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -522,6 +523,7 @@ function SourceDoc(props) {
             <Tab label="Repo" {...a11yProps(0)} />
             <Tab label="Code" {...a11yProps(1)} />
             <Tab label="Docs" {...a11yProps(2)} />
+            <Tab label="Simulations" {...a11yProps(3)} />
           </Tabs>
         </Box>
         <TabPanel
@@ -621,6 +623,13 @@ function SourceDoc(props) {
             setEdges={props.functions.setEdges}
             setSelectedEL={props.functions.setSelectedEL}
           />
+        </TabPanel>
+        <TabPanel
+          value={value}
+          index={3}
+          sx={{ display: "flex", flexDirection: "column" }}
+        >
+          <SimulationsTab sourceFiles={sourceFiles} />
         </TabPanel>
         {value == 0 && props.data.prFiles.length > 0 && !openPR && (
           <div className="notifContainer">

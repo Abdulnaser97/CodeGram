@@ -50,6 +50,7 @@ import {
   reloadDiagram,
 } from "../Redux/actions/loadDiagram";
 import { errorNotification } from "../Redux/actions/notification";
+import { addNodeToSimulation } from "../Redux/actions/simulationActions";
 
 const multiSelectionKeyCode = "Shift";
 
@@ -833,6 +834,12 @@ export function useReactFlowWrapper({
     handleContextMenuClose();
   };
 
+  const addToSimulation = async (event) => {
+    event.preventDefault();
+    await dispatch(addNodeToSimulation(selectedEL));
+    handleContextMenuClose();
+  };
+
   const onCopy = (event = null) => {
     if (
       selectedElIdRef.current &&
@@ -1353,6 +1360,13 @@ export function useReactFlowWrapper({
               </div>
             </MenuItem>
           )}
+          {contextMenu !== null && contextMenu.type === "elementMenu" && (
+            <MenuItem onClick={(e) => addToSimulation(e)}>
+              <div className="menu-item">
+                <div className="menu-text">Add to Simulation</div>
+              </div>
+            </MenuItem>
+          )}
           {contextMenu !== null && contextMenu.type === "paneMenu" && (
             <MenuItem
               onClick={onPaste}
@@ -1364,6 +1378,7 @@ export function useReactFlowWrapper({
               </div>
             </MenuItem>
           )}
+
           {contextMenu !== null && contextMenu.type === "nodeLink" && (
             <div>
               <Typography
