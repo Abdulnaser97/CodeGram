@@ -156,6 +156,7 @@ function SourceDoc(props) {
             openArtifact={props.data.openArtifact}
             selectedEL={filteredSelectedEL}
             addFileToNode={props.functions.addFileToNode}
+            addChildNode={props.functions.addChildNode}
           />
         );
       }
@@ -173,6 +174,7 @@ function SourceDoc(props) {
             selectedEL={filteredSelectedEL}
             addFileToNode={props.functions.addFileToNode}
             nodes={props.data.nodes}
+            addChildNode={props.functions.addChildNode}
           />
         );
       }
@@ -412,7 +414,6 @@ function SourceDoc(props) {
   useEffect(() => {
     if (props.data.tabValue != value) setValue(props.data.tabValue);
   }, [props.data.tabValue]);
-
   // search method called whenever search var changes
   useEffect(() => {
     props.functions.setOpenArtifact("");

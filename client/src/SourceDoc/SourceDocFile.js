@@ -7,8 +7,14 @@ import { useReactFlow, OnNodesChange } from "react-flow-renderer";
 import { realPos } from "../canvas/utils";
 // export default function SourceDocFile(props) {
 function SourceDocFile(props) {
-  const { addNode, setOpenArtifact, openArtifact, addFileToNode, selectedEL } =
-    props;
+  const {
+    addNode,
+    setOpenArtifact,
+    openArtifact,
+    addFileToNode,
+    selectedEL,
+    addChildNode,
+  } = props;
   var { file } = props;
 
   const { fitBounds, getNodes, setCenter } = useReactFlow();
@@ -108,6 +114,12 @@ function SourceDocFile(props) {
           onClick={() => {
             if (selectedEL && !selectedEL.data.label) {
               addFileToNode(file);
+            } else if (
+              selectedEL &&
+              selectedEL.data.label &&
+              selectedEL.data.label != "Project Root"
+            ) {
+              addChildNode({ file: file, fromSD: true });
             } else {
               addNode({ file: file, fromSD: true });
             }
