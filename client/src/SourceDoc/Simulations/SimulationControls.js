@@ -1,7 +1,9 @@
 import { theme } from "../../Themes";
 import styled from "styled-components";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
-import ArrowLeftRoundedIcon from "@mui/icons-material/ArrowLeftRounded";
+import NavigateNextRoundedIcon from "@mui/icons-material/NavigateNextRounded";
+import NavigateBeforeRoundedIcon from "@mui/icons-material/NavigateBeforeRounded";
+import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
 
 const CircleDiv = styled.div`
@@ -39,36 +41,73 @@ const SimulationsPlayerBar = styled.div`
   align-items: center;
 `;
 
-function SimulationsControls() {
+function SimulationsControls({ isRunning, setIsRunning, prev, setPrev, current, setCurrent }) {
+    const [disableBackWard, setDisableBackWard] = useState(true);
+    const [disableForward, setDisableForward] = useState(false);
+    const handleForward = () => {
+        if (current) {
+            const newIdx = current+1
+            if (newIdx >= simFiles.length) {
+                setDisableForward(true);
+                return;
+            }
+            setPrev(current);
+            setCurrent(newIdx);
+            setDisableBackWard(false);
+        }
+    }
+    const handleBackward = () => {
+        if (current) {
+            const newIdx = current-1
+            if (newIdx <= 0) {
+                setDisableBackWard(true);
+                return;
+            }
+            setPrev(current);
+            setCurrent(newIdx);
+            setDisableForward(false);
+        }
   return (
     <SimulationsPlayerBar>
       <CircleDiv className="backward">
-        <ArrowLeftRoundedIcon
+        <NavigateBeforeRoundedIcon
           style={{
-            width: "140%",
-            height: "140%",
+            width: "100%",
+            height: "100%",
             fill: theme.palette.primary.lighterPink,
           }}
           fontSize="large"
-          onClick={() => console.log("Simulations")}
+          onClick={() => handleBackward()}
         />
       </CircleDiv>
 
       <CircleDiv className="stop">
-        <StopRoundedIcon
-          style={{
-            width: "70%",
-            height: "70%",
-            fill: theme.palette.primary.lighterPink,
-          }}
-          onClick={() => console.log("Simulations")}
-        />
+        {isRunning ? (
+          <StopRoundedIcon
+            style={{
+              width: "70%",
+              height: "70%",
+              fill: theme.palette.primary.lighterPink,
+            }}
+            onClick={() => setIsRunning(false)}
+          />
+        ) : (
+          <ArrowRightRoundedIcon
+            style={{
+              width: "140%",
+              height: "140%",
+              fill: theme.palette.primary.lighterPink,
+            }}
+            fontSize="large"
+            onClick={() => handleForward()}
+          />
+        )}
       </CircleDiv>
       <CircleDiv className="forward">
-        <ArrowRightRoundedIcon
+        <NavigateNextRoundedIcon
           style={{
-            width: "140%",
-            height: "140%",
+            width: "100%",
+            height: "100%",
             fill: theme.palette.primary.lighterPink,
           }}
           onClick={() => console.log("Simulations")}

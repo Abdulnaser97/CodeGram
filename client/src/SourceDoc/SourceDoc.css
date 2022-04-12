@@ -34,7 +34,7 @@
 .SDMaximizeWrapper {
   position: fixed;
   top: 1.5%;
-  left: 3%;
+  left: 3.2%;
   height: 15px;
   width: 30px;
   display: flex;
@@ -67,7 +67,7 @@
 .SDMinimizeWrapper {
   position: relative;
   top: 1.5%;
-  left: 9%;
+  left: calc(3.2% + 38px);
   height: 15px;
   width: 30px;
   display: flex;

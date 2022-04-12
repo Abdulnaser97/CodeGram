@@ -232,6 +232,7 @@ body {
   justify-content: center;
   align-items: center;
   transition: ease-in 0.1s;
+  cursor: pointer;
 }
 .iconWrapper:hover {
   color: black;

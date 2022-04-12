@@ -10,11 +10,11 @@ import { useReactFlow } from "react-flow-renderer";
 function SimulationNode(props) {
   const { fitBounds, getNodes, getNode } = useReactFlow();
   // TODO: Uncomment
-  //const node = getNode(props.id);
+  //const node = getNode(props.nodeId);
   const node = {
-    id: props.id,
+    id: props.nodeId,
     data: {
-      label: `${props.id}`,
+      label: `${props.nodeId}`,
     },
   };
   // search results from fuse are returned as items
@@ -53,7 +53,10 @@ function SimulationNode(props) {
           </p>
         </div>
       </div>
-      <div className="iconWrapper" style={{ marginRight: "10px" }}>
+      <div
+        className="iconWrapper"
+        style={{ marginRight: "10px", cursor: "grab" }}
+      >
         <DragHandleRoundedIcon
           fontSize="small"
           onClick={() => {
