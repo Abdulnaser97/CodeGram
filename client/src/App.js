@@ -203,7 +203,13 @@ function App() {
         throw new Error("CodeGram Scanner CheckRun not found");
       }
       console.log(codeGramScanner);
-      setPRFiles(codeGramScanner);
+      const summary = codeGramScanner.output.summary;
+      const start = "**File:** ";
+      let files = summary.split(start);
+      files.shift();
+      if (files.length > 2) files.pop();
+      files = files.map((file) => file.split(",")[0]);
+      setPRFiles(files);
     } catch (err) {
       console.log("Error: Failed To Retrieve CheckRun Files", err);
       dispatch(
