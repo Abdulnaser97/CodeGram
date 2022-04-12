@@ -572,6 +572,7 @@ function SourceDoc(props) {
                     openArtifact={props.data.openArtifact}
                     selectedEL={filteredSelectedEL}
                     addFileToNode={props.functions.addFileToNode}
+                    addChildNode={props.functions.addChildNode}
                     nodes={props.data.nodes}
                   />
                 );
