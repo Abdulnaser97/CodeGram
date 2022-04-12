@@ -24,6 +24,7 @@ export default function DocsTab(props) {
   const [wiki, setWiki] = useState(selectedEL ? selectedEL.data.wiki : "");
   const [ogs, setOgs] = useState([]);
   const [incs, setIncs] = useState([]);
+  const [nodeParents, setNodeParents] = useState([]);
   const [newLabel, setNewLabel] = useState(
     selectedEL ? selectedEL.data.label : ""
   );
@@ -35,6 +36,14 @@ export default function DocsTab(props) {
       if (node) {
         setIncs(getIncomers(node, rf.getNodes(), rf.getEdges()));
         setOgs(getOutgoers(node, rf.getNodes(), rf.getEdges()));
+        var pNode = node.parentNode;
+        var parents = [];
+        while (pNode) {
+          let parent = rf.getNode(pNode);
+          parents.push(parent);
+          pNode = parent.parentNode;
+        }
+        setNodeParents(parents);
       }
     }
   }, [selectedEL]);
@@ -103,7 +112,7 @@ export default function DocsTab(props) {
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       <div
         className="navbar-button github"
-        style={{ position: "fixed", right: "1.5vw" }}
+        style={{ position: "fixed", right: "1.5vw", "overflow-y": "auto" }}
         onClick={() => handleDoneOrEditClick()}
       >
         <Box className="EditWikiButtonWrapper">
@@ -184,14 +193,39 @@ export default function DocsTab(props) {
             }
             onChange={handleWikiChange}
           />
-        ) : (
+        ) : wiki?.length ? (
           <div
             dangerouslySetInnerHTML={{
               __html: wiki,
             }}
           />
+        ) : (
+          <div className="emptyWikiButton" onClick={(e) => setIsEditing(true)}>
+            <Typography variant="h6" fontWeight={"thin"}>
+              {" "}
+              + ADD WIKI{" "}
+            </Typography>
+          </div>
         )}
         <div className="canvasData">
+          {nodeParents.length > 0 && (
+            <div>
+              <Typography variant="h7"> Parents </Typography>
+              <Box sx={{ display: "flex", width: "auto" }}>
+                {nodeParents.map((np) => (
+                  <div
+                    className="nodeCard"
+                    onClick={() => {
+                      setSelectedEL(np);
+                    }}
+                  >
+                    {" "}
+                    {np.data.label}{" "}
+                  </div>
+                ))}
+              </Box>
+            </div>
+          )}
           {ogs.length > 0 && (
             <div>
               <Typography variant="h7">Outgoers</Typography>
@@ -210,6 +244,7 @@ export default function DocsTab(props) {
               </Box>
             </div>
           )}
+
           {incs.length > 0 && (
             <div>
               <Typography variant="h7">Incomers</Typography>

@@ -465,6 +465,20 @@ export function useReactFlowWrapper({
       setNewNodeId(newNode.id);
       dispatch(bringToFront({ id: newNode.id }));
       setRequestUpdateZIndex(true);
+      setNodes((els) =>
+        els.map((el) => {
+          if (el.id === selectedEL.id) {
+            // it's important that you create a new object here
+            // in order to notify react flow about the change
+            el.data = {
+              ...el.data,
+              parentFlag: true,
+            };
+          }
+
+          return el;
+        })
+      );
     },
     [setNodes, selectedEL, nodeName, dispatch, project]
   );

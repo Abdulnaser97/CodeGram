@@ -96,7 +96,8 @@ const CustomNodeComponent = (props) => {
   return (
     <div
       style={{
-        backgroundColor: showContent ? "transparent" : "white",
+        backgroundColor:
+          showContent && props.data.parentFlag ? "transparent" : "white",
         borderRadius: `${handleSize * 1.1}px`,
         display:
           zoom >= props.data.zoomSensitivity / 1.3 || !props.data.childFlag
@@ -187,7 +188,7 @@ const CustomNodeComponent = (props) => {
           topLeft: false,
         }}
       >
-        {showContent && (
+        {showContent && props.data.parentFlag && (
           <div className="node-label corner">
             {props.data.label && !isEditing ? (
               <>{props.data.label}</>
@@ -214,7 +215,7 @@ const CustomNodeComponent = (props) => {
           </div>
         )}
 
-        {!showContent && (
+        {(!showContent || !props.data.parentFlag) && (
           <div
             style={{
               display: "flex",
