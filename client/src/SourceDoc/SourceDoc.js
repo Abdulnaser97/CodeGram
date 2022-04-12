@@ -462,8 +462,13 @@ function SourceDoc(props) {
         <div
           className="SDMaximizeWrapper"
           onClick={() => {
-            if (!isMaxSD) setHeight("100vh");
-            else setHeight("80vh");
+            if (!isMaxSD) {
+              setWidth("45vw");
+              setHeight("100vh");
+            } else {
+              setWidth("35vw");
+              setHeight("80vh");
+            }
             setIsMaxSD((prevIsMaxSD) => !prevIsMaxSD);
           }}
         >
