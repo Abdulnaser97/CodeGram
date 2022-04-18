@@ -1487,6 +1487,7 @@ export function ReactFlowStoreInterface({
         });
         dispatch(reloadDiagram(false));
       }
+      //
     } catch (err) {
       console.log(err);
       dispatch(errorNotification(`Error parsing saved diagram!`));
