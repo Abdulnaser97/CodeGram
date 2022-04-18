@@ -87,7 +87,7 @@ function getLangFromFilename(filename) {
   }
 }
 
-function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
+function CodeTab({ rawCode, fileName, fileNode, addLineNode, styleProp }) {
   var rf = useReactFlow();
   var lang = "";
   if (fileNode?.data?.lang) {
@@ -139,7 +139,7 @@ function CodeTab({ rawCode, fileName, fileNode, addLineNode }) {
   };
   console.log(selectedText);
   return (
-    <div onMouseUp={(e) => handleCopyEvent(e)}>
+    <div onMouseUp={(e) => handleCopyEvent(e)} style={styleProp}>
       <Menu
         dense
         variant="menu"

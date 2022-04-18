@@ -465,6 +465,16 @@ function SourceDoc(props) {
     }
   }
 
+  useEffect(() => {
+    if (isMaxSD) {
+      setWidth("45vw");
+      setHeight("100vh");
+    } else {
+      setWidth("35vw");
+      setHeight("80vh");
+    }
+  }, [isMaxSD]);
+
   //if(props.data.isOpenSD){
   return (
     <div className={props.data.isOpenSD ? "openSD" : "hiddenSD"}>
@@ -494,13 +504,6 @@ function SourceDoc(props) {
         <div
           className="SDMaximizeWrapper"
           onClick={() => {
-            if (!isMaxSD) {
-              setWidth("45vw");
-              setHeight("100vh");
-            } else {
-              setWidth("35vw");
-              setHeight("80vh");
-            }
             setIsMaxSD((prevIsMaxSD) => !prevIsMaxSD);
           }}
         >
@@ -629,7 +632,21 @@ function SourceDoc(props) {
           index={3}
           sx={{ display: "flex", flexDirection: "column" }}
         >
-          <SimulationsTab sourceFiles={sourceFiles} />
+          <SimulationsTab
+            sourceFiles={sourceFiles}
+            setSelectedEL={props.functions.setSelectedEL}
+            createCustomChange={props.functions.createCustomChange}
+            selectedEL={selectedEL}
+            rawCode={curCode}
+            fileName={
+              filteredSelectedEL && filteredSelectedEL.data
+                ? filteredSelectedEL.data.label
+                : ""
+            }
+            fileNode={selectedEL ? selectedEL : ""}
+            addLineNode={props.functions.addLineNode}
+            setIsMaxSD={setIsMaxSD}
+          />
         </TabPanel>
         {value == 0 && props.data.prFiles.length > 0 && !openPR && (
           <div className="notifContainer">

@@ -46,7 +46,13 @@ const CustomNodeComponent = (props) => {
   const [height, setHeight] = useState(
     props.data.height ? props.data.height : 70
   );
-  const [fontSize, setFontSize] = useState(`${width / 180}em`);
+  let longText =
+    props.data.label && props.data.label.length > 20 ? true : false;
+  let mediumText =
+    props.data.label && props.data.label.length > 15 ? true : false;
+  const [fontSize, setFontSize] = useState(
+    `${width / (longText ? 400 : mediumText ? 300 : 220)}em`
+  );
   const [borderRadius, setBorderRadius] = useState(
     `${Math.min(width, height) / 12}px`
   );
@@ -137,7 +143,7 @@ const CustomNodeComponent = (props) => {
             `${
               Math.sqrt(
                 Math.pow(height + d.height, 2) + Math.pow(width + d.width, 2)
-              ) / 200
+              ) / (longText ? 400 : mediumText ? 300 : 220)
             }em`
           );
 
@@ -243,9 +249,9 @@ const CustomNodeComponent = (props) => {
                     "z-index": 0,
                     border: "none",
                     textAlign: "center",
-                    fontSize: "100%",
+                    fontSize: "80%",
                     outline: "none",
-                    width: "80%",
+                    width: "70%",
                     padding: "none",
                     background: "transparent",
                     fontFamily: theme.typography.fontFamily,
