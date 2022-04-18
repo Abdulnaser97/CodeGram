@@ -663,7 +663,7 @@ function App() {
         />
         <NotifDiagramLoading />
 
-        <NotifDiagramLoaded />
+        <NotificationDiagramLoaded />
       </div>
     </ThemeProvider>
   );
