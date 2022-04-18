@@ -139,7 +139,11 @@ function CodeTab({ rawCode, fileName, fileNode, addLineNode, styleProp }) {
   };
   console.log(selectedText);
   return (
-    <div onMouseUp={(e) => handleCopyEvent(e)} style={styleProp}>
+    <div
+      className="containerNoScrollBar"
+      onMouseUp={(e) => handleCopyEvent(e)}
+      style={styleProp}
+    >
       <Menu
         dense
         variant="menu"

@@ -1,3 +1,4 @@
+import "../SourceDoc.css";
 import { Box } from "@mui/system";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
 import ArrowLeftRoundedIcon from "@mui/icons-material/ArrowLeftRounded";
@@ -326,6 +327,7 @@ function SimulationsTab({
             Wiki
           </Typography>
           <div
+            className="containerNoScrollBar"
             style={{
               position: "relative",
               height: "100%",
@@ -335,10 +337,12 @@ function SimulationsTab({
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",
+              overflow: "auto",
             }}
           >
             <div
-              style={{ positon: "relative", width: "90%", height: "100%" }}
+              className="containerNoScrollBar"
+              style={{ positon: "relative", width: "90%", height: "97%" }}
               dangerouslySetInnerHTML={{
                 __html: selectedEL.data.wiki,
               }}
@@ -385,7 +389,8 @@ function SimulationsTab({
               position: "relative",
               width: "95%",
               height: "27vh",
-              overflowY: "scroll",
+              overflow: "auto",
+              backgroundColor: "transparent",
             }}
           />
         </div>
