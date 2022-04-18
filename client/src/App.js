@@ -148,6 +148,7 @@ function App() {
     tabValue,
     setTabValue,
     addChildNode,
+    createCustomChange,
   } = useReactFlowWrapper({
     dispatch,
     selectedShapeName,
@@ -642,6 +643,7 @@ function App() {
             handleSearch: handleSearch,
             getRepoFiles: getRepoFiles,
             addChildNode: addChildNode,
+            createCustomChange: createCustomChange,
           }}
           data={{
             repo: repo,

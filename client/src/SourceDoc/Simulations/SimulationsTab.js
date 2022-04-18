@@ -9,9 +9,19 @@ import SimulationNode from "./SimulationNode";
 import SimulationsControls from "./SimulationControls";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useReactFlow } from "react-flow-renderer";
-import { FormControl } from "@mui/material";
+import { FormControl, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentSimulation } from "../../Redux/actions/simulationActions";
+import { realPos } from "../../canvas/utils";
+import CodeTab from "../CodeTab";
+
+const SimulationContainer = styled.div`
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
 
 function getElementByXpath(path) {
   return document.evaluate(
@@ -112,15 +122,28 @@ function SimFiles({ simFiles, setSimFiles, current }) {
   );
 }
 
-function SimulationsTab({ sourceFiles }) {
+function SimulationsTab({
+  sourceFiles,
+  setSelectedEL,
+  createCustomChange,
+  selectedEL,
+  rawCode,
+  fileName,
+  fileNode,
+  addLineNode,
+  setIsMaxSD,
+}) {
   const [selectedSimulation, setSelectedSimulation] = useState("");
   const [current, setCurrent] = useState(0);
   const [currentStyle, setCurrentStyle] = useState(null);
-  const [prev, setPrev] = useState(undefined);
+  const [prev, setPrev] = useState(0);
   const [simFiles, setSimFiles] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
   const [originalStylesBackup, setOriginalStylesBackup] = useState(null);
-  const { getNodes } = useReactFlow();
+  const [isEditing, setIsEditing] = useState(false);
+
+  const { getNodes, getNode, fitBounds } = useReactFlow();
+  const rf = useReactFlow();
 
   const { simulations } = useSelector((state) => state.simulations);
 
@@ -185,8 +208,32 @@ function SimulationsTab({ sourceFiles }) {
           color: "white",
         });
         setCurrentStyle(origCurStyles);
+        let nodeToSelect = getNode(simFiles[current]);
+        setSelectedEL(nodeToSelect);
+        if (nodeToSelect) {
+          var realNodePos = realPos(nodeToSelect, rf);
+
+          // setCenter(x, y, { zoom, duration: 1000 });
+          fitBounds(
+            {
+              x: realNodePos.position.x + nodeToSelect.width / 2,
+              y: realNodePos.position.y,
+              width: nodeToSelect.data.width * 4,
+              height: nodeToSelect.data.height * 4,
+            },
+            {
+              padding: 2,
+              duration: 1000,
+            }
+          );
+        }
+
         if (prev !== undefined && currentStyle) {
           restoreStyles(simFiles[prev], currentStyle);
+        }
+      } else {
+        if (currentStyle) {
+          restoreStyles(simFiles[current], currentStyle);
         }
       }
     } catch (e) {
@@ -195,8 +242,17 @@ function SimulationsTab({ sourceFiles }) {
   }, [isRunning, current, prev]);
 
   return (
-    <>
-      <Box sx={{ flexGrow: 1, p: 2, color: "white", "box-shadow": 0 }}>
+    <SimulationContainer>
+      <Box
+        sx={{
+          flexGrow: 1,
+          p: 2,
+          color: "white",
+          "box-shadow": 0,
+          paddingBottom: "20px",
+          width: "90%",
+        }}
+      >
         <FormControl fullWidth variant="outlined">
           <select
             className=""
@@ -207,7 +263,7 @@ function SimulationsTab({ sourceFiles }) {
             style={{
               borderRadius: "30px",
               outline: "none",
-              height: "3vh",
+              height: "35px",
               paddingLeft: "20px",
               border: "1px solid #ffaea6",
               color: "#FFAEA6",
@@ -229,27 +285,112 @@ function SimulationsTab({ sourceFiles }) {
         current={current}
         setCurrent={setCurrent}
         simFiles={simFiles}
+        setSelectedEL={setSelectedEL}
+        createCustomChange={createCustomChange}
+        isEditing={isEditing}
+        setIsEditing={setIsEditing}
+        setIsMaxSD={setIsMaxSD}
       />
+      {isEditing ? (
+        <div
+          className="repoContainer"
+          style={{
+            position: "relative",
+            maxHeight: "50vh",
+            "overflow-y": "auto",
+            "overflow-x": "hidden",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <SimFiles
+            simFiles={simFiles}
+            setSimFiles={setSimFiles}
+            current={simFiles ? simFiles[current] : null}
+          />
+        </div>
+      ) : selectedEL?.data?.wiki ? (
+        <div
+          style={{
+            position: "relative",
+            marginLeft: "5%",
+            width: "90%",
+            height: "30vh",
+            marginBottom: "5vh",
+          }}
+        >
+          {" "}
+          <Typography my={1} variant="h8" color="primary">
+            Wiki
+          </Typography>
+          <div
+            style={{
+              position: "relative",
+              height: "100%",
+              border: "1px solid #ffaea6",
+              borderRadius: "10px",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{ positon: "relative", width: "90%", height: "100%" }}
+              dangerouslySetInnerHTML={{
+                __html: selectedEL.data.wiki,
+              }}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="emptyWikiButton" style={{ marginBottom: "10%" }}>
+          <Typography variant="h6" fontWeight={"thin"}>
+            {" "}
+            + Add Wiki in Docs Tab
+          </Typography>
+        </div>
+      )}
       <div
-        className="repoContainer"
         style={{
           position: "relative",
-          maxHeight: "50vh",
-          "overflow-y": "auto",
-          "overflow-x": "hidden",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
+          marginLeft: "5%",
+          width: "90%",
+          height: "30vh",
         }}
       >
-        <SimFiles
-          simFiles={simFiles}
-          setSimFiles={setSimFiles}
-          current={simFiles ? simFiles[current] : null}
-        />
+        <Typography my={1} variant="h8" color="primary">
+          Source Code
+        </Typography>
+        <div
+          style={{
+            position: "relative",
+            height: "30vh",
+            border: "1px solid #ffaea6",
+            borderRadius: "10px",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <CodeTab
+            rawCode={rawCode}
+            fileName={fileName}
+            fileNode={fileNode}
+            addLineNode={addLineNode}
+            styleProp={{
+              position: "relative",
+              width: "95%",
+              height: "27vh",
+              overflowY: "scroll",
+            }}
+          />
+        </div>
       </div>
-    </>
+    </SimulationContainer>
   );
 }
 

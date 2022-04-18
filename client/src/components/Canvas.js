@@ -1425,6 +1425,7 @@ export function useReactFlowWrapper({
     setTabValue: setTabValue,
     tabValue: tabValue,
     addChildNode: addChildNode,
+    createCustomChange: createCustomChange,
   };
 }
 

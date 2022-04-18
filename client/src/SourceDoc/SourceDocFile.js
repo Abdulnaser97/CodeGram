@@ -114,12 +114,6 @@ function SourceDocFile(props) {
           onClick={() => {
             if (selectedEL && !selectedEL.data.label) {
               addFileToNode(file);
-            } else if (
-              selectedEL &&
-              selectedEL.data.label &&
-              selectedEL.data.label != "Project Root"
-            ) {
-              addChildNode({ file: file, fromSD: true });
             } else {
               addNode({ file: file, fromSD: true });
             }
