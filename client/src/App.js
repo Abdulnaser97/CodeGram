@@ -276,7 +276,7 @@ function App() {
       }
 
       window.history.replaceState(null, null, url);
-      const userName = "AbdulNaser97";
+      const userName = "Abdulnaser97";
       const repoName = "CodeGram";
       const formattedURL =
         "https://api.github.com/" + userName + "/" + repoName;
@@ -290,7 +290,7 @@ function App() {
       url.searchParams.set("repo", repoName);
       window.history.replaceState(null, null, url);
     }
-  }, [window.location.href]);
+  }, []);
 
   useEffect(() => {
     if (publicRepoURL && publicRepoURL.length > 0 && repoFiles.length === 0) {
