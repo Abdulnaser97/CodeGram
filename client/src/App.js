@@ -263,8 +263,10 @@ function App() {
 
     // }
     if (
-      window.location.href == "https://www.code-gram.com/?repo=CodeGram" ||
-      window.location.href == "http://localhost:3001/?repo=CodeGram"
+      (window.location.href == "https://www.code-gram.com/?repo=CodeGram" ||
+        window.location.href == "http://localhost:3001/?repo=CodeGram") &&
+      !publicRepoURL &&
+      !loggedIn
     ) {
       console.log("special case link");
       const url = new URL(window.location.href);
