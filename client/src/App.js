@@ -251,6 +251,48 @@ function App() {
   };
 
   useEffect(() => {
+    // try {
+    //   const url = new URL(window.location.href);
+    //   if (url.searchParams.get("repo") == 'CodeGram' && url.searchParams.get("branch") ){
+    //     url.searchParams.delete("repo");
+    //   }
+    //   if (url.searchParams.get("branch")) {
+    //     url.searchParams.delete("branch");
+    //   }
+    // } catch {
+
+    // }
+    if (
+      window.location.href == "https://www.code-gram.com/?repo=CodeGram" ||
+      window.location.href == "http://localhost:3001/?repo=CodeGram"
+    ) {
+      console.log("special case link");
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("repo")) {
+        url.searchParams.delete("repo");
+      }
+      if (url.searchParams.get("branch")) {
+        url.searchParams.delete("branch");
+      }
+
+      window.history.replaceState(null, null, url);
+      const userName = "AbdulNaser97";
+      const repoName = "CodeGram";
+      const formattedURL =
+        "https://api.github.com/" + userName + "/" + repoName;
+      setRepos([...repos, { name: repoName }]);
+      setNodes(initialElements.nodes);
+      setEdges(initialElements.edges);
+      dispatch(getPublicRepoFiles(repoName, formattedURL));
+      setRepo(repoName);
+      setSelectedEL(initialElements[0]);
+      setBranch("");
+      url.searchParams.set("repo", repoName);
+      window.history.replaceState(null, null, url);
+    }
+  }, [window.location.href]);
+
+  useEffect(() => {
     if (publicRepoURL && publicRepoURL.length > 0 && repoFiles.length === 0) {
       // extract repo name from public url
       try {
