@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Logo3 from "./Media/Logo3.svg";
 import React, { useState, useEffect, useCallback } from "react";
 import { useReactFlowWrapper } from "./components/Canvas";
+import { loadRepoFromPublicURL } from "./Redux/actions/loadDiagram";
 import {
   invalidateToken,
   getPR,
@@ -253,17 +254,6 @@ function App() {
   };
 
   useEffect(() => {
-    // try {
-    //   const url = new URL(window.location.href);
-    //   if (url.searchParams.get("repo") == 'CodeGram' && url.searchParams.get("branch") ){
-    //     url.searchParams.delete("repo");
-    //   }
-    //   if (url.searchParams.get("branch")) {
-    //     url.searchParams.delete("branch");
-    //   }
-    // } catch {
-
-    // }
     if (
       (window.location.href == "https://www.code-gram.com/?repo=CodeGram" ||
         window.location.href == "http://localhost:3001/?repo=CodeGram") &&
@@ -271,31 +261,9 @@ function App() {
       !loggedIn &&
       state
     ) {
-      console.log("special case link");
-      const url = new URL(window.location.href);
-      if (url.searchParams.get("repo")) {
-        url.searchParams.delete("repo");
-      }
-      if (url.searchParams.get("branch")) {
-        url.searchParams.delete("branch");
-      }
-
-      window.history.replaceState(null, null, url);
-      const userName = "Abdulnaser97";
-      const repoName = "CodeGram";
-      const formattedURL =
-        "https://api.github.com/" + userName + "/" + repoName;
-      setRepos([...repos, { name: repoName }]);
-      setNodes(initialElements.nodes);
-      setEdges(initialElements.edges);
-      console.log(state.repoFiles.isFetchingFiles);
-      dispatch(getPublicRepoFiles(repoName, formattedURL));
-      setRepo(repoName);
-      setSelectedEL(initialElements[0]);
-      setBranch("");
-      url.searchParams.set("repo", repoName);
-      window.history.replaceState(null, null, url);
-      console.log(state);
+      dispatch(
+        loadRepoFromPublicURL("https://github.com/Abdulnaser97/CodeGram")
+      );
     }
   }, [window.location.href]);
 
@@ -324,7 +292,6 @@ function App() {
         dispatch(getPublicRepoFiles(repoName, formattedURL));
         setRepo(repoName);
         setSelectedEL(initialElements[0]);
-        setBranch("");
         url.searchParams.set("repo", repoName);
         window.history.replaceState(null, null, url);
         console.log(state);
