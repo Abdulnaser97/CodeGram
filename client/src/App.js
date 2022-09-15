@@ -84,6 +84,7 @@ function App() {
     isFetchingFiles,
     isReloadDiagram,
     RFState,
+    state,
   } = useSelector((state) => {
     return {
       nodesArr: state.nodes.nodesArr,
@@ -93,6 +94,7 @@ function App() {
       isFetchingFiles: state.repoFiles.isFetchingFiles,
       isReloadDiagram: state.RFState.reloadDiagram,
       RFState: state.RFState,
+      state: state,
     };
   });
   const rf = useReactFlow();
@@ -266,7 +268,8 @@ function App() {
       (window.location.href == "https://www.code-gram.com/?repo=CodeGram" ||
         window.location.href == "http://localhost:3001/?repo=CodeGram") &&
       !publicRepoURL &&
-      !loggedIn
+      !loggedIn &&
+      state
     ) {
       console.log("special case link");
       const url = new URL(window.location.href);
@@ -285,14 +288,16 @@ function App() {
       setRepos([...repos, { name: repoName }]);
       setNodes(initialElements.nodes);
       setEdges(initialElements.edges);
+      console.log(state.repoFiles.isFetchingFiles);
       dispatch(getPublicRepoFiles(repoName, formattedURL));
       setRepo(repoName);
       setSelectedEL(initialElements[0]);
       setBranch("");
       url.searchParams.set("repo", repoName);
       window.history.replaceState(null, null, url);
+      console.log(state);
     }
-  }, []);
+  }, [window.location.href]);
 
   useEffect(() => {
     if (publicRepoURL && publicRepoURL.length > 0 && repoFiles.length === 0) {
@@ -315,12 +320,14 @@ function App() {
         setRepos([...repos, { name: repoName }]);
         setNodes(initialElements.nodes);
         setEdges(initialElements.edges);
+        console.log(state.repoFiles.isFetchingFiles);
         dispatch(getPublicRepoFiles(repoName, formattedURL));
         setRepo(repoName);
         setSelectedEL(initialElements[0]);
         setBranch("");
         url.searchParams.set("repo", repoName);
         window.history.replaceState(null, null, url);
+        console.log(state);
       } catch (e) {
         console.log(e);
         dispatch(
@@ -493,6 +500,7 @@ function App() {
         const myFuse = new Fuse(Object.values(repoFiles), options);
         setHomePath(hPath);
         setFuse(myFuse);
+        console.log(repoFiles);
         dispatch(storeRepoFiles(repoFiles));
       }
     } catch (err) {
