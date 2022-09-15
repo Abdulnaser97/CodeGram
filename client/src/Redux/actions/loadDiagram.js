@@ -48,7 +48,11 @@ export const loadDiagram = (repoFiles) => async (dispatch) => {
         );
         dispatch(setSourceDocTab(0));
         // dispatch notification diagram Found
-        dispatch(successNotification(`Diagram Found!`));
+        dispatch(
+          successNotification(
+            `Diagram Found! Scroll in and pan to explore code!`
+          )
+        );
       })
 
       .catch(function (error) {
