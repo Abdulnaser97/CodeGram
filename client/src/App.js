@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Logo3 from "./Media/Logo3.svg";
 import React, { useState, useEffect, useCallback } from "react";
 import { useReactFlowWrapper } from "./components/Canvas";
+import { loadRepoFromPublicURL } from "./Redux/actions/loadDiagram";
 import {
   invalidateToken,
   getPR,
@@ -84,6 +85,7 @@ function App() {
     isFetchingFiles,
     isReloadDiagram,
     RFState,
+    state,
   } = useSelector((state) => {
     return {
       nodesArr: state.nodes.nodesArr,
@@ -93,6 +95,7 @@ function App() {
       isFetchingFiles: state.repoFiles.isFetchingFiles,
       isReloadDiagram: state.RFState.reloadDiagram,
       RFState: state.RFState,
+      state: state,
     };
   });
   const rf = useReactFlow();
@@ -251,48 +254,18 @@ function App() {
   };
 
   useEffect(() => {
-    // try {
-    //   const url = new URL(window.location.href);
-    //   if (url.searchParams.get("repo") == 'CodeGram' && url.searchParams.get("branch") ){
-    //     url.searchParams.delete("repo");
-    //   }
-    //   if (url.searchParams.get("branch")) {
-    //     url.searchParams.delete("branch");
-    //   }
-    // } catch {
-
-    // }
     if (
       (window.location.href == "https://www.code-gram.com/?repo=CodeGram" ||
         window.location.href == "http://localhost:3001/?repo=CodeGram") &&
       !publicRepoURL &&
-      !loggedIn
+      !loggedIn &&
+      state
     ) {
-      console.log("special case link");
-      const url = new URL(window.location.href);
-      if (url.searchParams.get("repo")) {
-        url.searchParams.delete("repo");
-      }
-      if (url.searchParams.get("branch")) {
-        url.searchParams.delete("branch");
-      }
-
-      window.history.replaceState(null, null, url);
-      const userName = "Abdulnaser97";
-      const repoName = "CodeGram";
-      const formattedURL =
-        "https://api.github.com/" + userName + "/" + repoName;
-      setRepos([...repos, { name: repoName }]);
-      setNodes(initialElements.nodes);
-      setEdges(initialElements.edges);
-      dispatch(getPublicRepoFiles(repoName, formattedURL));
-      setRepo(repoName);
-      setSelectedEL(initialElements[0]);
-      setBranch("");
-      url.searchParams.set("repo", repoName);
-      window.history.replaceState(null, null, url);
+      dispatch(
+        loadRepoFromPublicURL("https://github.com/Abdulnaser97/CodeGram")
+      );
     }
-  }, []);
+  }, [window.location.href]);
 
   useEffect(() => {
     if (publicRepoURL && publicRepoURL.length > 0 && repoFiles.length === 0) {
@@ -315,12 +288,13 @@ function App() {
         setRepos([...repos, { name: repoName }]);
         setNodes(initialElements.nodes);
         setEdges(initialElements.edges);
+        console.log(state.repoFiles.isFetchingFiles);
         dispatch(getPublicRepoFiles(repoName, formattedURL));
         setRepo(repoName);
         setSelectedEL(initialElements[0]);
-        setBranch("");
         url.searchParams.set("repo", repoName);
         window.history.replaceState(null, null, url);
+        console.log(state);
       } catch (e) {
         console.log(e);
         dispatch(
@@ -493,6 +467,7 @@ function App() {
         const myFuse = new Fuse(Object.values(repoFiles), options);
         setHomePath(hPath);
         setFuse(myFuse);
+        console.log(repoFiles);
         dispatch(storeRepoFiles(repoFiles));
       }
     } catch (err) {
