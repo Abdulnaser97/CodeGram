@@ -105,7 +105,7 @@ function SourceDoc(props) {
       setSourceFiles(null);
       setPath([]);
       if (!props.loggedIn && !props.publicRepoURL) {
-        setPathComponent("Paste a repo URL or click the Demo button to start!");
+        setPathComponent("");
       } else {
         setPathComponent("...Loading");
       }
