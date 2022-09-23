@@ -678,6 +678,8 @@ function App() {
             tabValue: tabValue,
             nodes: nodes,
             prFiles: prFiles,
+            loggedIn: loggedIn,
+            publicRepoURL: publicRepoURL,
           }}
         />
         <NotifDiagramLoading />

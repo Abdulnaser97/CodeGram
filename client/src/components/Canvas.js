@@ -8,6 +8,7 @@ import {
   SignUpComponent,
   CircleNodeComponent,
   DocumentationComponent,
+  DemoComponent,
 } from "../canvas/custom_node";
 import ReactFlow, {
   addEdge,
@@ -167,6 +168,7 @@ export function useReactFlowWrapper({
       SignUpComponent: SignUpComponent,
       Text: TextComponent,
       DocumentationComponent: DocumentationComponent,
+      DemoComponent: DemoComponent,
     }),
     []
   );

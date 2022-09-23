@@ -104,7 +104,11 @@ function SourceDoc(props) {
       props.functions.setOpenArtifact("");
       setSourceFiles(null);
       setPath([]);
-      setPathComponent("...Loading");
+      if (!props.loggedIn && !props.publicRepoURL) {
+        setPathComponent("Paste a repo URL or click the Demo button to start!");
+      } else {
+        setPathComponent("...Loading");
+      }
       setSDContent("");
       setIsEditing("");
     }
