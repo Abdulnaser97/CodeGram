@@ -155,8 +155,8 @@
       "width": 463,
       "height": 49,
       "position": {
-        "x": 198,
-        "y": 483
+        "x": 148,
+        "y": 500
       },
       "animated": true,
       "style": {
@@ -205,16 +205,66 @@
       "width": 300,
       "height": 71,
       "position": {
-        "x": 595,
-        "y": 376
+        "x": 615,
+        "y": 306
       },
       "animated": true,
       "style": {
         "zIndex": "10"
       },
       "positionAbsolute": {
-        "x": 595,
-        "y": 376
+        "x": 615,
+        "y": 306
+      },
+      "z": 0,
+      "handleBounds": {
+        "source": [
+          {
+            "id": "top-handle-randomnode_4",
+            "position": "top",
+            "x": 145,
+            "y": -4,
+            "width": 10,
+            "height": 10
+          }
+        ],
+        "target": null
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "randomnode_5",
+      "data": {
+        "label": "Demo Component",
+        "name": "",
+        "linkedFiles": ["aa.py", "gg.py", "kookoo.py"],
+        "childNodes": ["da", "de", "do"],
+        "siblingNodes": ["ta", "te", "to"],
+        "parentNodes": ["pa", "pe"],
+        "documentation": ["url1", "url2"],
+        "description": "",
+        "url": null,
+        "path": "",
+        "floatTargetHandle": false,
+        "type": "DemoComponent",
+        "width": 585,
+        "height": 165
+      },
+      "type": "DemoComponent",
+      "width": 300,
+      "height": 71,
+      "position": {
+        "x": 440,
+        "y": 410
+      },
+      "animated": true,
+      "style": {
+        "zIndex": "10"
+      },
+      "positionAbsolute": {
+        "x": 440,
+        "y": 410
       },
       "z": 0,
       "handleBounds": {
@@ -289,6 +339,30 @@
       "target": "randomnode_4",
       "targetHandle": "top-handle-randomnode_4",
       "id": "randomnode_1648432058092",
+      "type": "floating",
+      "markerEnd": {
+        "type": "arrowclosed"
+      },
+      "data": {
+        "label": "",
+        "wiki": ""
+      },
+      "labelBgPadding": [8, 4],
+      "labelBgBorderRadius": 4,
+      "labelBgStyle": {
+        "fill": "#FFCC00",
+        "color": "#fff",
+        "fillOpacity": 1
+      },
+      "labelShowBg": true,
+      "selected": false
+    },
+    {
+      "source": "randomnode_1",
+      "sourceHandle": "bottom-handle-randomnode_1",
+      "target": "randomnode_5",
+      "targetHandle": "top-handle-randomnode_5",
+      "id": "randomnode_1648432058093",
       "type": "floating",
       "markerEnd": {
         "type": "arrowclosed"
