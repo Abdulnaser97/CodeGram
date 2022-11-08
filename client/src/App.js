@@ -490,6 +490,16 @@ function App() {
     }
   }, []);
 
+  // Alert user that website is not compatible with mobile
+  useEffect(() => {
+    const isMobileDevice = /Mobi/i.test(window.navigator.userAgent);
+    if (isMobileDevice) {
+      alert(
+        "CodeGram is not compatible with mobile devices, please visit the website from PC"
+      );
+    }
+  }, []);
+
   // Stores Access token in session storage, Not very secure, but good for now
   useEffect(() => {
     if (user.length !== 0) {
