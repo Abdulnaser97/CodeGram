@@ -7,7 +7,7 @@ import {
   loadingNotification,
 } from "../Redux/actions/notification";
 
-export function NotifDiagramLoaded() {
+export function NotificationDiagramLoaded() {
   const message = useSelector((state) => {
     return state.notifications.successNotificationMessage;
   });
